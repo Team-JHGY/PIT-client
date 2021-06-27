@@ -6,7 +6,7 @@ import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 
 import MainView from './src/views/Main'
-import SignUpView from './src/views/SignUp'
+import LoginView from './src/views/Login'
 const Stack = createStackNavigator()
 var initialView = ''
 const App = () => {
@@ -16,9 +16,9 @@ const App = () => {
     try {
       await AsyncStorage.getItem('JWT').then((value) => {
         if (value != null) {
-          initialView = 'Login'
+          initialView = 'Main'
         } else {
-          initialView = 'SignUp'
+          initialView = 'Login'
         }
       })
     } catch (err) {
@@ -59,8 +59,8 @@ const App = () => {
     <NavigationContainer>
       <Stack.Navigator initialRouteName={initialView}>
         <Stack.Screen
-          name="SignUp"
-          component={SignUpView}
+          name="Login"
+          component={LoginView}
           options={{ header: () => null }}
         ></Stack.Screen>
         <Stack.Screen
