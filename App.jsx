@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import * as SplashScreen from 'expo-splash-screen'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-
+import * as Font from 'expo-font'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 
@@ -33,9 +33,15 @@ const App = () => {
         // Make any API calls you need to do here
         await getJWT()
 
+        await Font.loadAsync({
+          // Load a font `NotoSansKR` from a static resource
+          NotoSansKRBold: require('./assets/fonts/NotoSansKR-Bold.otf'),
+          NotoSansKRMedium: require('./assets/fonts/NotoSansKR-Medium.otf'),
+          NotoSansKRRegular: require('./assets/fonts/NotoSansKR-Regular.otf'),
+        })
         // Artificially delay for two seconds to simulate a slow loading
         // experience. Please remove this if you copy and paste the code!
-        await new Promise((resolve) => setTimeout(resolve, 2000))
+        await new Promise((resolve) => setTimeout(resolve, 1000))
       } catch (e) {
         console.warn(e)
       } finally {
