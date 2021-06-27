@@ -7,8 +7,8 @@ import * as Font from 'expo-font'
 import Pitlogo from '../../assets/img/Login/PIT_logo.svg'
 import KakaoLogin from '../../assets/img/Login/Kakao_login.svg'
 import NaverLogin from '../../assets/img/Login/Naver_login.svg'
-import { WithLocalSvg, Svg } from 'react-native-svg'
-const LoginView = () => {
+import { WithLocalSvg } from 'react-native-svg'
+const LoginView = ({ navigation }) => {
   const onLayoutRootView = useCallback(async () => {
     await SplashScreen.hideAsync()
   })
@@ -17,12 +17,21 @@ const LoginView = () => {
       <WithLocalSvg style={styles.logo} asset={Pitlogo}></WithLocalSvg>
       <Text style={styles.text1}>트레이너와 회원이 함께 하는</Text>
       <Text style={styles.text2}>1:1 PT 관리</Text>
-      <Text style={styles.text3}>1:1 PT 관리</Text>
 
-      <Pressable style={styles.svgWrapper}>
+      <Pressable
+        style={styles.svgWrapper}
+        onPress={() => {
+          navigation.navigate('SignUp')
+        }}
+      >
         <WithLocalSvg asset={KakaoLogin} width={'100%'} height={70}></WithLocalSvg>
       </Pressable>
-      <Pressable style={styles.svgWrapper}>
+      <Pressable
+        style={styles.svgWrapper}
+        onPress={() => {
+          navigation.navigate('SignUp')
+        }}
+      >
         <WithLocalSvg
           style={styles.loginButton}
           asset={NaverLogin}

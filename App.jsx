@@ -7,6 +7,7 @@ import { createStackNavigator } from '@react-navigation/stack'
 
 import MainView from './src/views/Main'
 import LoginView from './src/views/Login'
+import SignUpView from './src/views/SignUp/SignUp'
 const Stack = createStackNavigator()
 var initialView = ''
 const App = () => {
@@ -57,17 +58,10 @@ const App = () => {
   }
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName={initialView}>
-        <Stack.Screen
-          name="Login"
-          component={LoginView}
-          options={{ header: () => null }}
-        ></Stack.Screen>
-        <Stack.Screen
-          name="Main"
-          component={MainView}
-          options={{ header: () => null }}
-        ></Stack.Screen>
+      <Stack.Navigator initialRouteName={initialView} screenOptions={{ header: () => null }}>
+        <Stack.Screen name="Login" component={LoginView}></Stack.Screen>
+        <Stack.Screen name="Main" component={MainView}></Stack.Screen>
+        <Stack.Screen name="SignUp" component={SignUpView}></Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>
   )
