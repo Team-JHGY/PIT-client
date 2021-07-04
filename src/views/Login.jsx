@@ -8,6 +8,7 @@ import Pitlogo from '../../assets/img/Login/PIT_logo.svg'
 import KakaoLogin from '../../assets/img/Login/Kakao_login.svg'
 import NaverLogin from '../../assets/img/Login/Naver_login.svg'
 import { WithLocalSvg } from 'react-native-svg'
+
 const LoginView = ({ navigation }) => {
   const onLayoutRootView = useCallback(async () => {
     await SplashScreen.hideAsync()
@@ -21,7 +22,7 @@ const LoginView = ({ navigation }) => {
       <Pressable
         style={styles.svgWrapper}
         onPress={() => {
-          navigation.navigate('SignUp')
+          navigation.navigate('Home')
         }}
       >
         <WithLocalSvg asset={KakaoLogin} width={'100%'} height={70}></WithLocalSvg>
@@ -29,7 +30,7 @@ const LoginView = ({ navigation }) => {
       <Pressable
         style={styles.svgWrapper}
         onPress={() => {
-          navigation.navigate('SignUp')
+          navigation.navigate('NewMembers')
         }}
       >
         <WithLocalSvg
