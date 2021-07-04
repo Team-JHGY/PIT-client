@@ -30,4 +30,9 @@ export default StyleSheet.create({
     fontFamily: 'NotoSansKRBold',
     fontSize: 18,
   },
+  textField: {
+    alignSelf: 'stretch',
+    marginLeft: 20,
+    marginRight: 20,
+  },
 })
