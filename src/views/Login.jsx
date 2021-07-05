@@ -30,7 +30,7 @@ const LoginView = ({ navigation }) => {
       <Pressable
         style={styles.svgWrapper}
         onPress={() => {
-          navigation.navigate('NewMembers')
+          navigation.navigate('SignUp')
         }}
       >
         <WithLocalSvg

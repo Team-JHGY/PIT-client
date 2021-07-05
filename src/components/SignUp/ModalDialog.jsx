@@ -4,7 +4,7 @@ import { WithLocalSvg } from 'react-native-svg'
 import ButtonLarge from '../Common/ButtonLarge'
 import globalStyle from '../../utils/globalStyle'
 import CloseIcon from '../../../assets/icon/Common/closeIcon.svg'
-export default ModalDialog = ({ closeModal }) => {
+export default ModalDialog = ({ closeModal, goBackPage }) => {
   return (
     <View style={styles.body}>
       <View style={styles.modalDialog}>
@@ -19,7 +19,7 @@ export default ModalDialog = ({ closeModal }) => {
           <Text style={styles.text}>모든 데이터가 지워질 수 있어요.</Text>
         </View>
 
-        <ButtonLarge name={'회원가입 취소하기'} isEnable={true}></ButtonLarge>
+        <ButtonLarge name={'회원가입 취소하기'} isEnable={true} onPress={goBackPage}></ButtonLarge>
       </View>
     </View>
   )

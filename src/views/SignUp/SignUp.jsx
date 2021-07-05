@@ -19,6 +19,9 @@ const SignUpView = ({ navigation }) => {
           closeModal={() => {
             setIsModal(false)
           }}
+          goBackPage={() => {
+            navigation.goBack()
+          }}
         />
       )}
 
