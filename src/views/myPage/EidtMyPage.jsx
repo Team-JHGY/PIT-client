@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { View, Text, StyleSheet, Image, Platform, Button, Pressable } from 'react-native'
 import { WithLocalSvg } from 'react-native-svg'
 import { Appbar } from 'react-native-paper'
@@ -9,21 +9,17 @@ import ButtonLarge from '../../components/Common/ButtonLarge'
 import ButtonSmall from '../../components/Common/ButtonSmall'
 import ButtonSmallRed from '../../components/Common/ButtonSmallRed'
 import closeIcon from '../../../assets/icon/Common/closeIcon.svg'
-import arrow_left from '../../../assets/arrow_left.png'
 
-const SignUpStep2 = ({
-  goBackStep,
-  image,
-  setImage,
-  name,
-  setName,
-  intro,
-  setIntro,
-  openModal,
-}) => {
-  const [buttonEnable, setButtonEnable] = useState('false')
 
-  useEffect(() => {
+export default function EditMyPage ({navigation}) {
+
+  const [image, setImage]               = React.useState(null)
+  const [name, setName]                 = React.useState('test')
+  const [intro, setIntro]               = React.useState('')
+  const [buttonEnable,setButtonEnable]  = React.useState(false)
+
+  
+  React.useEffect(() => {
     ;(async () => {
       if (Platform.OS !== 'web') {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
@@ -33,7 +29,7 @@ const SignUpStep2 = ({
       }
     })()
   }, [])
-  useEffect(() => {
+  React.useEffect(() => {
     if (name.length > 0) setButtonEnable(true)
     else setButtonEnable(false)
   }, [name])
@@ -54,13 +50,10 @@ const SignUpStep2 = ({
   return (
     <>
       <Appbar.Header style={globalStyle.titleAppbar}>
-        <Pressable style={globalStyle.header} onPress={() => goBackStep()}>
-          <Image source={arrow_left} style={globalStyle.title} />
-        </Pressable>
-        <Appbar.Content title="트레이너로 가입" titleStyle={styles.appbarTitle} />
+        <Appbar.Content title="편집" titleStyle={styles.appbarTitle} />
         <Pressable
           style={(globalStyle.header, { marginLeft: 'auto', paddingRight: 20 })}
-          onPress={() => openModal()}
+          onPress={()=>navigation.goBack()}
         >
           <WithLocalSvg asset={closeIcon} />
         </Pressable>
@@ -112,7 +105,11 @@ const SignUpStep2 = ({
           />
         </View>
         <Text style={styles.notificationText}>나의 회원들에게 보여지는 정보입니다.</Text>
-        <ButtonLarge name={'가입완료'} isEnable={buttonEnable} />
+        <View style={globalStyle.BottomBtnMainForm}>
+          <Pressable style={globalStyle.BasicBtn} onPress={() => navigation.goBack()}>
+            <Text style={globalStyle.BasicBtnText}>추가</Text>
+          </Pressable>
+        </View>
       </View>
     </>
   )
@@ -122,6 +119,7 @@ const styles = StyleSheet.create({
   body: {
     flex: 1,
     alignItems: 'center',
+    backgroundColor:"#ffffff"
   },
   profile: {
     marginTop: 30,
@@ -160,4 +158,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default SignUpStep2
+
