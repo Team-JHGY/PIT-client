@@ -138,8 +138,8 @@ const styles = StyleSheet.create({
         marginTop:42,
         borderRadius:10,
         borderWidth: 1,
-        borderColor: '#C2C7CC'
-        
+        borderColor: '#C2C7CC',
+        justifyContent:"center"
     }
     
 })
@@ -218,7 +218,7 @@ const modalstyles = StyleSheet.create({
     },
     btnText:{
         textAlign:"center",
-        marginTop:5
+        justifyContent:"center"
     }
   });
 

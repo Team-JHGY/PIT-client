@@ -31,11 +31,24 @@ export default StyleSheet.create({
     fontFamily: 'NotoSansKRBold',
     fontSize: 18,
   },
-
+  col_1:{
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: "auto",
+  },
+  col_2:{
+    flexGrow: 2,
+    flexShrink: 2,
+    flexBasis: "auto",
+  },
+  row:{
+    flexDirection:"row"
+  },
   textField: {
     alignSelf: 'stretch',
     marginLeft: 20,
     marginRight: 20,
+    padding:5
   },
 
   textDarkRed: {
@@ -62,8 +75,7 @@ export default StyleSheet.create({
   appbarBtn: {
     backgroundColor: '#ffff',
     borderRadius: 5,
-    margin: 2,
-    width: 88,
+    padding:10,
     height: 36,
     borderWidth: 1,
     borderColor: '#eee',
@@ -92,7 +104,7 @@ export default StyleSheet.create({
     fontSize: 14,
     color: '#5A5757',
     textAlign: 'center',
-    marginTop: 5,
+    justifyContent:"center"
   },
   appbarMain: {
     backgroundColor: '#ffff',
@@ -142,5 +154,25 @@ export default StyleSheet.create({
     color: '#5A5757',
     textAlign: 'center',
     marginTop: 5,
+  },
+  BottomBtnMainForm: {
+    margin: 20,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    width: '90%',
+  },
+  BasicBtn: {
+    width: '100%',
+    height: 60,
+    borderRadius: 10,
+    backgroundColor: '#2AFF91',
+  },
+  BasicBtnText: {
+    fontFamily: 'NotoSansKRBold',
+    fontSize: 18,
+    textAlign: 'center',
+    marginTop: 15,
   },
 })

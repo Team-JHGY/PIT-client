@@ -16,6 +16,8 @@ import MyPage from './src/views/myPage/MyPage'
 import Schedule from './src/views/schedule/Schedule'
 import AddMembersCode from './src/views/myMembers/AddMemberCode'
 import SignUpView from './src/views/SignUp/SignUp'
+import EditMyPage from './src/views/myPage/EidtMyPage'
+
 
 //Bottom nav Images
 import calendar_on from './assets/calendar_on.png'
@@ -141,6 +143,7 @@ export default function App() {
         <Stack.Screen name="Home" component={BottomNav} />
         <Stack.Screen name="Schedule" component={Schedule} />
         <Stack.Screen name="MyPage" component={MyPage} />
+        <Stack.Screen name="EditMyPage" component={EditMyPage} />
         <Stack.Screen name="AddMembersCode" component={AddMembersCode} />
       </Stack.Navigator>
     </NavigationContainer>

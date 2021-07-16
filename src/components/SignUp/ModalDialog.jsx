@@ -4,6 +4,7 @@ import { WithLocalSvg } from 'react-native-svg'
 import ButtonLarge from '../Common/ButtonLarge'
 import globalStyle from '../../utils/globalStyle'
 import CloseIcon from '../../../assets/icon/Common/closeIcon.svg'
+
 export default ModalDialog = ({ closeModal, goBackPage }) => {
   return (
     <View style={styles.body}>

@@ -95,9 +95,9 @@ export default function AddMembersCode({ navigation }) {
             추가하려는 회원님의 앱에서 마이 &gt; 회원코드에서 회원코드를 확인할 수 있습니다.
           </Text>
         </View>
-        <View style={styles.BottomBtnMainForm}>
-          <Pressable style={styles.BasicBtn} onPress={() => setModalVisible(true)}>
-            <Text style={styles.BasicBtnText}>추가</Text>
+        <View style={globalStyle.BottomBtnMainForm}>
+          <Pressable style={globalStyle.BasicBtn} onPress={() => setModalVisible(true)}>
+            <Text style={globalStyle.BasicBtnText}>추가</Text>
           </Pressable>
         </View>
       </SafeAreaView>
@@ -110,14 +110,6 @@ const styles = StyleSheet.create({
   mainForm: {
     backgroundColor: '#ffff',
     flex: 1,
-  },
-  BottomBtnMainForm: {
-    margin: 20,
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    width: '90%',
   },
 
   infoText: {
@@ -132,17 +124,6 @@ const styles = StyleSheet.create({
   },
   viewPadding: {
     padding: 20,
-  },
-  BasicBtn: {
-    width: '100%',
-    height: 60,
-    borderRadius: 10,
-    backgroundColor: '#2AFF91',
-  },
-  BasicBtnText: {
-    ...globalStyle.button,
-    textAlign: 'center',
-    marginTop: 15,
   },
   input: {
     ...globalStyle.body2,
