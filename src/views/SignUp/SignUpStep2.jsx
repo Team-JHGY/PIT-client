@@ -1,5 +1,5 @@
-import React from 'react'
-import { View, Text, StyleSheet, Image, Platform, AsyncStorage, Pressable } from 'react-native'
+import React, { useState, useEffect } from 'react'
+import { View, Text, StyleSheet, Image, Platform, Button, Pressable,AsyncStorage } from 'react-native'
 import { WithLocalSvg } from 'react-native-svg'
 import { Appbar } from 'react-native-paper'
 import * as ImagePicker from 'expo-image-picker'
@@ -8,20 +8,26 @@ import TextField from '../../components/Common/TextField'
 import ButtonLarge from '../../components/Common/ButtonLarge'
 import ButtonSmall from '../../components/Common/ButtonSmall'
 import ButtonSmallRed from '../../components/Common/ButtonSmallRed'
+
+//icons image
 import closeIcon from '../../../assets/icon/Common/closeIcon.svg'
+import arrow_left from '../../../assets/arrow_left.png'
 import Asterisk from '../../../assets/icon/asterisk.svg'
 
-export default function EditMyPage ({navigation}) {
-
+export default function SignUpStep2(props) {
+  const [buttonEnable, setButtonEnable] = React.useState('false')
+  const [userAuth, setUserAuth]         = React.useState()
   const [image, setImage]               = React.useState(null)
-  const [name, setName]                 = React.useState('')
-  const [intro, setIntro]               = React.useState('')
-  const [buttonEnable,setButtonEnable]  = React.useState(false)
+  const [name, setName]                 = React.useState("")
   const [birthday, setBirthday]         = React.useState()
   const [gender, setGender]             = React.useState('M')
-  const [userAuth, setUserAuth]         = React.useState()
+  const [userContext, setUsetContext]   = React.useState()
 
-  React.useEffect(() => {
+
+  const { goBackStep, openModal, onPress} = props; //앞에서 전달받은 정보
+
+
+  useEffect(() => {
     ;(async () => {
       if (Platform.OS !== 'web') {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
@@ -29,14 +35,23 @@ export default function EditMyPage ({navigation}) {
           alert('Sorry, we need camera roll permissions to make this work!')
         }
       }
-    })
+    })()
     AddtoLocalUserAuth()
   }, [])
 
-  React.useEffect(() => {
+
+  useEffect(() => {
     if (name.length > 0) setButtonEnable(true)
     else setButtonEnable(false)
   }, [name])
+
+
+  function AddtoLocalUserAuth(){
+    AsyncStorage.getItem("userAuth", (err, result) => { //user_id에 담긴 아이디 불러오기
+      setUserAuth(result); // result에 담김 //불러온거 출력
+    });
+  }
+
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -46,6 +61,7 @@ export default function EditMyPage ({navigation}) {
       quality: 1,
     })
 
+
     console.log(result)
 
     if (!result.cancelled) {
@@ -53,23 +69,23 @@ export default function EditMyPage ({navigation}) {
     }
   }
 
-  function AddtoLocalUserAuth(){
-    AsyncStorage.getItem("userAuth", (err, result) => { //user_id에 담긴 아이디 불러오기
-      setUserAuth(result); // result에 담김 //불러온거 출력
-    });
-  }
-
   function ToggleButton(gender) {
     setGender(gender);
   }
 
+
+
+
   return (
     <>
       <Appbar.Header style={globalStyle.titleAppbar}>
-        <Appbar.Content title="편집" titleStyle={styles.appbarTitle} />
+        <Pressable style={globalStyle.iconSize} onPress={() => goBackStep()}>
+          <Image source={arrow_left} style={globalStyle.title} />
+        </Pressable>
+        <Appbar.Content title={userAuth === "member"? "회원으로 가입" : "트레이너로 가입"} titleStyle={styles.appbarTitle} />
         <Pressable
           style={(globalStyle.header, { marginLeft: 'auto', paddingRight: 20 })}
-          onPress={()=>navigation.goBack()}
+          onPress={() => openModal()}
         >
           <WithLocalSvg asset={closeIcon} />
         </Pressable>
@@ -94,21 +110,20 @@ export default function EditMyPage ({navigation}) {
             <View style={{ marginLeft: 10 }}>
               <ButtonSmallRed
                 name={'삭제'}
-                onPress={() => {
-                  setImage(null)
-                }}
+                onPress={()=>{setImage(null)}}
               />
             </View>
           )}
         </View>
-
+        
         <View style={globalStyle.textField}>
           <TextField
             title={'이름'}
+            name="name"
             input={name}
             height={55}
             isMandatory={true}
-            setInput={setName}
+            setInput={(text) => setName(text)}
           />
         </View>
         { userAuth !== "member"?
@@ -142,37 +157,32 @@ export default function EditMyPage ({navigation}) {
             </View>
 
           </View>
-           <View style={globalStyle.textField}>
-           <TextField
-             title={'생년월일'}
-             input={birthday}
-             name="birthday"
-             height={55}
-             isMandatory={true}
-             setInput={(text) => setBirthday(text)}
-           />
-         </View>
-         </>
-         
-      
+          <View style={globalStyle.textField}>
+            <TextField
+              title={'생년월일'}
+              input={birthday}
+              name="birthday"
+              height={55}
+              isMandatory={true}
+              setInput={(text) => setBirthday(text)}
+            />
+          </View>
+          </>
         }
+        
+        
         <View style={globalStyle.textField}>
           <TextField
             title={'자기 소개'}
-            input={intro}
+            input={userContext}
+            name="userContext"
             height={130}
             isMultiLine={true}
-            setInput={setIntro}
+            setInput={(text) => setUsetContext(text)}
           />
         </View>
-        <Text style={styles.notificationText}>
-          {userAuth === "member"?  "나의 트레이너에게 보여지는 정보입니다." : "나의 회원들에게 보여지는 정보입니다."}
-        </Text>
-        <View style={globalStyle.BottomBtnMainForm}>
-          <Pressable style={globalStyle.BasicBtn} onPress={() => navigation.goBack()}>
-            <Text style={globalStyle.BasicBtnText}>편집 완료</Text>
-          </Pressable>
-        </View>
+        <Text style={styles.notificationText}>{userAuth === "member"? "나의 트레이너에게 보여지는 정보입니다.":"나의 회원들에게 보여지는 정보입니다."}</Text>
+        <ButtonLarge name={'가입완료'} isEnable={buttonEnable} onPress={onPress}/>
       </View>
     </>
   )
@@ -182,7 +192,6 @@ const styles = StyleSheet.create({
   body: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor:"#ffffff"
   },
   profile: {
     marginTop: 30,
@@ -219,6 +228,18 @@ const styles = StyleSheet.create({
     marginTop: 0,
     marginBottom: 0,
   },
+  titleWrapper: {
+    flexDirection: 'row',
+  },
+  titleText: {
+    ...globalStyle.heading2,
+  },
+  labelWrapper: {
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderColor: '#C2C7CC',
+    borderRadius: 6,
+  },
   smallBtn:{
     ...globalStyle.body2Bold,
     width:90,
@@ -230,9 +251,6 @@ const styles = StyleSheet.create({
   btnOn:{
     ...globalStyle.buttonLightGreen
   },
-  titleText: {
-    ...globalStyle.heading2,
-  },
   btnOff : {
     ...globalStyle.inputGrey,
     borderWidth:1
@@ -243,10 +261,6 @@ const styles = StyleSheet.create({
   smallBtnText:{
     ...globalStyle.body2Bold,
     textAlign:"center",
-  },
-  titleWrapper: {
-    flexDirection: 'row',
-  },
+  }
 })
-
 

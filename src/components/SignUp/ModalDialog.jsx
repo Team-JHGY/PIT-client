@@ -65,9 +65,8 @@ const styles = StyleSheet.create({
   text: {
     fontFamily: 'NotoSansKRMedium',
     fontSize: 14,
+    fontWeight: '400',
     lineHeight: 22,
-    color: '#5A5757',
-    textAlign: 'center',
   },
   textWrapper: {
     marginTop: 25,

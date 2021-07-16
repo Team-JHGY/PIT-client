@@ -25,8 +25,9 @@ export default StyleSheet.create({
   },
   body2Bold: {
     fontFamily: 'NotoSansKRBold',
-    fontSize: 14,
+    fontSize: 14
   },
+
   button: {
     fontFamily: 'NotoSansKRBold',
     fontSize: 18,
@@ -57,7 +58,36 @@ export default StyleSheet.create({
   textDartGery: {
     color: '#5A5757',
   },
-
+  textWhite:{
+    color:"#ffffff"
+  },
+  textBlack:{
+    color:"#000000"
+  },
+  textDartGery:{
+    color:"#5A5757"
+  },
+  textDimmedGrey:{
+    color:"#A6ACB2"
+  },
+  textDarkGreen:{
+    color:"#00D98B"
+  },
+  buttonGrey:{
+    borderColor:"#C2C7CC"
+  },
+  buttonLightGreen:{
+    backgroundColor:"#2AFF91"
+  },
+  buttonLightRed:{
+    borderColor:"#FF8989"
+  },
+  inputGrey:{
+    borderColor:"#C2C7CC"
+  },
+  inputLightGrey:{
+    borderColor:"#E1EAF9"
+  },
   appbarMain: {
     backgroundColor: '#ffff',
     elevation: 0,
@@ -95,9 +125,9 @@ export default StyleSheet.create({
     margin: 6,
   },
   title: {
-    height: 17,
+    height: 34,
     width: 17,
-    margin: 10,
+    marginLeft: 10,
   },
   appbarBtnText: {
     fontFamily: 'NotoSansKRMedium',
@@ -113,6 +143,13 @@ export default StyleSheet.create({
     textAlign: 'left',
     borderBottomWidth: 0.2,
     borderBottomColor: '#C2C7CC',
+    justifyContent: 'flex-start',
+  },
+  appbarMainNotBorder: {
+    backgroundColor: '#ffff',
+    elevation: 0,
+    height: 90,
+    textAlign: 'left',
     justifyContent: 'flex-start',
   },
   titleAppbar: {
@@ -168,6 +205,13 @@ export default StyleSheet.create({
     height: 60,
     borderRadius: 10,
     backgroundColor: '#2AFF91',
+  },
+  BasicBtnDisable: {
+    width: '100%',
+    height: 60,
+    borderRadius: 10,
+    backgroundColor: '#2AFF91',
+    opacity:0.4
   },
   BasicBtnText: {
     fontFamily: 'NotoSansKRBold',

@@ -19,7 +19,6 @@ export default ButtonSmallRed = ({ name, onPress }) => {
 }
 
 const styles = StyleSheet.create({
-  buttonWrapper: { height: 10 },
   button: {
     marginTop: 15,
     borderStyle: 'solid',

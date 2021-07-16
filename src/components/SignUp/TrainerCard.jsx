@@ -33,6 +33,7 @@ const styles = StyleSheet.create({
   card: {
     borderStyle: 'solid',
     borderRadius: 10,
+    marginLeft: 20,
     marginRight: 5,
     alignItems: 'center',
     flex: 1,
