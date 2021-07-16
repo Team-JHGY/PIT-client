@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, Pressable, Text, StyleSheet } from 'react-native'
 
-export default ButtonSmall = ({ name, onPress }) => {
+const ButtonSmall = ({ name, onPress }) => {
   return (
     <View>
       <Pressable
@@ -34,3 +34,4 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
 })
+export default ButtonSmall

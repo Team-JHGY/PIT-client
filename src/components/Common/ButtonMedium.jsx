@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, Pressable, Text, StyleSheet } from 'react-native'
 import globalStyle from '../../utils/globalStyle'
-export default ButtonMedium = ({ name, onPress, width, height, isSelected }) => {
+const ButtonMedium = ({ name, onPress, width, height, isSelected }) => {
   const buttonMediumStyle = (width, height) => {
     if (isSelected === true) {
       return {
@@ -55,3 +55,4 @@ const styles = StyleSheet.create({
     ...globalStyle.body2,
   },
 })
+export default ButtonMedium

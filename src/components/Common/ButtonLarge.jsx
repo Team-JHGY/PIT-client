@@ -1,7 +1,7 @@
 import React from 'react'
 import { Pressable, Text, StyleSheet } from 'react-native'
 import globalStyle from '../../utils/globalStyle'
-export default ButtonLarge = ({ name, isEnable, onPress }) => {
+const ButtonLarge = ({ name, isEnable, onPress }) => {
   return (
     <Pressable
       style={isEnable === true ? styles.enable : disableStyle}
@@ -36,3 +36,4 @@ const styles = StyleSheet.create({
   },
 })
 var disableStyle = StyleSheet.compose(styles.enable, styles.disable)
+export default ButtonLarge

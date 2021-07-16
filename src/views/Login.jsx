@@ -1,15 +1,14 @@
-import React, { useCallback, useEffect, useState } from 'react'
-import { StyleSheet, Text, View, Image, Pressable } from 'react-native'
+import React, { useCallback } from 'react'
+import { StyleSheet, Text, View, Pressable } from 'react-native'
 import * as SplashScreen from 'expo-splash-screen'
 import globalStyle from '../utils/globalStyle'
-import * as Font from 'expo-font'
 
 import Pitlogo from '../../assets/img/Login/PIT_logo.svg'
 import KakaoLogin from '../../assets/img/Login/Kakao_login.svg'
 import NaverLogin from '../../assets/img/Login/Naver_login.svg'
 import { WithLocalSvg } from 'react-native-svg'
 
-const LoginView = ({ navigation }) => {
+export default function LoginView({ navigation }) {
   const onLayoutRootView = useCallback(async () => {
     await SplashScreen.hideAsync()
   })
@@ -71,4 +70,3 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
 })
-export default LoginView

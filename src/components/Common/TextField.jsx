@@ -3,15 +3,7 @@ import { View, Text, StyleSheet, TextInput } from 'react-native'
 import { WithLocalSvg } from 'react-native-svg'
 import globalStyle from '../../utils/globalStyle'
 import Asterisk from '../../../assets/icon/asterisk.svg'
-export default TextField = ({
-  title,
-  input,
-  height,
-  isMandatory,
-  isMultiLine,
-  setInput,
-  placeholder,
-}) => {
+const TextField = ({ title, input, height, isMandatory, isMultiLine, setInput, placeholder }) => {
   const labelTextStyle = (height) => {
     if (isMultiLine === true) {
       return {
@@ -71,3 +63,5 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
 })
+
+export default TextField
