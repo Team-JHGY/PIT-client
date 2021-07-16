@@ -17,7 +17,7 @@ import Schedule from './src/views/schedule/Schedule'
 import AddMembersCode from './src/views/myMembers/AddMemberCode'
 import SignUpView from './src/views/SignUp/SignUp'
 import EditMyPage from './src/views/myPage/EidtMyPage'
-
+import KakaoLogin from './src/views/login/KakaoLogin'
 
 //Bottom nav Images
 import calendar_on from './assets/calendar_on.png'
@@ -145,6 +145,7 @@ export default function App() {
         <Stack.Screen name="MyPage" component={MyPage} />
         <Stack.Screen name="EditMyPage" component={EditMyPage} />
         <Stack.Screen name="AddMembersCode" component={AddMembersCode} />
+        <Stack.Screen name="KakaoLogin" component={KakaoLogin} />
       </Stack.Navigator>
     </NavigationContainer>
   )

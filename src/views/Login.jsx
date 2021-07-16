@@ -19,12 +19,12 @@ export default function LoginView({ navigation }) {
       <Text style={styles.text2}>1:1 PT 관리</Text>
 
       <Pressable
-        style={styles.svgWrapper}
+        style={[styles.svgWrapper, { marginTop: 60 }]}
         onPress={() => {
           navigation.navigate('Home')
         }}
       >
-        <WithLocalSvg asset={KakaoLogin} width={'100%'} height={70}></WithLocalSvg>
+        <WithLocalSvg asset={KakaoLogin} width={'88.8%'} height={70}></WithLocalSvg>
       </Pressable>
       <Pressable
         style={styles.svgWrapper}
@@ -35,10 +35,24 @@ export default function LoginView({ navigation }) {
         <WithLocalSvg
           style={styles.loginButton}
           asset={NaverLogin}
-          width={'100%'}
+          width={'88.8%'}
           height={70}
         ></WithLocalSvg>
       </Pressable>
+      <Pressable
+        style={styles.svgWrapper}
+        onPress={() => {
+          navigation.navigate('KakaoLogin')
+        }}
+      >
+        <WithLocalSvg
+          style={styles.loginButton}
+          asset={NaverLogin}
+          width={'88.8%'}
+          height={70}
+        ></WithLocalSvg>
+      </Pressable>
+      <Text style={styles.footerText}>PIT project</Text>
     </View>
   )
 }
@@ -57,16 +71,26 @@ const styles = StyleSheet.create({
   },
   text1: {
     ...globalStyle.body1,
+    lineHeight: 24,
     marginTop: 35,
     color: 'white',
   },
   text2: {
     ...globalStyle.body1,
+    lineHeight: 24,
     color: 'white',
   },
   loginButton: {
     marginLeft: 20,
     marginRight: 20,
     marginTop: 20,
+  },
+  footerText: {
+    ...globalStyle.body2,
+    lineHeight: 19,
+    color: '#FFFFFF',
+    opacity: 0.2,
+    marginTop: 'auto',
+    marginBottom: 30,
   },
 })
