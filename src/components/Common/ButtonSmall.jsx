@@ -1,9 +1,9 @@
 import React from 'react'
 import { View, Pressable, Text, StyleSheet } from 'react-native'
 
-export default ButtonSmall = ({ name, onPress, marginLeft, marginRight }) => {
+export default ButtonSmall = ({ name, onPress }) => {
   return (
-    <View style={styles.buttonWrapper}>
+    <View>
       <Pressable
         onPress={() => {
           if (onPress !== null) {

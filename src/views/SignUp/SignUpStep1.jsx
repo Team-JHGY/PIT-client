@@ -11,6 +11,8 @@ import MemberCard from '../../components/SignUp/MemberCard'
 const SignUpStep1 = ({ changeStep, setRole, role, goBack, openModal }) => {
   const [buttonEnable, setButtonEnable] = useState('false')
   useEffect(() => {
+    // step2에서 뒤로가기 눌렀을 때 버튼을 활성화
+    // onPress 의 setButtonEnable과 다른 역할
     if (role !== '') setButtonEnable(true)
   }, [])
   return (
@@ -46,13 +48,25 @@ const SignUpStep1 = ({ changeStep, setRole, role, goBack, openModal }) => {
             <MemberCard isChecked={role === 'member'} />
           </Pressable>
         </View>
-        <View style={{ marginTop: 25 }}>
-          {role === 'trainer' && <Text>트레이너 계정으로 가입하면 회원에게 나의 일정을</Text>}
-          {role === 'trainer' && <Text>공유하고, 수업때 회원이 진행한 운동을 기록하고</Text>}
-          {role === 'trainer' && <Text>식단과 개인운동에 대한 피드백을 줄 수 있어요.</Text>}
-          {role === 'member' && <Text>회원 계정으로 가입하면 트레이너에게 나의 일정을</Text>}
-          {role === 'member' && <Text>공유하고, 수업때 회원이 진행한 운동을 기록하고</Text>}
-          {role === 'member' && <Text>식단과 개인운동에 대한 피드백을 줄 수 있어요.</Text>}
+        <View style={styles.description}>
+          {role === 'trainer' && (
+            <Text style={styles.text}>트레이너 계정으로 가입하면 회원에게 나의 일정을</Text>
+          )}
+          {role === 'trainer' && (
+            <Text style={styles.text}>공유하고, 수업때 회원이 진행한 운동을 기록하고</Text>
+          )}
+          {role === 'trainer' && (
+            <Text style={styles.text}>식단과 개인운동에 대한 피드백을 줄 수 있어요.</Text>
+          )}
+          {role === 'member' && (
+            <Text style={styles.text}>회원 계정으로 가입하면 선생님의 일정을 확인할 수</Text>
+          )}
+          {role === 'member' && (
+            <Text style={styles.text}>있고, 수업때 진행한 운동리스트 확인과 개인운동</Text>
+          )}
+          {role === 'member' && (
+            <Text style={styles.text}>및 식단에 대한 피드백을 받아볼 수 있어요.</Text>
+          )}
         </View>
         <ButtonLarge name={'다음'} isEnable={buttonEnable} onPress={changeStep} />
       </View>
@@ -66,9 +80,20 @@ const styles = StyleSheet.create({
     marginTop: 60,
     flexDirection: 'row',
     height: 300,
+    width: '88.8%',
   },
   heading: { ...globalStyle.heading1 },
   body2: { ...globalStyle.body2 },
+  description: {
+    width: '88.8%',
+    marginTop: 25,
+  },
+  text: {
+    ...globalStyle.body2,
+    fontSize: 15,
+    lineHeight: 20,
+    color: '#5A5757',
+  },
 })
 
 export default SignUpStep1

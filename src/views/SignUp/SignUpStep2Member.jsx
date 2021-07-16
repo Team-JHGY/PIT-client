@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, StyleSheet, Image, Platform, Button, Pressable } from 'react-native'
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  Platform,
+  Button,
+  Pressable,
+  ScrollView,
+} from 'react-native'
 import { WithLocalSvg } from 'react-native-svg'
 import { Appbar } from 'react-native-paper'
 import * as ImagePicker from 'expo-image-picker'
@@ -8,14 +17,21 @@ import TextField from '../../components/Common/TextField'
 import ButtonLarge from '../../components/Common/ButtonLarge'
 import ButtonSmall from '../../components/Common/ButtonSmall'
 import ButtonSmallRed from '../../components/Common/ButtonSmallRed'
+import ButtonMedium from '../../components/Common/ButtonMedium'
 import closeIcon from '../../../assets/icon/Common/closeIcon.svg'
 import arrow_left from '../../../assets/arrow_left.png'
+import Asterisk from '../../../assets/icon/asterisk.svg'
+
 const SignUpStep2 = ({
   goBackStep,
   image,
   setImage,
   name,
   setName,
+  sex,
+  setSex,
+  birthDay,
+  setBirthDay,
   intro,
   setIntro,
   openModal,
@@ -33,7 +49,7 @@ const SignUpStep2 = ({
     })()
   }, [])
   useEffect(() => {
-    if (name.length > 0) setButtonEnable(true)
+    if (name.length > 0 && birthDay.length > 0 && sex !== '') setButtonEnable(true)
     else setButtonEnable(false)
   }, [name])
   const pickImage = async () => {
@@ -56,7 +72,7 @@ const SignUpStep2 = ({
         <Pressable style={globalStyle.header} onPress={() => goBackStep()}>
           <Image source={arrow_left} style={globalStyle.title} />
         </Pressable>
-        <Appbar.Content title="트레이너로 가입" titleStyle={styles.appbarTitle} />
+        <Appbar.Content title="회원으로 가입" titleStyle={styles.appbarTitle} />
         <Pressable
           style={(globalStyle.header, { marginLeft: 'auto', paddingRight: 20 })}
           onPress={() => openModal()}
@@ -64,7 +80,7 @@ const SignUpStep2 = ({
           <WithLocalSvg asset={closeIcon} />
         </Pressable>
       </Appbar.Header>
-      <View style={styles.body}>
+      <ScrollView contentContainerStyle={styles.body}>
         {image !== null ? (
           <Image source={{ uri: image }} style={styles.profile} />
         ) : (
@@ -101,25 +117,65 @@ const SignUpStep2 = ({
             setInput={setName}
           />
         </View>
+        <View style={{ flexDirection: 'row', alignSelf: 'stretch', marginLeft: 20 }}>
+          <Text style={{ ...globalStyle.heading2 }}>{'성별'}</Text>
+          <View style={{ justifyContent: 'center', marginLeft: 5 }}>
+            <WithLocalSvg asset={Asterisk}></WithLocalSvg>
+          </View>
+        </View>
+        <View style={{ flexDirection: 'row', alignSelf: 'stretch', marginLeft: 20 }}>
+          <ButtonMedium
+            name={'남'}
+            width={90}
+            height={50}
+            isSelected={sex === 'M' ? true : false}
+            onPress={() => {
+              setSex('M')
+            }}
+          />
+          <View style={{ marginLeft: 8 }}>
+            <ButtonMedium
+              name={'여'}
+              width={90}
+              height={50}
+              isSelected={sex === 'F' ? true : false}
+              onPress={() => {
+                setSex('F')
+              }}
+            />
+          </View>
+        </View>
+
+        <View style={globalStyle.textField}>
+          <TextField
+            title={'생년월일'}
+            input={name}
+            height={55}
+            isMandatory={true}
+            setInput={setName}
+            placeholder={'19910705'}
+          />
+        </View>
         <View style={globalStyle.textField}>
           <TextField
             title={'자기 소개'}
             input={intro}
-            height={130}
+            height={120}
             isMultiLine={true}
             setInput={setIntro}
           />
         </View>
-        <Text style={styles.notificationText}>나의 회원들에게 보여지는 정보입니다.</Text>
+
+        <Text style={styles.notificationText}>나의 트레이너에게 보여지는 정보입니다.</Text>
         <ButtonLarge name={'가입완료'} isEnable={buttonEnable} />
-      </View>
+      </ScrollView>
     </>
   )
 }
 
 const styles = StyleSheet.create({
   body: {
-    flex: 1,
+    // flex: 1,
     alignItems: 'center',
   },
   profile: {
@@ -128,7 +184,7 @@ const styles = StyleSheet.create({
     height: 70,
     borderRadius: 50,
     borderWidth: 3,
-    borderColor: '#E101FF',
+    borderColor: '#11F37E',
   },
   buttonWrapper: {
     alignSelf: 'stretch',
@@ -144,6 +200,7 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     marginLeft: 20,
     marginTop: 20,
+    marginBottom: 85,
     color: '#5A5757',
     lineHeight: 22,
     fontSize: 14,

@@ -3,13 +3,26 @@ import { View, Text, StyleSheet, TextInput } from 'react-native'
 import { WithLocalSvg } from 'react-native-svg'
 import globalStyle from '../../utils/globalStyle'
 import Asterisk from '../../../assets/icon/asterisk.svg'
-export default TextField = ({ title, input, height, isMandatory, isMultiLine, setInput }) => {
+export default TextField = ({
+  title,
+  input,
+  height,
+  isMandatory,
+  isMultiLine,
+  setInput,
+  placeholder,
+}) => {
   const labelTextStyle = (height) => {
-    return {
-      ...globalStyle.body2,
-      justifyContent: 'center',
-      height: height,
-      marginLeft: 10,
+    if (isMultiLine === true) {
+      return {
+        height: height,
+        textAlignVertical: 'top',
+        paddingTop: 10,
+      }
+    } else {
+      return {
+        height: height,
+      }
     }
   }
   return (
@@ -22,16 +35,33 @@ export default TextField = ({ title, input, height, isMandatory, isMultiLine, se
           </View>
         )}
       </View>
-      <View height={height} style={styles.labelWrapper}>
+      <TextInput
+        style={[
+          labelTextStyle(height),
+          {
+            paddingLeft: 10,
+            fontSize: 14,
+            borderStyle: 'solid',
+            borderWidth: 1,
+            borderColor: '#C2C7CC',
+            borderRadius: 6,
+          },
+        ]}
+        onChangeText={setInput}
+        multiline={isMultiLine === true ? true : false}
+        placeholder={placeholder !== null ? placeholder : ''}
+      >
+        {input}
+      </TextInput>
+      {/* <View height={150} style={styles.labelWrapper}>
         <TextInput
           style={labelTextStyle(height)}
           onChangeText={setInput}
-          caretHidden={true}
           multiline={isMultiLine === true ? true : false}
         >
           {input}
         </TextInput>
-      </View>
+      </View> */}
     </View>
   )
 }
