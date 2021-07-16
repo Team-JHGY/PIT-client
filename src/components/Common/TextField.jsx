@@ -53,15 +53,6 @@ export default TextField = ({
       >
         {input}
       </TextInput>
-      {/* <View height={150} style={styles.labelWrapper}>
-        <TextInput
-          style={labelTextStyle(height)}
-          onChangeText={setInput}
-          multiline={isMultiLine === true ? true : false}
-        >
-          {input}
-        </TextInput>
-      </View> */}
     </View>
   )
 }
