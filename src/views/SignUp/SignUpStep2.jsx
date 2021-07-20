@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, StyleSheet, Image, Platform, Button, Pressable,AsyncStorage } from 'react-native'
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  Platform,
+  Button,
+  Pressable,
+  AsyncStorage,
+} from 'react-native'
 import { WithLocalSvg } from 'react-native-svg'
 import { Appbar } from 'react-native-paper'
 import * as ImagePicker from 'expo-image-picker'
@@ -16,16 +25,14 @@ import Asterisk from '../../../assets/icon/asterisk.svg'
 
 export default function SignUpStep2(props) {
   const [buttonEnable, setButtonEnable] = React.useState('false')
-  const [userAuth, setUserAuth]         = React.useState()
-  const [image, setImage]               = React.useState(null)
-  const [name, setName]                 = React.useState("")
-  const [birthday, setBirthday]         = React.useState()
-  const [gender, setGender]             = React.useState('M')
-  const [userContext, setUsetContext]   = React.useState()
+  const [userAuth, setUserAuth] = React.useState()
+  const [image, setImage] = React.useState(null)
+  const [name, setName] = React.useState('')
+  const [birthday, setBirthday] = React.useState()
+  const [gender, setGender] = React.useState('M')
+  const [userContext, setUsetContext] = React.useState()
 
-
-  const { goBackStep, openModal, onPress} = props; //앞에서 전달받은 정보
-
+  const { goBackStep, openModal, onPress } = props //앞에서 전달받은 정보
 
   useEffect(() => {
     ;(async () => {
@@ -39,19 +46,17 @@ export default function SignUpStep2(props) {
     AddtoLocalUserAuth()
   }, [])
 
-
   useEffect(() => {
     if (name.length > 0) setButtonEnable(true)
     else setButtonEnable(false)
   }, [name])
 
-
-  function AddtoLocalUserAuth(){
-    AsyncStorage.getItem("userAuth", (err, result) => { //user_id에 담긴 아이디 불러오기
-      setUserAuth(result); // result에 담김 //불러온거 출력
-    });
+  function AddtoLocalUserAuth() {
+    AsyncStorage.getItem('userAuth', (err, result) => {
+      //user_id에 담긴 아이디 불러오기
+      setUserAuth(result) // result에 담김 //불러온거 출력
+    })
   }
-
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -61,7 +66,6 @@ export default function SignUpStep2(props) {
       quality: 1,
     })
 
-
     console.log(result)
 
     if (!result.cancelled) {
@@ -70,11 +74,8 @@ export default function SignUpStep2(props) {
   }
 
   function ToggleButton(gender) {
-    setGender(gender);
+    setGender(gender)
   }
-
-
-
 
   return (
     <>
@@ -82,7 +83,10 @@ export default function SignUpStep2(props) {
         <Pressable style={globalStyle.iconSize} onPress={() => goBackStep()}>
           <Image source={arrow_left} style={globalStyle.title} />
         </Pressable>
-        <Appbar.Content title={userAuth === "member"? "회원으로 가입" : "트레이너로 가입"} titleStyle={styles.appbarTitle} />
+        <Appbar.Content
+          title={userAuth === 'member' ? '회원으로 가입' : '트레이너로 가입'}
+          titleStyle={styles.appbarTitle}
+        />
         <Pressable
           style={(globalStyle.header, { marginLeft: 'auto', paddingRight: 20 })}
           onPress={() => openModal()}
@@ -95,7 +99,9 @@ export default function SignUpStep2(props) {
           <Image source={{ uri: image }} style={styles.profile} />
         ) : (
           <Image
-            style={styles.profile}
+            style={
+              userAuth === 'member' ? [styles.profile, { borderColor: '#11F37E' }] : styles.profile
+            }
             source={require('../../../assets/img/SignUp/emptyProfile.png')}
           ></Image>
         )}
@@ -110,12 +116,14 @@ export default function SignUpStep2(props) {
             <View style={{ marginLeft: 10 }}>
               <ButtonSmallRed
                 name={'삭제'}
-                onPress={()=>{setImage(null)}}
+                onPress={() => {
+                  setImage(null)
+                }}
               />
             </View>
           )}
         </View>
-        
+
         <View style={globalStyle.textField}>
           <TextField
             title={'이름'}
@@ -126,51 +134,57 @@ export default function SignUpStep2(props) {
             setInput={(text) => setName(text)}
           />
         </View>
-        { userAuth !== "member"?
-          null
-          :
+        {userAuth !== 'member' ? null : (
           <>
-          <View style={globalStyle.textField}>
-            <View style={styles.titleWrapper}>
-              <Text style={styles.titleText}>성별</Text>
-              
-              <View style={{ justifyContent: 'center', marginLeft: 5 }}>
-                <WithLocalSvg asset={Asterisk}></WithLocalSvg>
+            <View style={globalStyle.textField}>
+              <View style={styles.titleWrapper}>
+                <Text style={styles.titleText}>성별</Text>
+
+                <View style={{ justifyContent: 'center', marginLeft: 5 }}>
+                  <WithLocalSvg asset={Asterisk}></WithLocalSvg>
+                </View>
+              </View>
+              <View style={styles.titleWrapper}>
+                <Pressable
+                  style={
+                    gender === 'M'
+                      ? [styles.smallBtn, styles.leftmargin, styles.btnOn]
+                      : [styles.smallBtn, styles.leftmargin, styles.btnOff]
+                  }
+                  onPress={() => {
+                    ToggleButton('M')
+                  }}
+                >
+                  <Text style={[styles.smallBtnText]}>남</Text>
+                </Pressable>
+
+                <Pressable
+                  style={
+                    gender === 'F'
+                      ? [styles.smallBtn, styles.leftmargin, styles.btnOn]
+                      : [styles.smallBtn, styles.leftmargin, styles.btnOff]
+                  }
+                  onPress={() => {
+                    ToggleButton('F')
+                  }}
+                >
+                  <Text style={[styles.smallBtnText]}>여</Text>
+                </Pressable>
               </View>
             </View>
-            <View style={styles.titleWrapper}>
-
-              <Pressable 
-                style={gender === "M"?[styles.smallBtn, styles.leftmargin, styles.btnOn]:[styles.smallBtn, styles.leftmargin, styles.btnOff]} 
-                onPress={()=>{ToggleButton("M")}}
-              >
-                <Text style={[styles.smallBtnText]}>남</Text>
-              </Pressable>
-
-              <Pressable 
-                style={gender === "F"?[styles.smallBtn, styles.leftmargin, styles.btnOn]:[styles.smallBtn, styles.leftmargin, styles.btnOff]}
-                onPress={()=>{ToggleButton("F")}}
-              >
-                <Text style={[styles.smallBtnText]}>여</Text>
-              </Pressable>
-
+            <View style={globalStyle.textField}>
+              <TextField
+                title={'생년월일'}
+                input={birthday}
+                name="birthday"
+                height={55}
+                isMandatory={true}
+                setInput={(text) => setBirthday(text)}
+              />
             </View>
-
-          </View>
-          <View style={globalStyle.textField}>
-            <TextField
-              title={'생년월일'}
-              input={birthday}
-              name="birthday"
-              height={55}
-              isMandatory={true}
-              setInput={(text) => setBirthday(text)}
-            />
-          </View>
           </>
-        }
-        
-        
+        )}
+
         <View style={globalStyle.textField}>
           <TextField
             title={'자기 소개'}
@@ -181,8 +195,12 @@ export default function SignUpStep2(props) {
             setInput={(text) => setUsetContext(text)}
           />
         </View>
-        <Text style={styles.notificationText}>{userAuth === "member"? "나의 트레이너에게 보여지는 정보입니다.":"나의 회원들에게 보여지는 정보입니다."}</Text>
-        <ButtonLarge name={'가입완료'} isEnable={buttonEnable} onPress={onPress}/>
+        <Text style={styles.notificationText}>
+          {userAuth === 'member'
+            ? '나의 트레이너에게 보여지는 정보입니다.'
+            : '나의 회원들에게 보여지는 정보입니다.'}
+        </Text>
+        <ButtonLarge name={'가입완료'} isEnable={buttonEnable} onPress={onPress} />
       </View>
     </>
   )
@@ -240,27 +258,26 @@ const styles = StyleSheet.create({
     borderColor: '#C2C7CC',
     borderRadius: 6,
   },
-  smallBtn:{
+  smallBtn: {
     ...globalStyle.body2Bold,
-    width:90,
-    height:50,
-    borderRadius:10,
+    width: 90,
+    height: 50,
+    borderRadius: 10,
     textAlign: 'center',
-    justifyContent:"center"
+    justifyContent: 'center',
   },
-  btnOn:{
-    ...globalStyle.buttonLightGreen
+  btnOn: {
+    ...globalStyle.buttonLightGreen,
   },
-  btnOff : {
+  btnOff: {
     ...globalStyle.inputGrey,
-    borderWidth:1
+    borderWidth: 1,
   },
-  leftmargin:{
-    marginRight:8
+  leftmargin: {
+    marginRight: 8,
   },
-  smallBtnText:{
+  smallBtnText: {
     ...globalStyle.body2Bold,
-    textAlign:"center",
-  }
+    textAlign: 'center',
+  },
 })
-
