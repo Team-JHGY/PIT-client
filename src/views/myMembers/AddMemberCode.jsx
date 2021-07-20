@@ -8,6 +8,7 @@ import {
   Image,
   TextInput,
   Modal,
+  AsyncStorage
 } from 'react-native'
 import globalStyle from '../../utils/globalStyle'
 import { Appbar } from 'react-native-paper'
@@ -15,17 +16,41 @@ import arrow_left from '../../../assets/arrow_left.png'
 import cross from '../../../assets/cross.png'
 
 export default function AddMembersCode({ navigation }) {
-  const [text, onChangeText] = React.useState()
+  const [text, onChangeText] = React.useState(null)
   const [modalVisible, setModalVisible] = useState(false)
+  const [disableBtn, setDisableBtn] = useState(false)
+  const [userAuth, setUserAuth]         = React.useState()
+
+  React.useEffect(() => {
+      AddtoLocalUserAuth()
+      CheckTextInput()
+  },[text])
+
+  function AddtoLocalUserAuth(){
+      AsyncStorage.getItem("userAuth", (err, result) => { //user_id에 담긴 아이디 불러오기
+          setUserAuth(result); // result에 담김 //불러온거 출력
+      });
+  }
+  function CheckTextInput(){
+    if(text === null || text === ""){
+      setDisableBtn(true)
+    }else{
+      setDisableBtn(false)
+    }
+  }
+
 
   return (
     <>
       {/*네비게이션 형태가 다 달라서 컴포넌트 별 개별 추가 진행*/}
       <Appbar.Header style={globalStyle.titleAppbar}>
-        <Pressable style={globalStyle.header} onPress={() => navigation.goBack()}>
+        <Pressable style={globalStyle.iconSize} onPress={() => navigation.goBack()}>
           <Image source={arrow_left} style={globalStyle.title} />
         </Pressable>
-        <Appbar.Content title="회원코드 입력으로 추가" titleStyle={globalStyle.header} />
+        <Appbar.Content 
+          title={userAuth === "member"? "트레이너코드 입력으로 추가":"회원코드 입력으로 추가"} 
+          titleStyle={globalStyle.header} 
+        />
       </Appbar.Header>
 
       {/* View 부분 */}
@@ -42,7 +67,13 @@ export default function AddMembersCode({ navigation }) {
             <View style={modalstyles.centeredView}>
               <View style={modalstyles.modalView}>
                 <View style={modalstyles.row}>
-                  <Text style={[globalStyle.heading2, modalstyles.headerText]}>회원확인</Text>
+                  <Text style={[globalStyle.heading2, modalstyles.headerText]}>
+                    {userAuth === "member"? 
+                      "트레이너 확인"
+                      :
+                      "회원확인"
+                    }    
+                  </Text>
                   <Pressable
                     style={modalstyles.cross}
                     onPress={() => setModalVisible(!modalVisible)}
@@ -59,14 +90,22 @@ export default function AddMembersCode({ navigation }) {
                   />
 
                   <Text style={globalStyle.heading2}>김태리</Text>
-                  <Text style={globalStyle.body2}>(여, ??세)</Text>
+                  {userAuth === "member"?
+                    null
+                    :
+                    <Text style={globalStyle.body2}>(여, ??세)</Text>
+                  } 
                   <Text style={[globalStyle.body2, modalstyles.infoText]}>
-                    추가하려는 회원님이 맞는지 확인해주세요.
+                    {userAuth === "member"? 
+                      "추가하려는 트레이너 선생님이 맞는지 확인해주세요."
+                      :
+                      "추가하려는 회원님이 맞는지 확인해주세요."
+                    }
                   </Text>
 
                   <View style={modalstyles.row}>
                     <Pressable
-                      style={[modalstyles.button, modalstyles.buttonClose]}
+                      style={[modalstyles.button, modalstyles.buttonClose, modalstyles.margin_right]}
                       onPress={() => setModalVisible(!modalVisible)}
                     >
                       <Text
@@ -80,7 +119,9 @@ export default function AddMembersCode({ navigation }) {
                       style={[modalstyles.button, modalstyles.buttonOpen]}
                       onPress={() => setModalVisible(!modalVisible)}
                     >
-                      <Text style={[globalStyle.button, modalstyles.btnText]}>확인</Text>
+                      <Text style={[globalStyle.button, modalstyles.btnText]}>
+                        확인
+                      </Text>
                     </Pressable>
                   </View>
                 </View>
@@ -88,15 +129,23 @@ export default function AddMembersCode({ navigation }) {
             </View>
           </Modal>
 
-          <Text style={globalStyle.heading2}>회원 코드</Text>
+          <Text style={globalStyle.heading2}>{userAuth === "member"? "트레이너 코드":"회원 코드"}</Text>
           <TextInput style={styles.input} onChangeText={onChangeText} value={text} />
 
           <Text style={styles.infoText}>
-            추가하려는 회원님의 앱에서 마이 &gt; 회원코드에서 회원코드를 확인할 수 있습니다.
+          {userAuth === "member"?
+            "추가하려는 트레이너님의 앱 마이 > 트레이너 코드에서 확인할 수 있습니다."
+            :
+            "추가하려는 회원님의 앱에서 마이 > 회원코드에서 회원코드를 확인할 수 있습니다."
+          }
           </Text>
         </View>
         <View style={globalStyle.BottomBtnMainForm}>
-          <Pressable style={globalStyle.BasicBtn} onPress={() => setModalVisible(true)}>
+          <Pressable 
+            style={disableBtn === false? globalStyle.BasicBtn : globalStyle.BasicBtnDisable } 
+            onPress={() => setModalVisible(true)}
+            disabled={disableBtn}
+          >
             <Text style={globalStyle.BasicBtnText}>추가</Text>
           </Pressable>
         </View>
@@ -149,7 +198,7 @@ const modalstyles = StyleSheet.create({
   },
   modalView: {
     margin: 10,
-    width: '80%',
+    width: '65%',
     backgroundColor: '#fff',
     borderRadius: 10,
     padding: 20,
@@ -168,7 +217,9 @@ const modalstyles = StyleSheet.create({
     height: 60,
     borderRadius: 5,
     padding: 10,
-    margin: 10,
+  },
+  margin_right:{
+    marginRight:10
   },
   buttonOpen: {
     backgroundColor: '#2AFF91',

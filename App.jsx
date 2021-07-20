@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import * as SplashScreen from 'expo-splash-screen'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+
 import * as Font from 'expo-font'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { StyleSheet, Image } from 'react-native'
+import { StyleSheet, Image, AsyncStorage } from 'react-native'
 
 //Pages
 import MainView from './src/views/Main'
@@ -18,6 +18,7 @@ import AddMembersCode from './src/views/myMembers/AddMemberCode'
 import SignUpView from './src/views/SignUp/SignUp'
 import EditMyPage from './src/views/myPage/EidtMyPage'
 import KakaoLogin from './src/views/login/KakaoLogin'
+import MyTrainers from './src/views/myPage/MyTrainers'
 
 //Bottom nav Images
 import calendar_on from './assets/calendar_on.png'
@@ -29,14 +30,20 @@ import my_off from './assets/my_off.png'
 import trainees_off from './assets/trainees_off.png'
 import trainees_on from './assets/trainees_on.png'
 
-//나중에 Context API 연결 할 부분
-const userAuth = 'Trainer'
-
 // Bottom Nav 연결 부분
 const Tab = createBottomTabNavigator()
 
 //하단 라우팅 담당 + 네비게이션
-function BottomNav() {
+export function BottomNav() {
+  const [userAuth, setUserAuth] = React.useState()
+
+  React.useEffect(() => {
+    AsyncStorage.getItem('userAuth', (err, result) => {
+      //user_id에 담긴 아이디 불러오기
+      setUserAuth(result) // result에 담김 //불러온거 출력
+    })
+  }, [])
+
   return (
     <Tab.Navigator
       style={styles.bottomNavMain}
@@ -65,16 +72,16 @@ function BottomNav() {
       }}
     >
       <Tab.Screen
-        name={userAuth === 'User' ? '홈' : '스케쥴'}
-        component={userAuth === 'User' ? MainView : Schedule}
+        name={userAuth === 'member' ? '홈' : '스케쥴'}
+        component={userAuth === 'member' ? MainView : Schedule}
       />
       <Tab.Screen
-        name={userAuth === 'User' ? '운동/식단' : '회원'}
-        component={userAuth === 'User' ? NewMembers : Members}
+        name={userAuth === 'member' ? '운동/식단' : '회원'}
+        component={userAuth === 'member' ? NewMembers : Members}
       />
       <Tab.Screen
-        name={userAuth === 'User' ? '마이' : '마이'}
-        component={userAuth === 'User' ? MyPage : MyPage}
+        name={userAuth === 'member' ? '마이' : '마이'}
+        component={userAuth === 'member' ? MyPage : MyPage}
       />
     </Tab.Navigator>
   )
@@ -146,6 +153,7 @@ export default function App() {
         <Stack.Screen name="EditMyPage" component={EditMyPage} />
         <Stack.Screen name="AddMembersCode" component={AddMembersCode} />
         <Stack.Screen name="KakaoLogin" component={KakaoLogin} />
+        <Stack.Screen name="MyTrainers" component={MyTrainers} />
       </Stack.Navigator>
     </NavigationContainer>
   )

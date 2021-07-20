@@ -1,18 +1,37 @@
 import React from 'react'
-import { StyleSheet, Text, View, SafeAreaView, Pressable,Image,ScrollView } from 'react-native'
+import { StyleSheet, Text, View, SafeAreaView, Pressable, Image, ScrollView, AsyncStorage } from 'react-native'
+import Clipboard from "expo-clipboard"
 import globalStyle from '../../utils/globalStyle'
-import { Appbar } from 'react-native-paper';
+import { Appbar } from 'react-native-paper'
+import arrow_right from '../../../assets/arrow_right.png'
 
 export default function MyPage({navigation}) {
     const [appBarArray, setAppBarArray] = React.useState([])
-    
+    const [trainerCode, setTrainerCode] = React.useState('12345')
+    const [userAuth, setUserAuth]         = React.useState()
+
+    const copyToClipboard = () => {
+            Clipboard.setString(trainerCode)
+            alert("복사되었습니당.")
+    };
+
+    function AddtoLocalUserAuth(){
+        AsyncStorage.getItem("userAuth", (err, result) => { //user_id에 담긴 아이디 불러오기
+            setUserAuth(result); // result에 담김 //불러온거 출력
+        });
+    }
+
+    React.useEffect(()=>{
+        AddtoLocalUserAuth()
+    },[])
+
 
     return (
         <>
         <Appbar.Header style={globalStyle.appbarMain}>
             <Appbar.Content title="마이"  titleStyle={[globalStyle.heading1, styles.barHeader]}/>
             <Pressable
-                style={[globalStyle.appbarBtn, globalStyle.buttonGrey, styles.editWidth]}
+                style={[globalStyle.appbarBtn, globalStyle.buttonGrey, styles.editWidth, styles.margin_right]}
                 onPress={()=>navigation.navigate('EditMyPage')} 
             >
                 <Text style={globalStyle.appbarBtnText}>편집</Text>
@@ -27,10 +46,49 @@ export default function MyPage({navigation}) {
                 <View style={styles.myPageInfoImg}>
                     <Image source={{uri:'https://img.sbs.co.kr/newsnet/etv/upload/2021/04/23/30000684130_500.jpg'}} style={styles.userImg}/>
                 </View>
+                
+                
+                { userAuth === "member"?
+                    <Pressable 
+                        style={[styles.myPageInfo, globalStyle.row, globalStyle.buttonLightGreen, styles.trainerBtn]}
+                        onPress={() => {navigation.navigate('MyTrainers')}}
+                    >
+                        <View style={[globalStyle.col_1, styles.alignCenter, styles.padding_Left]}>
+                            <Text style={globalStyle.body2, globalStyle.textDartGery}>현재 트레이너</Text>
+                            <Text style={globalStyle.heading2}>양치승 T</Text>
+                        </View>
+                        <View style={[globalStyle.col_2, styles.alignCenter, styles.padding_Left]}>
+                            <Text style={globalStyle.body2, globalStyle.textDartGery}>함께 운동했던 선생님들</Text>
+                            <Text style={globalStyle.heading2}>총 3 명</Text>
+                        </View>
+                        <View style={[globalStyle.col_1, styles.alignCenter, styles.padding_Left]}>
+                            <Image source={arrow_right} style={styles.arrow_right} />
+                        </View>
+                    </Pressable>
+                    :
+                    null
+                }
                 <View style={[styles.myPageInfo]}>
                     <Text style={[globalStyle.heading2, styles.userName]}>이름</Text>
                     <Text style={[globalStyle.body2, styles.userNameInfo]}>김태리</Text>
                 </View>
+                { userAuth === "member"?
+                    <>
+                    <View style={[styles.myPageInfo]}>
+                        <Text style={[globalStyle.heading2, styles.userName]}>성별</Text>
+                        <Text style={[globalStyle.body2, styles.userNameInfo]}>여</Text>
+                    </View>
+                    <View style={[styles.myPageInfo]}>
+                        <Text style={[globalStyle.heading2, styles.userName]}>생년월일</Text>
+                        <Text style={[globalStyle.body2, styles.userNameInfo]}>1992.08.03 (30세)</Text>
+                    </View>
+                    </>
+                    :
+                    null
+                }
+        
+
+
                 <View style={styles.myPageInfo}>
                     <Text style={[globalStyle.heading2, styles.userName]}>자기 소개</Text>
                     <Text style={[globalStyle.body2, styles.userNameInfo]}>
@@ -42,13 +100,13 @@ export default function MyPage({navigation}) {
                 </View>
                 <View style={[styles.myPageInfo, globalStyle.row]}>
                     <View style={globalStyle.col_1}>
-                        <Text style={[globalStyle.heading2, styles.userName]}>트레이너 코드</Text>
-                        <Text style={[globalStyle.body2, styles.userNameInfo]}>123456</Text>
+                        <Text style={[globalStyle.heading2, styles.userName]}>{userAuth === "member"? "회원코드" : "트레이너 코드"}</Text>
+                        <Text style={[globalStyle.body2, styles.userNameInfo]}>{trainerCode}</Text>
                     </View>
                     <View style={globalStyle.col_1, styles.alignCenter}>
                         <Pressable
                             style={[globalStyle.appbarBtn, globalStyle.buttonGrey, styles.copyBtn]}
-                            onPress={()=>navigation.navigate('NewMembers')} 
+                            onPress={copyToClipboard}
                         >
                             <Text style={globalStyle.appbarBtnText}>복사</Text>
                         </Pressable>
@@ -58,7 +116,7 @@ export default function MyPage({navigation}) {
                 </View>
                 <View style={[styles.myPageInfoImg, styles.logOut]}>
                     <Pressable style={styles.BasicBtn}
-                        //onPress={() => setModalVisible(true)}
+                        onPress={() => navigation.navigate('Login')}
                     >
                         <Text style={[globalStyle.body2, styles.BasicBtnText]}>로그아웃</Text>
                     </Pressable>
@@ -136,13 +194,27 @@ const styles = StyleSheet.create({
     },
     alignCenter:{
         justifyContent: "center",
-        alignItems: "center",
     },
     copyBtn:{
         width:60
     },
     editWidth:{
         width:60
+    },
+    trainerBtn:{
+        height:94,
+        borderRadius:10,
+        marginTop:10
+    },
+    arrow_right:{
+        width:30,
+        height:30
+    },
+    padding_Left: {
+        paddingLeft:20
+    },
+    margin_right:{
+        marginRight:15
     }
 })
 

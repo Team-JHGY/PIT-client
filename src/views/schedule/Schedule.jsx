@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { StyleSheet, Text, View, SafeAreaView, Pressable } from 'react-native'
+import { StyleSheet, Text, View, SafeAreaView, Pressable,AsyncStorage } from 'react-native'
 import globalStyle from '../../utils/globalStyle'
 
 
@@ -8,7 +8,11 @@ import globalStyle from '../../utils/globalStyle'
 
 export default function Schedule({navigation}) {
     const [appBarArray, setAppBarArray] = React.useState([])
-    
+    React.useEffect(() => {
+        AsyncStorage.getItem('userAuth', (err, result) => { //user_id에 담긴 아이디 불러오기
+            console.log(result); // result에 담김 //불러온거 출력
+          });
+    },[])
 
     return (
         <>

@@ -1,6 +1,7 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import ButtonLarge from '../../components/Common/ButtonLarge'
-import { Text, StyleSheet, View, Pressable, Image } from 'react-native'
+import { Text, StyleSheet, View, Pressable, AsyncStorage } from 'react-native'
+
 import { WithLocalSvg } from 'react-native-svg'
 import { Appbar } from 'react-native-paper'
 import closeIcon from '../../../assets/icon/Common/closeIcon.svg'
@@ -8,13 +9,16 @@ import globalStyle from '../../utils/globalStyle'
 import TrainerCard from '../../components/SignUp/TrainerCard'
 import MemberCard from '../../components/SignUp/MemberCard'
 
-const SignUpStep1 = ({ changeStep, setRole, role, goBack, openModal }) => {
+export default function SignUpStep1(props) {
+  //changeStep 은 숫자
   const [buttonEnable, setButtonEnable] = useState('false')
+  const { changeStep, goBack, openModal } = props
+  const [role, setRole] = useState('')
+
   useEffect(() => {
-    // step2에서 뒤로가기 눌렀을 때 버튼을 활성화
-    // onPress 의 setButtonEnable과 다른 역할
     if (role !== '') setButtonEnable(true)
   }, [])
+
   return (
     <>
       <Appbar.Header style={globalStyle.titleAppbar}>
@@ -34,6 +38,7 @@ const SignUpStep1 = ({ changeStep, setRole, role, goBack, openModal }) => {
             onPress={() => {
               setRole('trainer')
               setButtonEnable(true)
+              AsyncStorage.setItem('userAuth', 'trainer')
             }}
           >
             <TrainerCard isChecked={role === 'trainer'} />
@@ -43,6 +48,7 @@ const SignUpStep1 = ({ changeStep, setRole, role, goBack, openModal }) => {
             onPress={() => {
               setRole('member')
               setButtonEnable(true)
+              AsyncStorage.setItem('userAuth', 'member')
             }}
           >
             <MemberCard isChecked={role === 'member'} />
@@ -95,5 +101,3 @@ const styles = StyleSheet.create({
     color: '#5A5757',
   },
 })
-
-export default SignUpStep1
