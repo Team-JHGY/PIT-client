@@ -25,31 +25,31 @@ export default StyleSheet.create({
   },
   body2Bold: {
     fontFamily: 'NotoSansKRBold',
-    fontSize: 14
+    fontSize: 14,
   },
 
   button: {
     fontFamily: 'NotoSansKRBold',
     fontSize: 18,
   },
-  col_1:{
+  col_1: {
     flexGrow: 1,
     flexShrink: 1,
-    flexBasis: "auto",
+    flexBasis: 'auto',
   },
-  col_2:{
+  col_2: {
     flexGrow: 2,
     flexShrink: 2,
-    flexBasis: "auto",
+    flexBasis: 'auto',
   },
-  row:{
-    flexDirection:"row"
+  row: {
+    flexDirection: 'row',
   },
   textField: {
     alignSelf: 'stretch',
     marginLeft: 20,
     marginRight: 20,
-    padding:5
+    padding: 5,
   },
 
   textDarkRed: {
@@ -58,35 +58,35 @@ export default StyleSheet.create({
   textDartGery: {
     color: '#5A5757',
   },
-  textWhite:{
-    color:"#ffffff"
+  textWhite: {
+    color: '#ffffff',
   },
-  textBlack:{
-    color:"#000000"
+  textBlack: {
+    color: '#000000',
   },
-  textDartGery:{
-    color:"#5A5757"
+  textDartGery: {
+    color: '#5A5757',
   },
-  textDimmedGrey:{
-    color:"#A6ACB2"
+  textDimmedGrey: {
+    color: '#A6ACB2',
   },
-  textDarkGreen:{
-    color:"#00D98B"
+  textDarkGreen: {
+    color: '#00D98B',
   },
-  buttonGrey:{
-    borderColor:"#C2C7CC"
+  buttonGrey: {
+    borderColor: '#C2C7CC',
   },
-  buttonLightGreen:{
-    backgroundColor:"#2AFF91"
+  buttonLightGreen: {
+    backgroundColor: '#2AFF91',
   },
-  buttonLightRed:{
-    borderColor:"#FF8989"
+  buttonLightRed: {
+    borderColor: '#FF8989',
   },
-  inputGrey:{
-    borderColor:"#C2C7CC"
+  inputGrey: {
+    borderColor: '#C2C7CC',
   },
-  inputLightGrey:{
-    borderColor:"#E1EAF9"
+  inputLightGrey: {
+    borderColor: '#E1EAF9',
   },
   appbarMain: {
     backgroundColor: '#ffff',
@@ -105,7 +105,7 @@ export default StyleSheet.create({
   appbarBtn: {
     backgroundColor: '#ffff',
     borderRadius: 5,
-    padding:10,
+    padding: 10,
     height: 36,
     borderWidth: 1,
     borderColor: '#eee',
@@ -134,7 +134,7 @@ export default StyleSheet.create({
     fontSize: 14,
     color: '#5A5757',
     textAlign: 'center',
-    justifyContent:"center"
+    justifyContent: 'center',
   },
   appbarMain: {
     backgroundColor: '#ffff',
@@ -211,7 +211,7 @@ export default StyleSheet.create({
     height: 60,
     borderRadius: 10,
     backgroundColor: '#2AFF91',
-    opacity:0.4
+    opacity: 0.4,
   },
   BasicBtnText: {
     fontFamily: 'NotoSansKRBold',

@@ -9,6 +9,7 @@ import {
   Pressable,
   AsyncStorage,
 } from 'react-native'
+import InputScrollView from 'react-native-input-scroll-view'
 import { WithLocalSvg } from 'react-native-svg'
 import { Appbar } from 'react-native-paper'
 import * as ImagePicker from 'expo-image-picker'
@@ -28,7 +29,7 @@ export default function SignUpStep2(props) {
   const [userAuth, setUserAuth] = React.useState()
   const [image, setImage] = React.useState(null)
   const [name, setName] = React.useState('')
-  const [birthday, setBirthday] = React.useState()
+  const [birthday, setBirthday] = React.useState('')
   const [gender, setGender] = React.useState('M')
   const [userContext, setUsetContext] = React.useState()
 
@@ -47,9 +48,14 @@ export default function SignUpStep2(props) {
   }, [])
 
   useEffect(() => {
-    if (name.length > 0) setButtonEnable(true)
-    else setButtonEnable(false)
-  }, [name])
+    if (userAuth === 'trainer') {
+      if (name.length > 0) setButtonEnable(true)
+      else setButtonEnable(false)
+    } else if (userAuth === 'member') {
+      if (name.length > 0 && birthday.length == 8) setButtonEnable(true)
+      else setButtonEnable(false)
+    }
+  }, [name, gender, birthday])
 
   function AddtoLocalUserAuth() {
     AsyncStorage.getItem('userAuth', (err, result) => {
@@ -78,7 +84,7 @@ export default function SignUpStep2(props) {
   }
 
   return (
-    <>
+    <InputScrollView>
       <Appbar.Header style={globalStyle.titleAppbar}>
         <Pressable style={globalStyle.iconSize} onPress={() => goBackStep()}>
           <Image source={arrow_left} style={globalStyle.title} />
@@ -131,7 +137,13 @@ export default function SignUpStep2(props) {
             input={name}
             height={55}
             isMandatory={true}
-            setInput={(text) => setName(text)}
+            setInput={(input) => {
+              const regex = /^[ㄱ-ㅎ|가-힣|a-z|A-Z|]*$/
+
+              if (regex.test(input)) {
+                setName(input)
+              }
+            }}
           />
         </View>
         {userAuth !== 'member' ? null : (
@@ -179,7 +191,13 @@ export default function SignUpStep2(props) {
                 name="birthday"
                 height={55}
                 isMandatory={true}
-                setInput={(text) => setBirthday(text)}
+                placeholder={'예) 19910705'}
+                setInput={(input) => {
+                  const regex = /^[|0-9|]*$/
+                  if (regex.test(input) && input.length <= 8) {
+                    setBirthday(input)
+                  }
+                }}
               />
             </View>
           </>
@@ -202,7 +220,7 @@ export default function SignUpStep2(props) {
         </Text>
         <ButtonLarge name={'가입완료'} isEnable={buttonEnable} onPress={onPress} />
       </View>
-    </>
+    </InputScrollView>
   )
 }
 

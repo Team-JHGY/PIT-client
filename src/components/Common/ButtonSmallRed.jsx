@@ -19,7 +19,6 @@ const ButtonSmallRed = ({ name, onPress }) => {
 }
 
 const styles = StyleSheet.create({
-  buttonWrapper: { height: 10 },
   button: {
     marginTop: 15,
     borderStyle: 'solid',
@@ -29,8 +28,8 @@ const styles = StyleSheet.create({
   },
   text: {
     color: '#DD0101',
-    marginTop: 5,
-    marginBottom: 5,
+    marginTop: 10,
+    marginBottom: 10,
     marginLeft: 10,
     marginRight: 10,
   },

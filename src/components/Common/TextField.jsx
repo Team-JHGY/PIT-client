@@ -8,7 +8,6 @@ const TextField = ({ title, input, height, isMandatory, isMultiLine, setInput, p
     if (isMultiLine === true) {
       return {
         height: height,
-        textAlignVertical: 'top',
         paddingTop: 10,
       }
     } else {
@@ -17,6 +16,7 @@ const TextField = ({ title, input, height, isMandatory, isMultiLine, setInput, p
       }
     }
   }
+
   return (
     <View>
       <View style={styles.titleWrapper}>
@@ -40,11 +40,10 @@ const TextField = ({ title, input, height, isMandatory, isMultiLine, setInput, p
           },
         ]}
         onChangeText={setInput}
+        value={input}
         multiline={isMultiLine === true ? true : false}
         placeholder={placeholder !== null ? placeholder : ''}
-      >
-        {input}
-      </TextInput>
+      ></TextInput>
     </View>
   )
 }
