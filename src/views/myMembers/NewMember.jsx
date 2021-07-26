@@ -29,10 +29,10 @@ export default function NewMembers({navigation}) {
         <>
         {/*네비게이션 형태가 다 달라서 컴포넌트 별 개별 추가 진행*/}
        <Appbar.Header style={globalStyle.titleAppbar}>
-            <Appbar.Content title={userAuth === "member"? '트레이너 추가':'회원 추가'}  titleStyle={globalStyle.heading1}/>
+            <Appbar.Content title={userAuth === "member"? '트레이너 추가':'회원 추가'}  titleStyle={[globalStyle.heading1,globalStyle.center]}/>
             
             <Pressable
-                style={globalStyle.header}
+                style={[globalStyle.header, globalStyle.absoluteRight]}
                 onPress={()=>navigation.goBack()}
             >
                 <Image source={cross} style={globalStyle.title}/>
@@ -236,7 +236,6 @@ const modalstyles = StyleSheet.create({
         height:60,
         borderRadius: 5,
         padding: 10,
-        marginTop:20,
         textAlign:"center",
         justifyContent:"center"
     },

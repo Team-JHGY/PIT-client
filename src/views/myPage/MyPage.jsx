@@ -31,7 +31,7 @@ export default function MyPage({navigation}) {
         <Appbar.Header style={globalStyle.appbarMain}>
             <Appbar.Content title="마이"  titleStyle={[globalStyle.heading1, styles.barHeader]}/>
             <Pressable
-                style={[globalStyle.appbarBtn, globalStyle.buttonGrey, styles.editWidth, styles.margin_right]}
+                style={[globalStyle.appbarBtn, globalStyle.buttonGrey, globalStyle.center,styles.editWidth, styles.margin_right]}
                 onPress={()=>navigation.navigate('EditMyPage')} 
             >
                 <Text style={globalStyle.appbarBtnText}>편집</Text>
@@ -169,7 +169,8 @@ const styles = StyleSheet.create({
         borderBottomColor:"#eee"
     },
     userName:{
-        marginBottom:14
+        justifyContent: "center",
+        alignItems: "center", 
     },
     userNameInfo:{
         marginBottom:14
@@ -180,12 +181,15 @@ const styles = StyleSheet.create({
         borderRadius:10,
         backgroundColor:"#ffffff",  
         ...globalStyle.buttonGrey,
-        borderWidth:1  
+        borderWidth:1,
+        justifyContent: "center",
+        alignItems: "center",  
     },
     BasicBtnText:{
         ...globalStyle.button,
         textAlign:"center",
-        marginTop:15
+        justifyContent: "center",
+        alignItems: "center",
     },
     logOut:{
         justifyContent: "center",
@@ -196,10 +200,15 @@ const styles = StyleSheet.create({
         justifyContent: "center",
     },
     copyBtn:{
-        width:60
+        width:60,
+        textAlign: 'center',
+        justifyContent: 'center',
     },
     editWidth:{
-        width:60
+        width:60,
+        textAlign: 'center',
+        alignItems: "center",
+        justifyContent: 'center',
     },
     trainerBtn:{
         height:94,

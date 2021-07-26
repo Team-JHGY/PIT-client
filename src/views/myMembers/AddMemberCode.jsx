@@ -105,7 +105,7 @@ export default function AddMembersCode({ navigation }) {
 
                   <View style={modalstyles.row}>
                     <Pressable
-                      style={[modalstyles.button, modalstyles.buttonClose, modalstyles.margin_right]}
+                      style={[modalstyles.button, modalstyles.buttonClose, modalstyles.margin_right,globalStyle.center]}
                       onPress={() => setModalVisible(!modalVisible)}
                     >
                       <Text
@@ -116,7 +116,7 @@ export default function AddMembersCode({ navigation }) {
                     </Pressable>
 
                     <Pressable
-                      style={[modalstyles.button, modalstyles.buttonOpen]}
+                      style={[modalstyles.button, modalstyles.buttonOpen, globalStyle.center]}
                       onPress={() => setModalVisible(!modalVisible)}
                     >
                       <Text style={[globalStyle.button, modalstyles.btnText]}>
@@ -142,11 +142,11 @@ export default function AddMembersCode({ navigation }) {
         </View>
         <View style={globalStyle.BottomBtnMainForm}>
           <Pressable 
-            style={disableBtn === false? globalStyle.BasicBtn : globalStyle.BasicBtnDisable } 
+            style={disableBtn === false? [globalStyle.BasicBtn, globalStyle.center] : [globalStyle.BasicBtnDisable, globalStyle.center] } 
             onPress={() => setModalVisible(true)}
             disabled={disableBtn}
           >
-            <Text style={globalStyle.BasicBtnText}>추가</Text>
+            <Text style={[globalStyle.BasicBtnText, globalStyle.center]}>추가</Text>
           </Pressable>
         </View>
       </SafeAreaView>
@@ -192,7 +192,7 @@ const modalstyles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.4)',
   },
   UserInfo: {
-    marginTop: 30,
+    marginTop: 10,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -253,17 +253,16 @@ const modalstyles = StyleSheet.create({
     resizeMode: 'cover',
     borderWidth: 3,
     borderColor: '#11F37E',
-    marginBottom: 12,
+    marginBottom: 6,
   },
   infoText: {
     ...globalStyle.textDartGery,
     textAlign: 'center',
     width: 170,
-    marginTop: 15,
-    marginBottom: 30,
+    marginBottom: 15,
   },
   btnText: {
     textAlign: 'center',
-    marginTop: 5,
+    ...globalStyle.center
   },
 })

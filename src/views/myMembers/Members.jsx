@@ -17,13 +17,13 @@ export default function Members({navigation}) {
          <Appbar.Header style={globalStyle.appbarMain}>
             <Appbar.Content title="나의 회원"  titleStyle={globalStyle.heading1}/>
             <Pressable
-                style={globalStyle.appbarBtn}
+                style={[globalStyle.appbarBtn, globalStyle.center]}
                 onPress={()=>navigation.navigate('NewMembers')} 
             >
-                <Text style={globalStyle.appbarBtnText}>회원추가</Text>
+                <Text style={[globalStyle.appbarBtnText, globalStyle.center]}>회원추가</Text>
             </Pressable>
             <Pressable
-                style={globalStyle.appbarBtnArrow}
+                style={[globalStyle.appbarBtnArrow]}
                 
             >
                 <Image source={sortArrow} style={globalStyle.arrowImg}/>
@@ -47,8 +47,8 @@ export default function Members({navigation}) {
                                 </View>
                                 
                                 <View style={globalStyle.col_2}>
-                                    <Text style={[globalStyle.body2]}>김회원 (남, 23세)</Text>
-                                    <Text style={[globalStyle.body2, globalStyle.textDartGery]}>2021.06.13 등록</Text>
+                                    <Text style={[globalStyle.body2,styles.textmargin]}>김회원 (남, 23세)</Text>
+                                    <Text style={[globalStyle.body2, globalStyle.textDartGery,styles.textmargin]}>2021.06.13 등록</Text>
                                 </View>
                                 {isNew === "Y"? 
                                     <>
@@ -57,7 +57,7 @@ export default function Members({navigation}) {
                                             N
                                         </Text>
                                     </View>
-                                    <Text style={[globalStyle.body2, globalStyle.textDimmedGrey, styles.date, styles.greenText]}>06.13</Text>
+                                    <Text style={[globalStyle.body2, globalStyle.textDimmedGrey, styles.date, styles.greenText,styles.textmargin]}>06.13</Text>
                                     </>
                                     :<Text style={[globalStyle.body2, globalStyle.textDimmedGrey, styles.date]}>06.13</Text>
                                 }
@@ -106,7 +106,9 @@ const styles = StyleSheet.create({
         marginRight:12
     },
     userInfo:{
-        padding:20,
+        paddingTop:20,
+        paddingLeft:20,
+        paddingRight:20,
         flexDirection:"row",
         justifyContent:"center"
     },
@@ -126,8 +128,13 @@ const styles = StyleSheet.create({
     },
     newMarkText:{
         textAlign:"center",
+        justifyContent:"center",
         color:"#ffffff",
-        fontWeight:"bold"
+        fontWeight:"bold",
+        alignItems: "center"
+    },
+    textmargin:{
+        marginTop:-10
     }
     
 })

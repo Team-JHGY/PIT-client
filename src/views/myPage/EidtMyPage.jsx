@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, StyleSheet, Image, Platform, AsyncStorage, Pressable } from 'react-native'
+import { View, Text, StyleSheet, Image, Platform, AsyncStorage, Pressable,Scroll } from 'react-native'
 import { WithLocalSvg } from 'react-native-svg'
 import { Appbar } from 'react-native-paper'
 import * as ImagePicker from 'expo-image-picker'
@@ -66,9 +66,9 @@ export default function EditMyPage ({navigation}) {
   return (
     <>
       <Appbar.Header style={globalStyle.titleAppbar}>
-        <Appbar.Content title="편집" titleStyle={styles.appbarTitle} />
+        <Appbar.Content title="편집" titleStyle={[styles.appbarTitle,globalStyle.center]} />
         <Pressable
-          style={(globalStyle.header, { marginLeft: 'auto', paddingRight: 20 })}
+          style={[globalStyle.header,globalStyle.absoluteRight, { marginLeft: 'auto', paddingRight: 10 }]}
           onPress={()=>navigation.goBack()}
         >
           <WithLocalSvg asset={closeIcon} />
@@ -169,8 +169,8 @@ export default function EditMyPage ({navigation}) {
           {userAuth === "member"?  "나의 트레이너에게 보여지는 정보입니다." : "나의 회원들에게 보여지는 정보입니다."}
         </Text>
         <View style={globalStyle.BottomBtnMainForm}>
-          <Pressable style={globalStyle.BasicBtn} onPress={() => navigation.goBack()}>
-            <Text style={globalStyle.BasicBtnText}>편집 완료</Text>
+          <Pressable style={[globalStyle.BasicBtn,globalStyle.center]} onPress={() => navigation.goBack()}>
+            <Text style={[globalStyle.BasicBtnText, globalStyle.center]}>편집 완료</Text>
           </Pressable>
         </View>
       </View>
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     backgroundColor:"#ffffff"
   },
   profile: {
-    marginTop: 30,
+    marginTop: 20,
     width: 70,
     height: 70,
     borderRadius: 50,
