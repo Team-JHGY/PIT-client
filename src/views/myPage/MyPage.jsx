@@ -4,15 +4,17 @@ import Clipboard from "expo-clipboard"
 import globalStyle from '../../utils/globalStyle'
 import { Appbar } from 'react-native-paper'
 import arrow_right from '../../../assets/arrow_right.png'
+import Toast from 'react-native-easy-toast';
 
 export default function MyPage({navigation}) {
-    const [appBarArray, setAppBarArray] = React.useState([])
-    const [trainerCode, setTrainerCode] = React.useState('12345')
+    const [appBarArray, setAppBarArray]   = React.useState([])
+    const [trainerCode, setTrainerCode]   = React.useState('12345')
     const [userAuth, setUserAuth]         = React.useState()
+    const toastRef                        = React.useRef(); 
 
     const copyToClipboard = () => {
             Clipboard.setString(trainerCode)
-            alert("복사되었습니당.")
+            toastRef.current.show('클립보드에 복사했습니다.');
     };
 
     function AddtoLocalUserAuth(){
@@ -28,6 +30,12 @@ export default function MyPage({navigation}) {
 
     return (
         <>
+        <Toast ref={toastRef}
+                positionValue={100}
+                fadeInDuration={200}
+                fadeOutDuration={1000}
+                style={{backgroundColor:'rgba(33, 87, 243, 0.5)'}}
+        />
         <Appbar.Header style={globalStyle.appbarMain}>
             <Appbar.Content title="마이"  titleStyle={[globalStyle.heading1, styles.barHeader]}/>
             <Pressable
@@ -42,6 +50,7 @@ export default function MyPage({navigation}) {
             
         </Appbar.Header>
         <SafeAreaView style={styles.mainForm}>
+            
             <ScrollView>
                 <View style={styles.myPageInfoImg}>
                     <Image source={{uri:'https://img.sbs.co.kr/newsnet/etv/upload/2021/04/23/30000684130_500.jpg'}} style={styles.userImg}/>

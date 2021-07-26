@@ -14,31 +14,39 @@ import globalStyle from '../../utils/globalStyle'
 import { Appbar } from 'react-native-paper'
 import arrow_left from '../../../assets/arrow_left.png'
 import cross from '../../../assets/cross.png'
+import ButtonLarge from '../../components/Common/ButtonLarge'
 
 export default function AddMembersCode({ navigation }) {
-  const [text, onChangeText] = React.useState(null)
+  const [text, onChangeText]            = React.useState(null)
   const [modalVisible, setModalVisible] = useState(false)
-  const [disableBtn, setDisableBtn] = useState(false)
+  const [disableBtn, setDisableBtn]     = useState(false)
   const [userAuth, setUserAuth]         = React.useState()
 
   React.useEffect(() => {
       AddtoLocalUserAuth()
-      CheckTextInput()
-  },[text])
+  },[])
 
   function AddtoLocalUserAuth(){
       AsyncStorage.getItem("userAuth", (err, result) => { //user_id에 담긴 아이디 불러오기
           setUserAuth(result); // result에 담김 //불러온거 출력
       });
   }
-  function CheckTextInput(){
-    if(text === null || text === ""){
-      setDisableBtn(true)
-    }else{
+
+
+  function RegCheckName(text) {
+    const regex = /^[a-z|A-Z|0-9|]+$/;
+
+    if(text === null || text === undefined || text.length > 6){
       setDisableBtn(false)
+      if(regex.test(text) === true){
+        onChangeText(text)
+        setDisableBtn(true)
+      }else{
+        alert("영어, 숫자외에는 입력이 불가합니다.")
+        setDisableBtn(false)
+      }
     }
   }
-
 
   return (
     <>
@@ -130,7 +138,8 @@ export default function AddMembersCode({ navigation }) {
           </Modal>
 
           <Text style={globalStyle.heading2}>{userAuth === "member"? "트레이너 코드":"회원 코드"}</Text>
-          <TextInput style={styles.input} onChangeText={onChangeText} value={text} />
+          
+          <TextInput style={styles.input} onChangeText={(text)=>RegCheckName(text)} value={text} />
 
           <Text style={styles.infoText}>
           {userAuth === "member"?
@@ -140,15 +149,9 @@ export default function AddMembersCode({ navigation }) {
           }
           </Text>
         </View>
-        <View style={globalStyle.BottomBtnMainForm}>
-          <Pressable 
-            style={disableBtn === false? [globalStyle.BasicBtn, globalStyle.center] : [globalStyle.BasicBtnDisable, globalStyle.center] } 
-            onPress={() => setModalVisible(true)}
-            disabled={disableBtn}
-          >
-            <Text style={[globalStyle.BasicBtnText, globalStyle.center]}>추가</Text>
-          </Pressable>
-        </View>
+        
+          <ButtonLarge name={'추가'} isEnable={disableBtn} onPress={()=>navigation.goBack()} />
+     
       </SafeAreaView>
     </>
   )
@@ -181,6 +184,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderWidth: 1,
     borderColor: '#C2C7CC',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 })
 
