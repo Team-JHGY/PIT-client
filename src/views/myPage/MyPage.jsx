@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
         width:"100%"
     },
     myPageInfoImg:{
-        marginTop:14,
+        marginTop:10,
         justifyContent: "center",
         alignItems: "center",
     },
@@ -159,10 +159,10 @@ const styles = StyleSheet.create({
         resizeMode: "cover",
         borderWidth:3,
         borderColor:"#E101FF",
-        marginBottom:12
+        marginBottom:10
     },
     myPageInfo:{
-        marginBottom:14,
+        marginBottom:10,
         marginLeft:20,
         marginRight:20,
         borderBottomWidth:1,
@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
         alignItems: "center", 
     },
     userNameInfo:{
-        marginBottom:14
+        marginBottom:10
     },
     BasicBtn:{
         width:"100%",

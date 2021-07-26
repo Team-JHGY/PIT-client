@@ -43,13 +43,13 @@ export default function AddMembersCode({ navigation }) {
   return (
     <>
       {/*네비게이션 형태가 다 달라서 컴포넌트 별 개별 추가 진행*/}
-      <Appbar.Header style={globalStyle.titleAppbar}>
-        <Pressable style={globalStyle.iconSize} onPress={() => navigation.goBack()}>
+      <Appbar.Header style={[globalStyle.titleAppbar]}>
+        <Pressable style={[globalStyle.iconSize, globalStyle.absolute]} onPress={() => navigation.goBack()}>
           <Image source={arrow_left} style={globalStyle.title} />
         </Pressable>
         <Appbar.Content 
           title={userAuth === "member"? "트레이너코드 입력으로 추가":"회원코드 입력으로 추가"} 
-          titleStyle={globalStyle.header} 
+          titleStyle={[globalStyle.header,globalStyle.center]} 
         />
       </Appbar.Header>
 

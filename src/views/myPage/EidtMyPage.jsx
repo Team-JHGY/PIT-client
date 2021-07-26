@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, StyleSheet, Image, Platform, AsyncStorage, Pressable,Scroll } from 'react-native'
+import { View, Text, StyleSheet, Image, Platform, AsyncStorage, Pressable,SafeAreaView, ScrollView } from 'react-native'
 import { WithLocalSvg } from 'react-native-svg'
 import { Appbar } from 'react-native-paper'
 import * as ImagePicker from 'expo-image-picker'
@@ -21,6 +21,8 @@ export default function EditMyPage ({navigation}) {
   const [gender, setGender]             = React.useState('M')
   const [userAuth, setUserAuth]         = React.useState()
 
+
+  //사용자 이미지 저장
   React.useEffect(() => {
     ;(async () => {
       if (Platform.OS !== 'web') {
@@ -63,10 +65,21 @@ export default function EditMyPage ({navigation}) {
     setGender(gender);
   }
 
+  function RegCheckName(name) {
+    const regex = /^[ㄱ-ㅎ|가-힣|a-z|A-Z|0-9|]+$/;
+    if(regex.test(name) === false){
+      alert("한글, 영어, 숫자외에는 입력이 불가합니다.")
+    }else{
+      setName(name)
+    }
+  }
+
   return (
     <>
+       <SafeAreaView>
+        <ScrollView>
       <Appbar.Header style={globalStyle.titleAppbar}>
-        <Appbar.Content title="편집" titleStyle={[styles.appbarTitle,globalStyle.center]} />
+        <Appbar.Content title="편집" titleStyle={[styles.appbarTitle, globalStyle.center]} />
         <Pressable
           style={[globalStyle.header,globalStyle.absoluteRight, { marginLeft: 'auto', paddingRight: 10 }]}
           onPress={()=>navigation.goBack()}
@@ -74,6 +87,7 @@ export default function EditMyPage ({navigation}) {
           <WithLocalSvg asset={closeIcon} />
         </Pressable>
       </Appbar.Header>
+   
       <View style={styles.body}>
         {image !== null ? (
           <Image source={{ uri: image }} style={styles.profile} />
@@ -108,7 +122,7 @@ export default function EditMyPage ({navigation}) {
             input={name}
             height={55}
             isMandatory={true}
-            setInput={setName}
+            setInput={(name) => RegCheckName(name)}
           />
         </View>
         { userAuth !== "member"?
@@ -149,7 +163,13 @@ export default function EditMyPage ({navigation}) {
              name="birthday"
              height={55}
              isMandatory={true}
-             setInput={(text) => setBirthday(text)}
+             placeholder={'예) 19910705'}
+             setInput={(input) => {
+              const regex = /^[|0-9|]*$/
+              if (regex.test(input) && input.length <= 8) {
+                setBirthday(input)
+              }
+            }}
            />
          </View>
          </>
@@ -168,12 +188,12 @@ export default function EditMyPage ({navigation}) {
         <Text style={styles.notificationText}>
           {userAuth === "member"?  "나의 트레이너에게 보여지는 정보입니다." : "나의 회원들에게 보여지는 정보입니다."}
         </Text>
-        <View style={globalStyle.BottomBtnMainForm}>
-          <Pressable style={[globalStyle.BasicBtn,globalStyle.center]} onPress={() => navigation.goBack()}>
-            <Text style={[globalStyle.BasicBtnText, globalStyle.center]}>편집 완료</Text>
-          </Pressable>
-        </View>
+        
+          <ButtonLarge name={'편집완료'} isEnable={buttonEnable} onPress={()=>navigation.goBack()} />
+        
       </View>
+      </ScrollView>
+      </SafeAreaView>
     </>
   )
 }
@@ -206,6 +226,7 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     marginLeft: 20,
     marginTop: 20,
+    marginBottom:20,
     color: '#5A5757',
     lineHeight: 22,
     fontSize: 14,
@@ -247,6 +268,7 @@ const styles = StyleSheet.create({
   titleWrapper: {
     flexDirection: 'row',
   },
+
 })
 
 

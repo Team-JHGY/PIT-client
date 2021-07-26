@@ -182,6 +182,6 @@ const styles = StyleSheet.create({
     marginLeft: 'auto',
     marginRight: 'auto',
     width: 24,
-    height: 23,
+    height: 24,
   },
 })

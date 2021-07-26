@@ -91,7 +91,7 @@ export default StyleSheet.create({
   appbarMain: {
     backgroundColor: '#ffff',
     elevation: 0,
-    height: 90,
+    height: 100,
     textAlign: 'left',
     borderBottomWidth: 0.2,
     borderBottomColor: '#C2C7CC',
@@ -135,15 +135,6 @@ export default StyleSheet.create({
     color: '#5A5757',
     textAlign: 'center',
     justifyContent: 'center',
-  },
-  appbarMain: {
-    backgroundColor: '#ffff',
-    elevation: 0,
-    height: 90,
-    textAlign: 'left',
-    borderBottomWidth: 0.2,
-    borderBottomColor: '#C2C7CC',
-    justifyContent: 'flex-start',
   },
   appbarMainNotBorder: {
     backgroundColor: '#ffff',
@@ -190,7 +181,6 @@ export default StyleSheet.create({
     fontSize: 14,
     color: '#5A5757',
     textAlign: 'center',
-    marginTop: 5,
   },
   BottomBtnMainForm: {
     margin: 20,
