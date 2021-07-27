@@ -12,11 +12,11 @@ export default function MyTrainers({navigation}) {
     return (
         <>
         <Appbar.Header style={[globalStyle.appbarMainNotBorder ]}>
-            <Pressable style={globalStyle.iconSize} onPress={() => navigation.goBack()}>
+            <Pressable style={[globalStyle.iconSize, globalStyle.absolute]} onPress={() => navigation.goBack()}>
                 <Image source={arrow_left} style={globalStyle.title} />
             </Pressable>
 
-            <Appbar.Content title="나의 트레이너"  titleStyle={globalStyle.header}/>
+            <Appbar.Content title='나의트레이너'  titleStyle={globalStyle.header,globalStyle.center}/>
             
         </Appbar.Header>
         <SafeAreaView style={userCount === 0? styles.mainForm : styles.mainFormUser}>
@@ -36,12 +36,12 @@ export default function MyTrainers({navigation}) {
                                 </View>
                                 
                                 <View style={globalStyle.col_2}>
-                                    <Text style={[globalStyle.body2]}>김회원 (남, 23세)</Text>
-                                    <Text style={[globalStyle.body2, globalStyle.textDartGery]}>2021.06.13 등록</Text>
+                                    <Text style={[globalStyle.body2, styles.textmargin]}>김회원 (남, 23세)</Text>
+                                    <Text style={[globalStyle.body2, globalStyle.textDartGery, styles.textmargin]}>2021.06.13 등록</Text>
                                 </View>
                                 {index === 0? 
                                     
-                                    <Text style={[globalStyle.body2, globalStyle.textDimmedGrey, styles.date, styles.greenText]}>
+                                    <Text style={[globalStyle.body2, globalStyle.textDimmedGrey, styles.greenText]}>
                                         현재 트레이너
                                     </Text>
                                     
@@ -52,7 +52,7 @@ export default function MyTrainers({navigation}) {
                             </View>
                         )
                     })}
-                    <View style={styles.userInfo}>
+                    <View style={styles.addTrainer}>
                         <Pressable 
                             style={styles.trainerAddBtn}
                             onPress={()=> {navigation.navigate('NewMembers')}}
@@ -74,8 +74,8 @@ const styles = StyleSheet.create({
     mainForm: {
         backgroundColor:"#ffff",
         flex: 1,
-        justifyContent: "center",
-        alignItems: "center"
+        
+        
     },
     mainFormUser: {
         backgroundColor:"#ffff",
@@ -84,10 +84,6 @@ const styles = StyleSheet.create({
     disableText:{
         ...globalStyle.body2,
         opacity:0.3
-    },
-    aliginCenter:{
-        justifyContent: "center",
-        alignItems: "center"
     },
     disableText:{
         ...globalStyle.body2,
@@ -101,7 +97,18 @@ const styles = StyleSheet.create({
         marginRight:12
     },
     userInfo:{
-        padding:20,
+        paddingTop:10,
+        paddingBottom:10,
+        paddingLeft:20,
+        paddingRight:20,
+        flexDirection:"row",
+        justifyContent:"center"
+    },
+    addTrainer:{
+        paddingTop:20,
+        paddingBottom:10,
+        paddingLeft:20,
+        paddingRight:20,
         flexDirection:"row",
         justifyContent:"center"
     },
@@ -110,19 +117,6 @@ const styles = StyleSheet.create({
     },
     greenText:{
         color:"#11F37E"
-    },
-    newMark:{
-        backgroundColor:"#11F37E",
-        borderRadius:10,
-        height:21,
-        width:26, 
-        justifyContent:"center",
-        margin:2
-    },
-    newMarkText:{
-        textAlign:"center",
-        color:"#ffffff",
-        fontWeight:"bold"
     },
     trainerAddBtn:{
         ...globalStyle.buttonLightGreen,
@@ -136,6 +130,9 @@ const styles = StyleSheet.create({
         fontWeight:"bold",
         textAlign:"center",
         
+    },
+    textmargin:{
+        marginTop:-10
     }
     
 })

@@ -1,13 +1,15 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState,useRef } from 'react'
 import { StyleSheet, Text, View, SafeAreaView, Pressable,Image, Modal, AsyncStorage } from 'react-native'
 import globalStyle from '../../utils/globalStyle'
 import { Appbar } from 'react-native-paper';
 import cross from "../../../assets/cross.png"
 import Clipboard from "expo-clipboard"
+import Toast from 'react-native-easy-toast';
 
 export default function NewMembers({navigation}) {
     const [modalVisible, setModalVisible] = useState(false);
     const [userAuth, setUserAuth]         = React.useState()
+    const toastRef                        = useRef(); // toast ref 생성
     const [trainerCode, setTrainerCode]   = React.useState("12s345s6wb")
 
     React.useEffect(() => {
@@ -16,7 +18,8 @@ export default function NewMembers({navigation}) {
 
     const copyToClipboard = () => {
         Clipboard.setString(trainerCode)
-        alert("복사되었습니당.")
+        //alert("클립보드에 복사했습니다.")
+        toastRef.current.show('클립보드에 복사했습니다.');
     };
 
     function AddtoLocalUserAuth(){
@@ -29,10 +32,10 @@ export default function NewMembers({navigation}) {
         <>
         {/*네비게이션 형태가 다 달라서 컴포넌트 별 개별 추가 진행*/}
        <Appbar.Header style={globalStyle.titleAppbar}>
-            <Appbar.Content title={userAuth === "member"? '트레이너 추가':'회원 추가'}  titleStyle={globalStyle.heading1}/>
+            <Appbar.Content title={userAuth === "member"? '트레이너 추가':'회원 추가'}  titleStyle={[globalStyle.heading1,globalStyle.center]}/>
             
             <Pressable
-                style={globalStyle.header}
+                style={[globalStyle.header, globalStyle.absoluteRight]}
                 onPress={()=>navigation.goBack()}
             >
                 <Image source={cross} style={globalStyle.title}/>
@@ -41,7 +44,6 @@ export default function NewMembers({navigation}) {
 
         {/* View 부분 */}
         <SafeAreaView style={styles.mainForm}>
-
             {/*Modal 부분*/}
             <Modal
                 animationType="slide"
@@ -51,6 +53,12 @@ export default function NewMembers({navigation}) {
                 setModalVisible(!modalVisible);
                 }}
             >
+                <Toast ref={toastRef}
+                    positionValue={100}
+                    fadeInDuration={200}
+                    fadeOutDuration={1000}
+                    style={{backgroundColor:'rgba(33, 87, 243, 0.5)'}}
+                />
                 <View style={modalstyles.centeredView}>
                     <View style={modalstyles.modalView}>
                         <View style={modalstyles.row}>
@@ -236,7 +244,6 @@ const modalstyles = StyleSheet.create({
         height:60,
         borderRadius: 5,
         padding: 10,
-        marginTop:20,
         textAlign:"center",
         justifyContent:"center"
     },

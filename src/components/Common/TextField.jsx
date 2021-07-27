@@ -3,7 +3,9 @@ import { View, Text, StyleSheet, TextInput } from 'react-native'
 import { WithLocalSvg } from 'react-native-svg'
 import globalStyle from '../../utils/globalStyle'
 import Asterisk from '../../../assets/icon/asterisk.svg'
+
 const TextField = ({ title, input, height, isMandatory, isMultiLine, setInput, placeholder }) => {
+  
   const labelTextStyle = (height) => {
     if (isMultiLine === true) {
       return {

@@ -306,6 +306,7 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     marginLeft: 20,
     marginTop: 20,
+    marginBottom:20,
     color: '#5A5757',
     lineHeight: 22,
     fontSize: 14,
