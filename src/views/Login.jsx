@@ -21,7 +21,7 @@ export default function LoginView({ navigation }) {
       <Pressable
         style={[styles.svgWrapper, { marginTop: 60 }]}
         onPress={() => {
-          navigation.navigate('Home')
+          navigation.navigate('KakaoLogin')
         }}
       >
         <WithLocalSvg asset={KakaoLogin} width={'88.8%'} height={70}></WithLocalSvg>
@@ -33,20 +33,7 @@ export default function LoginView({ navigation }) {
         }}
       >
         <WithLocalSvg
-          style={styles.loginButton}
-          asset={NaverLogin}
-          width={'88.8%'}
-          height={70}
-        ></WithLocalSvg>
-      </Pressable>
-      <Pressable
-        style={styles.svgWrapper}
-        onPress={() => {
-          navigation.navigate('KakaoLogin')
-        }}
-      >
-        <WithLocalSvg
-          style={styles.loginButton}
+          style={{ marginTop: 20 }}
           asset={NaverLogin}
           width={'88.8%'}
           height={70}
@@ -79,11 +66,6 @@ const styles = StyleSheet.create({
     ...globalStyle.body1,
     lineHeight: 24,
     color: 'white',
-  },
-  loginButton: {
-    marginLeft: 20,
-    marginRight: 20,
-    marginTop: 20,
   },
   footerText: {
     ...globalStyle.body2,

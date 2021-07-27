@@ -7,7 +7,6 @@ export default function MainView() {
     await SplashScreen.hideAsync()
   })
   return (
-    
     <SafeAreaView style={styles.body} onLayout={onLayoutRootView}>
       <Text>Main View</Text>
     </SafeAreaView>
@@ -15,8 +14,7 @@ export default function MainView() {
 }
 const styles = StyleSheet.create({
   body: {
-    flex:1,
-    backgroundColor:"#fff"
+    flex: 1,
+    backgroundColor: '#fff',
   },
 })
-

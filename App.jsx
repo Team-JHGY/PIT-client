@@ -30,6 +30,9 @@ import my_off from './assets/my_off.png'
 import trainees_off from './assets/trainees_off.png'
 import trainees_on from './assets/trainees_on.png'
 
+//Context
+import UserStore from './src/store/user'
+
 // Bottom Nav 연결 부분
 const Tab = createBottomTabNavigator()
 
@@ -139,23 +142,25 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer>
-      {/* 상단 Appbar는 따로 적용진행  상단 Appbar 없는 부분이 있기에 ..! */}
-      <Stack.Navigator initialRouteName={initialView} screenOptions={{ header: () => null }}>
-        <Stack.Screen name="Login" component={LoginView} />
-        <Stack.Screen name="Main" component={MainView} />
-        <Stack.Screen name="SignUp" component={SignUpView} />
-        <Stack.Screen name="Members" component={Members} />
-        <Stack.Screen name="NewMembers" component={NewMembers} />
-        <Stack.Screen name="Home" component={BottomNav} />
-        <Stack.Screen name="Schedule" component={Schedule} />
-        <Stack.Screen name="MyPage" component={MyPage} />
-        <Stack.Screen name="EditMyPage" component={EditMyPage} />
-        <Stack.Screen name="AddMembersCode" component={AddMembersCode} />
-        <Stack.Screen name="KakaoLogin" component={KakaoLogin} />
-        <Stack.Screen name="MyTrainers" component={MyTrainers} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <UserStore>
+      <NavigationContainer>
+        {/* 상단 Appbar는 따로 적용진행  상단 Appbar 없는 부분이 있기에 ..! */}
+        <Stack.Navigator initialRouteName={initialView} screenOptions={{ header: () => null }}>
+          <Stack.Screen name="Login" component={LoginView} />
+          <Stack.Screen name="Main" component={MainView} />
+          <Stack.Screen name="SignUp" component={SignUpView} />
+          <Stack.Screen name="Members" component={Members} />
+          <Stack.Screen name="NewMembers" component={NewMembers} />
+          <Stack.Screen name="Home" component={BottomNav} />
+          <Stack.Screen name="Schedule" component={Schedule} />
+          <Stack.Screen name="MyPage" component={MyPage} />
+          <Stack.Screen name="EditMyPage" component={EditMyPage} />
+          <Stack.Screen name="AddMembersCode" component={AddMembersCode} />
+          <Stack.Screen name="KakaoLogin" component={KakaoLogin} />
+          <Stack.Screen name="MyTrainers" component={MyTrainers} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </UserStore>
   )
 }
 

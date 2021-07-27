@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import {
   View,
   Text,
@@ -18,23 +18,28 @@ import TextField from '../../components/Common/TextField'
 import ButtonLarge from '../../components/Common/ButtonLarge'
 import ButtonSmall from '../../components/Common/ButtonSmall'
 import ButtonSmallRed from '../../components/Common/ButtonSmallRed'
-
 //icons image
 import closeIcon from '../../../assets/icon/Common/closeIcon.svg'
 import arrow_left from '../../../assets/arrow_left.png'
 import Asterisk from '../../../assets/icon/asterisk.svg'
 
+// context
+import { UserContext } from '../../store/user'
+
+// utils
+import { _axios } from '../../utils/http-utils'
 export default function SignUpStep2(props) {
   const [buttonEnable, setButtonEnable] = React.useState('false')
   const [userAuth, setUserAuth] = React.useState()
   const [image, setImage] = React.useState(null)
-  const [name, setName] = React.useState('')
-  const [birthday, setBirthday] = React.useState('')
-  const [gender, setGender] = React.useState('M')
-  const [userContext, setUsetContext] = React.useState()
+  //const [name, setName] = React.useState('')
+  //const [birthday, setBirthday] = React.useState('')
+  //const [gender, setGender] = React.useState('M')
+  // const [userContext, setUsetContext] = React.useState()
 
   const { goBackStep, openModal, onPress } = props //앞에서 전달받은 정보
-
+  const { userState, userDispatch } = useContext(UserContext)
+  const { name, gender, birthday, intro, accessToken, refreshToken, expiresIn } = userState
   useEffect(() => {
     ;(async () => {
       if (Platform.OS !== 'web') {
@@ -80,7 +85,8 @@ export default function SignUpStep2(props) {
   }
 
   function ToggleButton(gender) {
-    setGender(gender)
+    //setGender(gender)
+    userDispatch({ type: 'SET_MEMBER_GENDER', payload: { gender: gender } })
   }
 
   return (
@@ -141,7 +147,7 @@ export default function SignUpStep2(props) {
               const regex = /^[ㄱ-ㅎ|가-힣|a-z|A-Z|]*$/
 
               if (regex.test(input)) {
-                setName(input)
+                userDispatch({ type: 'SET_MEMBER_NAME', payload: { name: input } })
               }
             }}
           />
@@ -159,12 +165,12 @@ export default function SignUpStep2(props) {
               <View style={styles.titleWrapper}>
                 <Pressable
                   style={
-                    gender === 'M'
+                    gender === 'MAN'
                       ? [styles.smallBtn, styles.leftmargin, styles.btnOn]
                       : [styles.smallBtn, styles.leftmargin, styles.btnOff]
                   }
                   onPress={() => {
-                    ToggleButton('M')
+                    ToggleButton('MAN')
                   }}
                 >
                   <Text style={[styles.smallBtnText]}>남</Text>
@@ -172,12 +178,12 @@ export default function SignUpStep2(props) {
 
                 <Pressable
                   style={
-                    gender === 'F'
+                    gender === 'WOMAN'
                       ? [styles.smallBtn, styles.leftmargin, styles.btnOn]
                       : [styles.smallBtn, styles.leftmargin, styles.btnOff]
                   }
                   onPress={() => {
-                    ToggleButton('F')
+                    ToggleButton('WOMAN')
                   }}
                 >
                   <Text style={[styles.smallBtnText]}>여</Text>
@@ -195,7 +201,8 @@ export default function SignUpStep2(props) {
                 setInput={(input) => {
                   const regex = /^[|0-9|]*$/
                   if (regex.test(input) && input.length <= 8) {
-                    setBirthday(input)
+                    //setBirthday(input)
+                    userDispatch({ type: 'SET_MEMBER_BIRTHDAY', payload: { birthday: input } })
                   }
                 }}
               />
@@ -206,11 +213,14 @@ export default function SignUpStep2(props) {
         <View style={globalStyle.textField}>
           <TextField
             title={'자기 소개'}
-            input={userContext}
+            input={intro}
             name="userContext"
             height={130}
             isMultiLine={true}
-            setInput={(text) => setUsetContext(text)}
+            setInput={(text) => {
+              //setUsetContext(text)
+              userDispatch({ type: 'SET_MEMBER_INTRO', payload: { intro: text } })
+            }}
           />
         </View>
         <Text style={styles.notificationText}>
@@ -218,7 +228,52 @@ export default function SignUpStep2(props) {
             ? '나의 트레이너에게 보여지는 정보입니다.'
             : '나의 회원들에게 보여지는 정보입니다.'}
         </Text>
-        <ButtonLarge name={'가입완료'} isEnable={buttonEnable} onPress={onPress} />
+        <ButtonLarge
+          name={'가입완료'}
+          isEnable={buttonEnable}
+          onPress={() => {
+            const birthdayFormat =
+              birthday.substr(0, 4) + '-' + birthday.substr(4, 2) + '-' + birthday.substr(6, 2)
+            var payload = {
+              name: name,
+              description: intro,
+              gender: gender,
+              birthday: birthdayFormat,
+              provider: 'KAKAO',
+              accessToken: accessToken,
+              refreshToken: refreshToken,
+              expiresIn: expiresIn,
+            }
+            _axios
+              .post('/auth/signup/member', JSON.stringify(payload))
+              .then((res) => {
+                if (res.status === 200) {
+                  var payload = {
+                    accessToken: accessToken,
+                    provider: 'KAKAO',
+                  }
+                  return new Promise((resolve, reject) => {
+                    resolve(payload)
+                  })
+                } else {
+                  return new Promise((resolve, reject) => {
+                    reject(res.status)
+                  })
+                }
+              })
+              .catch((err) => {
+                console.log(err)
+              })
+              .then((payload) => {
+                return _axios.post('/auth/signin', JSON.stringify(payload))
+              })
+              .then((res) => {
+                console.log(res)
+                AsyncStorage.setItem('JWT', res.data.data.token)
+                props.navigation.replace('Home')
+              })
+          }}
+        />
       </View>
     </InputScrollView>
   )

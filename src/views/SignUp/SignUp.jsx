@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import SignUpStep1 from './SignUpStep1'
 import SignUpStep2 from './SignUpStep2'
 import ModalDialog from '../../components/SignUp/ModalDialog'
+
 import { View } from 'react-native'
 
 const SignUpView = ({ navigation }) => {
@@ -26,7 +27,6 @@ const SignUpView = ({ navigation }) => {
           changeStep={() => {
             setStep(step + 1)
           }}
-
           goBack={() => {
             navigation.goBack()
           }}
@@ -41,15 +41,11 @@ const SignUpView = ({ navigation }) => {
           goBackStep={() => {
             setStep(step - 1)
           }}
-
           goBack={() => {
             navigation.goBack()
           }}
           openModal={() => {
             setIsModal(true)
-          }}
-          onPress={() => {
-            navigation.navigate('Home')
           }}
         />
       )}
