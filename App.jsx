@@ -101,7 +101,7 @@ export default function App() {
     try {
       await AsyncStorage.getItem('JWT').then((value) => {
         if (value != null) {
-          initialView = 'Main'
+          initialView = 'Home'
         } else {
           initialView = 'Login'
         }
