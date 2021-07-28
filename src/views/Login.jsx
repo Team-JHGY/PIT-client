@@ -1,11 +1,11 @@
 import React, { useCallback } from 'react'
-import { StyleSheet, Text, View, Pressable } from 'react-native'
+import { StyleSheet, Text, View, Pressable, Image } from 'react-native'
 import * as SplashScreen from 'expo-splash-screen'
 import globalStyle from '../utils/globalStyle'
 
 import Pitlogo from '../../assets/img/Login/PIT_logo.svg'
-import KakaoLogin from '../../assets/img/Login/Kakao_login.svg'
-import NaverLogin from '../../assets/img/Login/Naver_login.svg'
+import KakaoLogin from '../../assets/img/Login/Kakao_login.png'
+import NaverLogin from '../../assets/img/Login/Naver_login.png'
 import { WithLocalSvg } from 'react-native-svg'
 
 export default function LoginView({ navigation }) {
@@ -24,7 +24,8 @@ export default function LoginView({ navigation }) {
           navigation.navigate('KakaoLogin')
         }}
       >
-        <WithLocalSvg asset={KakaoLogin} width={'88.8%'} height={70}></WithLocalSvg>
+        <Image source={KakaoLogin} style={{ width: 400, height: 70 }} />
+        {/* <WithLocalSvg asset={KakaoLogin} width={'88.8%'} height={70}></WithLocalSvg> */}
       </Pressable>
       <Pressable
         style={styles.svgWrapper}
@@ -32,12 +33,13 @@ export default function LoginView({ navigation }) {
           navigation.navigate('SignUp')
         }}
       >
-        <WithLocalSvg
+        {/* <WithLocalSvg
           style={{ marginTop: 20 }}
           asset={NaverLogin}
           width={'88.8%'}
           height={70}
-        ></WithLocalSvg>
+        ></WithLocalSvg> */}
+        <Image source={NaverLogin} style={{ width: 400, height: 70, marginTop: 20 }} />
       </Pressable>
       <Text style={styles.footerText}>PIT project</Text>
     </View>
