@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import SignUpStep1 from './SignUpStep1'
 import SignUpStep2 from './SignUpStep2'
-import ModalDialog from '../../components/SignUp/ModalDialog'
+import ModalDialog from '../../components/Common/ModalDialog'
 
 import { View } from 'react-native'
 
@@ -19,6 +19,9 @@ const SignUpView = ({ navigation }) => {
           goBackPage={() => {
             navigation.goBack()
           }}
+          title={'회원가입 취소'}
+          body={'회원가입을 취소하고 나가시겠어요?'}
+          buttonTitle={'회원가입 취소하기'}
         />
       )}
       {/*트레이너 파트 */}

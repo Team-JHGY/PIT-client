@@ -1,26 +1,26 @@
 import React from 'react'
 import { View, Text, Pressable, StyleSheet } from 'react-native'
 import { WithLocalSvg } from 'react-native-svg'
-import ButtonLarge from '../Common/ButtonLarge'
+import ButtonLarge from './ButtonLarge'
 import globalStyle from '../../utils/globalStyle'
 import CloseIcon from '../../../assets/icon/Common/closeIcon.svg'
 
-const ModalDialog = ({ closeModal, goBackPage }) => {
+const ModalDialog = ({ closeModal, goBackPage, title, body, buttonTitle }) => {
   return (
     <View style={styles.body}>
       <View style={styles.modalDialog}>
         <View style={styles.header}>
-          <Text style={styles.heading2}>회원가입 취소</Text>
+          <Text style={styles.heading2}>{title}</Text>
           <Pressable style={styles.closeIcon} onPress={closeModal}>
             <WithLocalSvg asset={CloseIcon}></WithLocalSvg>
           </Pressable>
         </View>
         <View style={styles.textWrapper}>
-          <Text style={styles.text}>회원가입을 취소하고 나가시겠어요?</Text>
+          <Text style={styles.text}>{body}</Text>
           <Text style={styles.text}>모든 데이터가 지워질 수 있어요.</Text>
         </View>
 
-        <ButtonLarge name={'회원가입 취소하기'} isEnable={true} onPress={goBackPage}></ButtonLarge>
+        <ButtonLarge name={buttonTitle} isEnable={true} onPress={goBackPage}></ButtonLarge>
       </View>
     </View>
   )

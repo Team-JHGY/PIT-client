@@ -1,0 +1,33 @@
+import React from 'react'
+import { View, Text, StyleSheet } from 'react-native'
+import globalStyle from '../../utils/globalStyle'
+const ConfirmButton = () => {
+  return (
+    <View style={styles.button}>
+      <Text style={styles.text}>{'확인'}</Text>
+    </View>
+  )
+}
+
+const styles = StyleSheet.create({
+  button: {
+    borderStyle: 'solid',
+    borderRadius: 10,
+    backgroundColor: '#2AFF91',
+    height: '100%',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: '4.68%',
+    marginBottom: '4.54%',
+    marginLeft: '1.56%',
+  },
+  text: {
+    ...globalStyle.button,
+    lineHeight: 25,
+    fontStyle: 'normal',
+    fontWeight: 'normal',
+    color: '#000000',
+  },
+})
+export default ConfirmButton
