@@ -10,6 +10,9 @@ const initialState = {
   accessToken: '',
   refreshToken: '',
   expiresIn: '',
+  // 테스트용 필드
+  role: '',
+  jwtToken: '',
 }
 
 const reducer = (state, { type, payload }) => {
@@ -29,6 +32,10 @@ const reducer = (state, { type, payload }) => {
         refreshToken: payload.refreshToken,
         expiresIn: payload.expiresIn,
       }
+    case 'SET_ROLE':
+      return { ...state, role: payload.role }
+    case 'SET_JWT_TOKEN':
+      return { ...state, jwtToken: payload.jwtToken }
       break
   }
 }

@@ -83,7 +83,7 @@ const ScheduleChooseModal = ({ closeModal }) => {
             paddingBottom: '4.54%',
           }}
         >
-          <CancelButton />
+          <CancelButton clickEvent={closeModal} />
           <ConfirmButton />
         </View>
       </View>

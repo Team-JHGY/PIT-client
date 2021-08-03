@@ -1,11 +1,17 @@
 import React from 'react'
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet, Pressable } from 'react-native'
 import globalStyle from '../../utils/globalStyle'
-const CancelButton = () => {
+const CancelButton = ({ clickEvent }) => {
   return (
-    <View style={styles.button}>
-      <Text style={styles.text}>{'취소'}</Text>
-    </View>
+    <Pressable
+      onPress={() => {
+        clickEvent()
+      }}
+    >
+      <View style={styles.button}>
+        <Text style={styles.text}>{'취소'}</Text>
+      </View>
+    </Pressable>
   )
 }
 

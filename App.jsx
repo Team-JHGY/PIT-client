@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import * as SplashScreen from 'expo-splash-screen'
 
 import * as Font from 'expo-font'
@@ -34,18 +34,21 @@ import trainees_on from './assets/trainees_on.png'
 
 //Context
 import UserStore from './src/store/user'
+import { UserContext } from './src/store/user'
 
 // Bottom Nav 연결 부분
 const Tab = createBottomTabNavigator()
 
 //하단 라우팅 담당 + 네비게이션
 export function BottomNav() {
-  const [userAuth, setUserAuth] = React.useState()
+  const { userState, userDispatch } = useContext(UserContext)
 
+  const [userAuth, setUserAuth] = React.useState()
+  const { role } = userState
   React.useEffect(() => {
     AsyncStorage.getItem('userAuth', (err, result) => {
       //user_id에 담긴 아이디 불러오기
-      setUserAuth(result) // result에 담김 //불러온거 출력
+      //setUserAuth(result) // result에 담김 //불러온거 출력
     })
   }, [])
 
@@ -77,16 +80,16 @@ export function BottomNav() {
       }}
     >
       <Tab.Screen
-        name={userAuth === 'member' ? '홈' : '스케쥴'}
-        component={userAuth === 'member' ? MainView : Schedule}
+        name={role === 'member' ? '홈' : '스케쥴'}
+        component={role === 'member' ? MainView : Schedule}
       />
       <Tab.Screen
-        name={userAuth === 'member' ? '운동/식단' : '회원'}
-        component={userAuth === 'member' ? NewMembers : Members}
+        name={role === 'member' ? '운동/식단' : '회원'}
+        component={role === 'member' ? NewMembers : Members}
       />
       <Tab.Screen
-        name={userAuth === 'member' ? '마이' : '마이'}
-        component={userAuth === 'member' ? MyPage : MyPage}
+        name={role === 'member' ? '마이' : '마이'}
+        component={role === 'member' ? MyPage : MyPage}
       />
     </Tab.Navigator>
   )
@@ -103,7 +106,9 @@ export default function App() {
     try {
       await AsyncStorage.getItem('JWT').then((value) => {
         if (value != null) {
-          initialView = 'Home'
+          // 테스트 환경 셋팅 더미 계정
+          //initialView = 'Home'
+          initialView = 'Login'
         } else {
           initialView = 'Login'
         }
