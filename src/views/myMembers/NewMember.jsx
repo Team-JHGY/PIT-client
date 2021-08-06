@@ -1,38 +1,44 @@
-import React, { useCallback, useEffect, useState,useRef } from 'react'
+import React, { useCallback, useEffect, useState,useRef, useContext } from 'react'
 import { StyleSheet, Text, View, SafeAreaView, Pressable,Image, Modal, AsyncStorage } from 'react-native'
 import globalStyle from '../../utils/globalStyle'
 import { Appbar } from 'react-native-paper';
 import cross from "../../../assets/cross.png"
 import Clipboard from "expo-clipboard"
 import Toast from 'react-native-easy-toast';
+import { decode } from 'js-base64';
+
+// context
+import { UserContext } from '../../store/user'
+
 
 export default function NewMembers({navigation}) {
     const [modalVisible, setModalVisible] = useState(false);
-    const [userAuth, setUserAuth]         = React.useState()
+
     const toastRef                        = useRef(); // toast ref 생성
-    const [trainerCode, setTrainerCode]   = React.useState("12s345s6wb")
+    const { userState, userDispatch }     = useContext(UserContext)
+    const splitJwt                        = userState.jwtToken.split(".")
+    const userInfo                        = React.useState(JSON.parse(decode(splitJwt[1])))
 
     React.useEffect(() => {
         AddtoLocalUserAuth()
+        console.log(userInfo[0].oAuthId)
     },[])
 
-    const copyToClipboard = () => {
-        Clipboard.setString(trainerCode)
+    function copyToClipboard() {
+        Clipboard.setString(String(userInfo[0].oAuthId))
         //alert("클립보드에 복사했습니다.")
         toastRef.current.show('클립보드에 복사했습니다.');
     };
 
     function AddtoLocalUserAuth(){
-        AsyncStorage.getItem("userAuth", (err, result) => { //user_id에 담긴 아이디 불러오기
-            setUserAuth(result); // result에 담김 //불러온거 출력
-        });
+  
     }
 
     return (
         <>
         {/*네비게이션 형태가 다 달라서 컴포넌트 별 개별 추가 진행*/}
        <Appbar.Header style={globalStyle.titleAppbar}>
-            <Appbar.Content title={userAuth === "member"? '트레이너 추가':'회원 추가'}  titleStyle={[globalStyle.heading1,globalStyle.center]}/>
+            <Appbar.Content title={userInfo.type === "MEMBER"? '트레이너 추가':'회원 추가'}  titleStyle={[globalStyle.heading1,globalStyle.center]}/>
             
             <Pressable
                 style={[globalStyle.header, globalStyle.absoluteRight]}
@@ -63,7 +69,7 @@ export default function NewMembers({navigation}) {
                     <View style={modalstyles.modalView}>
                         <View style={modalstyles.row}>
                             <Text style={[globalStyle.heading2, modalstyles.headerText]}>
-                                {userAuth === "member"?
+                                {userInfo.type === "MEMBER"?
                                     "회원코드 복사"
                                     :
                                     "트레이너 코드 복사"
@@ -79,9 +85,9 @@ export default function NewMembers({navigation}) {
                         <View style={modalstyles.UserInfo}>
 
                             
-                            <Text style={modalstyles.codeText}>{trainerCode}</Text>
+                            <Text style={modalstyles.codeText}>{userInfo[0].oAuthId}</Text>
                             <Text style={[globalStyle.body2, globalStyle.textDartGery, styles.breakText]}>
-                                {userAuth === "member"?
+                                {userInfo.type === "MEMBER"?
                                     "회원코드를 클립보드에 복사했습니다.   트레이너 선생님에게 해당 코드를 공유해 회원 추가하도록 안내해 주세요."
                                     :
                                     "트레이너코드를 클립보드에 복사했습니다. 회원님에게 해당 코드를 공유해 트레이너 추가하도록 안내해 주세요."
@@ -91,7 +97,7 @@ export default function NewMembers({navigation}) {
                                 어디에서 추가할 수 있나요?
                             </Text>
                             <Text style={[globalStyle.body2, modalstyles.infoText]}>
-                                {userAuth === "member"?
+                                {userInfo.type === "MEMBER"?
                                     "트레이너 선생님 앱의 회원 > 회원 추가 버튼 클릭"
                                     :
                                     "회원님 앱의 마이 > 트레이너 > 트레이너 추가하기 버튼 클릭"
@@ -120,7 +126,7 @@ export default function NewMembers({navigation}) {
                 navigation.navigate('AddMembersCode')
                 }}> 
                     <Text style={styles.btnText}>
-                    {userAuth === "member"?
+                    {userInfo.type === "MEMBER"?
                         "트레이너코드 입력으로 추가"
                         :
                         "회원코드 입력으로 추가"
@@ -128,7 +134,7 @@ export default function NewMembers({navigation}) {
                     </Text>
                 </Pressable>
                 <Text style={styles.infoText}>
-                    {userAuth === "member"?
+                    {userInfo.type === "MEMBER"?
                         "추가하려는 트레이너 선생님의 앱에서 확인한 트레이너코드를 등록해 바로 추가합니다."
                         :
                         "추가하려는 회원님의 앱에서 확인한 회원코드를 등록해 바로 추가합니다."
@@ -142,7 +148,7 @@ export default function NewMembers({navigation}) {
                     onPress={() => setModalVisible(true)}
                 > 
                     <Text style={styles.btnText}>
-                        {userAuth === "member"?
+                        {userInfo.type === "MEMBER"?
                             "회원 코드 공유로 추가"
                             :
                             "트레이너 코드 공유로 추가"
@@ -151,7 +157,7 @@ export default function NewMembers({navigation}) {
                     </Text>
                 </Pressable>
                 <Text style={styles.infoText}>
-                    {userAuth === "member"?
+                    {userInfo.type === "MEMBER"?
                         "본인의 회원코드를 트레이너 선생님에게 공유해, 트레이너 선생님의 앱에서 해당 코드를 등록해 추가하게 합니다."
                         :
                         "본인의 트레이너 코드를 회원님에게 공유해, 회원님의 앱에서 해당 코드를 등록해 추가하게 합니다."

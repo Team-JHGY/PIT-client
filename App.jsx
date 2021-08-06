@@ -43,14 +43,7 @@ const Tab = createBottomTabNavigator()
 export function BottomNav() {
   const { userState, userDispatch } = useContext(UserContext)
 
-  const [userAuth, setUserAuth] = React.useState()
   const { role } = userState
-  React.useEffect(() => {
-    AsyncStorage.getItem('userAuth', (err, result) => {
-      //user_id에 담긴 아이디 불러오기
-      //setUserAuth(result) // result에 담김 //불러온거 출력
-    })
-  }, [])
 
   return (
     <Tab.Navigator

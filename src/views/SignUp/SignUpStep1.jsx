@@ -38,7 +38,6 @@ export default function SignUpStep1(props) {
             onPress={() => {
               setRole('trainer')
               setButtonEnable(true)
-              AsyncStorage.setItem('userAuth', 'trainer')
             }}
           >
             <TrainerCard isChecked={role === 'trainer'} />
@@ -48,7 +47,6 @@ export default function SignUpStep1(props) {
             onPress={() => {
               setRole('member')
               setButtonEnable(true)
-              AsyncStorage.setItem('userAuth', 'member')
             }}
           >
             <MemberCard isChecked={role === 'member'} />
