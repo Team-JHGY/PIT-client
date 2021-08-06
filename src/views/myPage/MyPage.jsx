@@ -126,7 +126,14 @@ export default function MyPage({navigation}) {
             
             <ScrollView>
                 <View style={styles.myPageInfoImg}>
-                    <Image source={{uri:`${userData.profileImage}`}} style={styles.userImg}/>
+                    {userData.user.profileImage === null?
+                    <Image
+                        style={styles.profile}
+                        source={require('../../../assets/img/SignUp/emptyProfile.png')}
+                    />
+                    :
+                    <Image source={{uri:`${userData.user.profileImage}`}} style={styles.userImg}/>
+                    }   
                 </View>
                 
                 
@@ -214,6 +221,14 @@ const styles = StyleSheet.create({
     mainForm: {
         backgroundColor:"#ffff",
         flex: 1,
+    },
+    profile: {
+        marginTop: 20,
+        width: 70,
+        height: 70,
+        borderRadius: 50,
+        borderWidth: 3,
+        borderColor: '#E101FF',
     },
     disableText:{
         ...globalStyle.body2,

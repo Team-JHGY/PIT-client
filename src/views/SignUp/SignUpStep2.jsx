@@ -120,7 +120,7 @@ export default function SignUpStep2(props) {
               userInfo.type === "MEMBER" ? [styles.profile, { borderColor: '#11F37E' }] : styles.profile
             }
             source={require('../../../assets/img/SignUp/emptyProfile.png')}
-          ></Image>
+          />
         )}
         <View style={styles.buttonWrapper}>
           <ButtonSmall

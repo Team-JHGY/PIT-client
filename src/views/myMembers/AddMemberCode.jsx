@@ -90,7 +90,7 @@ export default function AddMembersCode({ navigation }) {
           <Image source={arrow_left} style={globalStyle.title} />
         </Pressable>
         <Appbar.Content 
-          title={userInfo.type === "MEMBER"? "트레이너코드 입력으로 추가":"회원코드 입력으로 추가"} 
+          title={userInfo.type === "MEMBER"? "트레이너코드 입력으로 ":"회원코드 입력으로 추가"} 
           titleStyle={[globalStyle.header,globalStyle.center]} 
         />
       </Appbar.Header>
