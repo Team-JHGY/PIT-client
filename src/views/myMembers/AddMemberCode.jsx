@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import {
   StyleSheet,
   Text,
@@ -15,28 +15,36 @@ import { Appbar } from 'react-native-paper'
 import arrow_left from '../../../assets/arrow_left.png'
 import cross from '../../../assets/cross.png'
 import ButtonLarge from '../../components/Common/ButtonLarge'
+import { decode } from 'js-base64';
+
+// context
+import { UserContext } from '../../store/user'
+import config from "../../utils/config" 
 
 export default function AddMembersCode({ navigation }) {
   const [text, onChangeText]            = React.useState(null)
   const [modalVisible, setModalVisible] = useState(false)
   const [disableBtn, setDisableBtn]     = useState(false)
-  const [userAuth, setUserAuth]         = React.useState()
+  
+  const { userState, userDispatch }     = useContext(UserContext)
+
+  //jwt token decode
+  const splitJwt = userState.jwtToken.split(".")
+  const userInfo = JSON.parse(decode(splitJwt[1]))
 
   React.useEffect(() => {
       AddtoLocalUserAuth()
   },[])
 
   function AddtoLocalUserAuth(){
-      AsyncStorage.getItem("userAuth", (err, result) => { //user_id에 담긴 아이디 불러오기
-          setUserAuth(result); // result에 담김 //불러온거 출력
-      });
+  
   }
 
 
   function RegCheckName(text) {
     const regex = /^[a-z|A-Z|0-9|]+$/;
 
-    if(text === null || text === undefined || text.length > 6){
+    if(text === null || text === undefined || text.length >= 5){
       setDisableBtn(false)
       if(regex.test(text) === true){
         onChangeText(text)
@@ -48,6 +56,32 @@ export default function AddMembersCode({ navigation }) {
     }
   }
 
+  function AddCodePartners(){
+    
+    fetch(`${config.BASE_URL}/users/code/${text}`,{
+        method: 'GET', // *GET, POST, PUT, DELETE, etc.
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'include', // include, *same-origin, omit
+        headers: {
+            'Authorization' : userState.jwtToken,
+            'Content-Type'  : 'application/json',
+            
+        },
+    })
+    .then((res) => res.json())
+    .then((res) => {
+        console.log(res)
+        if(res.code ===  0){
+            //완료
+            navigation.goBack()
+        }else if(res.code === -13){
+            alert(res.data)
+        }
+    })
+    .catch((e) => console.log(e))
+
+  }
+
   return (
     <>
       {/*네비게이션 형태가 다 달라서 컴포넌트 별 개별 추가 진행*/}
@@ -56,7 +90,7 @@ export default function AddMembersCode({ navigation }) {
           <Image source={arrow_left} style={globalStyle.title} />
         </Pressable>
         <Appbar.Content 
-          title={userAuth === "member"? "트레이너코드 입력으로 추가":"회원코드 입력으로 추가"} 
+          title={userInfo.type === "MEMBER"? "트레이너코드 입력으로 ":"회원코드 입력으로 추가"} 
           titleStyle={[globalStyle.header,globalStyle.center]} 
         />
       </Appbar.Header>
@@ -76,7 +110,7 @@ export default function AddMembersCode({ navigation }) {
               <View style={modalstyles.modalView}>
                 <View style={modalstyles.row}>
                   <Text style={[globalStyle.heading2, modalstyles.headerText]}>
-                    {userAuth === "member"? 
+                    {userInfo.type === "MEMBER"? 
                       "트레이너 확인"
                       :
                       "회원확인"
@@ -98,13 +132,13 @@ export default function AddMembersCode({ navigation }) {
                   />
 
                   <Text style={globalStyle.heading2}>김태리</Text>
-                  {userAuth === "member"?
+                  {userInfo.type === "MEMBER"?
                     null
                     :
                     <Text style={globalStyle.body2}>(여, ??세)</Text>
                   } 
                   <Text style={[globalStyle.body2, modalstyles.infoText]}>
-                    {userAuth === "member"? 
+                    {userInfo.type === "MEMBER"? 
                       "추가하려는 트레이너 선생님이 맞는지 확인해주세요."
                       :
                       "추가하려는 회원님이 맞는지 확인해주세요."
@@ -137,12 +171,12 @@ export default function AddMembersCode({ navigation }) {
             </View>
           </Modal>
 
-          <Text style={globalStyle.heading2}>{userAuth === "member"? "트레이너 코드":"회원 코드"}</Text>
+          <Text style={globalStyle.heading2}>{userInfo.type === "MEMBER"? "트레이너 코드":"회원 코드"}</Text>
           
           <TextInput style={styles.input} onChangeText={(text)=>RegCheckName(text)} value={text} />
 
           <Text style={styles.infoText}>
-          {userAuth === "member"?
+          {userInfo.type === "MEMBER"?
             "추가하려는 트레이너님의 앱 마이 > 트레이너 코드에서 확인할 수 있습니다."
             :
             "추가하려는 회원님의 앱에서 마이 > 회원코드에서 회원코드를 확인할 수 있습니다."
@@ -150,7 +184,7 @@ export default function AddMembersCode({ navigation }) {
           </Text>
         </View>
         
-          <ButtonLarge name={'추가'} isEnable={disableBtn} onPress={()=>navigation.goBack()} />
+          <ButtonLarge name={'추가'} isEnable={disableBtn} onPress={()=>AddCodePartners()} />
      
       </SafeAreaView>
     </>

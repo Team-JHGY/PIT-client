@@ -11,7 +11,13 @@ import ButtonSmallRed from '../../components/Common/ButtonSmallRed'
 import closeIcon from '../../../assets/icon/Common/closeIcon.svg'
 import Asterisk from '../../../assets/icon/asterisk.svg'
 
-export default function EditMyPage ({navigation}) {
+import { decode } from 'js-base64';
+
+// context
+import { UserContext } from '../../store/user'
+import config from "../../utils/config"
+
+export default function EditMyPage ({navigation,userData}) {
 
   const [image, setImage]               = React.useState(null)
   const [name, setName]                 = React.useState('')
@@ -19,11 +25,73 @@ export default function EditMyPage ({navigation}) {
   const [buttonEnable,setButtonEnable]  = React.useState(false)
   const [birthday, setBirthday]         = React.useState()
   const [gender, setGender]             = React.useState('M')
-  const [userAuth, setUserAuth]         = React.useState()
+  const { userState, userDispatch }     = React.useContext(UserContext)
+  const splitJwt                        = userState.jwtToken.split(".")
+  const userInfo                        = JSON.parse(decode(splitJwt[1]))
 
+  function AddtoLocalUserAuth(){
+    if(userInfo.type === "MEMBER"){
+        fetch(`${config.BASE_URL}/members/${userInfo.sub}`,{
+            method: 'GET', // *GET, POST, PUT, DELETE, etc.
+            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: 'include', // include, *same-origin, omit
+            headers: {
+                'Authorization' : userState.jwtToken,
+                'Content-Type'  : 'application/json',
+                
+            },
+        })
+        .then((res) => res.json())
+        .then((res) => {
+            console.log(res.data)
+            if(res.code ===  0){
+              setName(res.data.user.name)
+              setBirthday(res.data.birthday)
+              setGender(res.data.gender)
+              setIntro(res.data.user.description)
+            }else if(res.code === -13){
+                setUserData([])
+            }
+            
+
+        })
+        .catch((e) => console.log(e))
+    }else{
+        fetch(`${config.BASE_URL}/trainers/${userInfo.sub}`,{
+            method: 'GET', // *GET, POST, PUT, DELETE, etc.
+            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: 'include', // include, *same-origin, omit
+            headers: {
+                'Authorization' : userState.jwtToken,
+                'Content-Type'  : 'application/json',
+                
+            },
+        })
+        .then((res) => res.json())
+        .then((res) => {
+            console.log(res.data)
+            if(res.code ===  0){
+              setName(res.data.user.name)
+              setGender(res.data.gender)
+              setIntro(res.data.user.description)
+                
+            }else if(res.code === -13){
+                setUserData([])
+            }
+            
+
+        })
+        .catch((e) => console.log(e))
+    }
+  }
+
+  React.useEffect(()=>{
+    AddtoLocalUserAuth()
+  },[])
 
   //사용자 이미지 저장
   React.useEffect(() => {
+    console.log(userData)
     ;(async () => {
       if (Platform.OS !== 'web') {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
@@ -32,7 +100,7 @@ export default function EditMyPage ({navigation}) {
         }
       }
     })
-    AddtoLocalUserAuth()
+
   }, [])
 
   React.useEffect(() => {
@@ -48,18 +116,45 @@ export default function EditMyPage ({navigation}) {
       quality: 1,
     })
 
+
     console.log(result)
-
-    if (!result.cancelled) {
-      setImage(result.uri)
+    const imageValue = {
+      uri:result.uri,
+      name:"test",
+      type:"image/jpeg"
     }
+    console.log(imageValue)
+
+   
+    const formData = new FormData()
+    formData.append("profile", imageValue)
+    formData.append("thumbnail", imageValue)
+    console.log(userState.jwtToken)
+
+    
+      setImage(result.uri)
+      
+      fetch(`${config.BASE_URL}/profile-image/${userInfo.id}`,formData,{
+        method: 'POST', // *GET, POST, PUT, DELETE, etc.
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'include', // include, *same-origin, omit
+        headers: {
+            'Authorization' : userState.jwtToken,
+            'Content-Type'  : 'multipart/form-data',
+            
+        }
+      })
+      .then((res) => res.json())
+      .then((res) => {
+          console.log(res)
+          
+          
+
+      })
+      .catch((e) => console.log(e))
+    
   }
 
-  function AddtoLocalUserAuth(){
-    AsyncStorage.getItem("userAuth", (err, result) => { //user_id에 담긴 아이디 불러오기
-      setUserAuth(result); // result에 담김 //불러온거 출력
-    });
-  }
 
   function ToggleButton(gender) {
     setGender(gender);
@@ -71,6 +166,82 @@ export default function EditMyPage ({navigation}) {
       alert("한글, 영어, 숫자외에는 입력이 불가합니다.")
     }else{
       setName(name)
+    }
+  }
+
+  function EditMyinfo(){
+    if(userInfo.type === "MEMBER"){
+      console.log({
+        "name"        : name,
+        "gender"      : gender,
+        "birthday"    : birthday,
+        "description" : intro
+        
+      })
+      fetch(`${config.BASE_URL}/members/${userInfo.sub}`,{
+          method: 'PATCH', // *GET, POST, PUT, DELETE, etc.
+          cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+          credentials: 'include', // include, *same-origin, omit
+          headers: {
+              'Authorization' : userState.jwtToken,
+              'Content-Type'  : 'application/json',
+          },
+          body: JSON.stringify({
+            "name"        : name,
+            "gender"      : gender,
+            "birthday"    : birthday,
+            "description" : intro
+            
+          })
+      })
+      .then((res) => res.json())
+      .then((res) => {
+          console.log(res.data)
+          if(res.code ===  0){
+            alert("편집 완료했습니다.")
+          }else{
+            alert("편집 실패했습니다.")
+          }
+          
+
+      })
+      .catch((e) => console.log(e))
+    }else{
+      console.log({
+        "name"        : name,
+        "gender"      : gender,
+        "birthday"    : birthday,
+        "description" : intro
+        
+      })
+      fetch(`${config.BASE_URL}/trainers/${userInfo.sub}`,{
+          method: 'PATCH', // *GET, POST, PUT, DELETE, etc.
+          cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+          credentials: 'include', // include, *same-origin, omit
+          headers: {
+              'Authorization' : userState.jwtToken,
+              'Content-Type'  : 'application/json',  
+          },
+          body: JSON.stringify({
+            "name"        : name,
+            "gender"      : gender,
+            "birthday"    : birthday,
+            "description" : intro
+            
+          })
+      })
+      .then((res) => res.json())
+      .then((res) => {
+          console.log(res.data)
+          if(res.code ===  0){
+            alert("편집 완료했습니다.")
+          }else{
+            alert("편집 실패했습니다.")
+          }
+          
+
+      })
+      .catch((e) => console.log(e))
     }
   }
 
@@ -125,7 +296,7 @@ export default function EditMyPage ({navigation}) {
             setInput={(name) => RegCheckName(name)}
           />
         </View>
-        { userAuth !== "member"?
+        { userInfo.type === "TRAINER"?
           null
           :
           <>
@@ -140,15 +311,15 @@ export default function EditMyPage ({navigation}) {
             <View style={styles.titleWrapper}>
 
               <Pressable 
-                style={gender === "M"?[styles.smallBtn, styles.leftmargin, styles.btnOn]:[styles.smallBtn, styles.leftmargin, styles.btnOff]} 
-                onPress={()=>{ToggleButton("M")}}
+                style={gender === "MAN"?[styles.smallBtn, styles.leftmargin, styles.btnOn]:[styles.smallBtn, styles.leftmargin, styles.btnOff]} 
+                onPress={()=>{ToggleButton("MAN")}}
               >
                 <Text style={[styles.smallBtnText]}>남</Text>
               </Pressable>
 
               <Pressable 
-                style={gender === "F"?[styles.smallBtn, styles.leftmargin, styles.btnOn]:[styles.smallBtn, styles.leftmargin, styles.btnOff]}
-                onPress={()=>{ToggleButton("F")}}
+                style={gender === "WOMAN"?[styles.smallBtn, styles.leftmargin, styles.btnOn]:[styles.smallBtn, styles.leftmargin, styles.btnOff]}
+                onPress={()=>{ToggleButton("WOMAN")}}
               >
                 <Text style={[styles.smallBtnText]}>여</Text>
               </Pressable>
@@ -165,8 +336,8 @@ export default function EditMyPage ({navigation}) {
              isMandatory={true}
              placeholder={'예) 19910705'}
              setInput={(input) => {
-              const regex = /^[|0-9|]*$/
-              if (regex.test(input) && input.length <= 8) {
+              const regex = /^[|0-9-|]*$/
+              if (regex.test(input) && input.length <= 10) {
                 setBirthday(input)
               }
             }}
@@ -186,10 +357,10 @@ export default function EditMyPage ({navigation}) {
           />
         </View>
         <Text style={styles.notificationText}>
-          {userAuth === "member"?  "나의 트레이너에게 보여지는 정보입니다." : "나의 회원들에게 보여지는 정보입니다."}
+          {userInfo.type === "MEMBER"?  "나의 트레이너에게 보여지는 정보입니다." : "나의 회원들에게 보여지는 정보입니다."}
         </Text>
         
-          <ButtonLarge name={'편집완료'} isEnable={buttonEnable} onPress={()=>navigation.goBack()} />
+          <ButtonLarge name={'편집완료'} isEnable={buttonEnable} onPress={()=>EditMyinfo()} />
         
       </View>
       </ScrollView>

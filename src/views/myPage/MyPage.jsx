@@ -5,22 +5,95 @@ import globalStyle from '../../utils/globalStyle'
 import { Appbar } from 'react-native-paper'
 import arrow_right from '../../../assets/arrow_right.png'
 import Toast from 'react-native-easy-toast';
+import { decode } from 'js-base64';
+
+
+// context
+import { UserContext } from '../../store/user'
+import config from "../../utils/config" 
 
 export default function MyPage({navigation}) {
-    const [appBarArray, setAppBarArray]   = React.useState([])
-    const [trainerCode, setTrainerCode]   = React.useState('12345')
-    const [userAuth, setUserAuth]         = React.useState()
+    const [userData, setUserData]       = React.useState({
+        "createdAt": "",
+        "id": "",
+        "modifedAt": "",
+        "user": {
+            "accessToken": "",
+            "code": "",
+            "description": "",
+            "expiresIn": "",
+            "id": "",
+            "name": "",
+            "oauthId": "",
+            "profileImage": "",
+            "provider": "",
+            "refreshToken": "",
+            "type": "",
+        },
+    })
     const toastRef                        = React.useRef(); 
+    const { userState, userDispatch }     = React.useContext(UserContext)
+    
+    //jwt token decode
+    const splitJwt                        = userState.jwtToken.split(".")
+    const userInfo                        = React.useState(JSON.parse(decode(splitJwt[1])))
+
 
     const copyToClipboard = () => {
-            Clipboard.setString(trainerCode)
+            Clipboard.setString(String(userInfo[0].oAuthId))
             toastRef.current.show('클립보드에 복사했습니다.');
     };
 
     function AddtoLocalUserAuth(){
-        AsyncStorage.getItem("userAuth", (err, result) => { //user_id에 담긴 아이디 불러오기
-            setUserAuth(result); // result에 담김 //불러온거 출력
-        });
+        if(userInfo[0].type === "MEMBER"){
+            fetch(`${config.BASE_URL}/members/${userInfo[0].sub}`,{
+                method: 'GET', // *GET, POST, PUT, DELETE, etc.
+                cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                credentials: 'include', // include, *same-origin, omit
+                headers: {
+                    'Authorization' : userState.jwtToken,
+                    'Content-Type'  : 'application/json',
+                    
+                },
+            })
+            .then((res) => res.json())
+            .then((res) => {
+                console.log(res.data)
+                if(res.code ===  0){
+                    setUserData(res.data)
+                    
+                }else if(res.code === -13){
+                    setUserData([])
+                }
+                
+    
+            })
+            .catch((e) => console.log(e))
+        }else{
+            fetch(`${config.BASE_URL}/trainers/${userInfo[0].sub}`,{
+                method: 'GET', // *GET, POST, PUT, DELETE, etc.
+                cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                credentials: 'include', // include, *same-origin, omit
+                headers: {
+                    'Authorization' : userState.jwtToken,
+                    'Content-Type'  : 'application/json',
+                    
+                },
+            })
+            .then((res) => res.json())
+            .then((res) => {
+                console.log(res.data)
+                if(res.code ===  0){
+                    setUserData(res.data)
+                    
+                }else if(res.code === -13){
+                    setUserData([])
+                }
+                
+    
+            })
+            .catch((e) => console.log(e))
+        }
     }
 
     React.useEffect(()=>{
@@ -31,16 +104,16 @@ export default function MyPage({navigation}) {
     return (
         <>
         <Toast ref={toastRef}
-                positionValue={100}
-                fadeInDuration={200}
-                fadeOutDuration={1000}
-                style={{backgroundColor:'rgba(33, 87, 243, 0.5)'}}
+            positionValue={100}
+            fadeInDuration={200}
+            fadeOutDuration={1000}
+            style={{backgroundColor:'rgba(33, 87, 243, 0.5)', width:'90%'}}
         />
         <Appbar.Header style={globalStyle.appbarMain}>
             <Appbar.Content title="마이"  titleStyle={[globalStyle.heading1, styles.barHeader]}/>
             <Pressable
                 style={[globalStyle.appbarBtn, globalStyle.buttonGrey, globalStyle.center,styles.editWidth, styles.margin_right]}
-                onPress={()=>navigation.navigate('EditMyPage')} 
+                onPress={(userData)=>navigation.navigate('EditMyPage')} 
             >
                 <Text style={globalStyle.appbarBtnText}>편집</Text>
             </Pressable>
@@ -53,11 +126,18 @@ export default function MyPage({navigation}) {
             
             <ScrollView>
                 <View style={styles.myPageInfoImg}>
-                    <Image source={{uri:'https://img.sbs.co.kr/newsnet/etv/upload/2021/04/23/30000684130_500.jpg'}} style={styles.userImg}/>
+                    {userData.user.profileImage === null?
+                    <Image
+                        style={styles.profile}
+                        source={require('../../../assets/img/SignUp/emptyProfile.png')}
+                    />
+                    :
+                    <Image source={{uri:`${userData.user.profileImage}`}} style={styles.userImg}/>
+                    }   
                 </View>
                 
                 
-                { userAuth === "member"?
+                {userInfo[0].type === "MEMBERS"?
                     <Pressable 
                         style={[styles.myPageInfo, globalStyle.row, globalStyle.buttonLightGreen, styles.trainerBtn]}
                         onPress={() => {navigation.navigate('MyTrainers')}}
@@ -79,17 +159,17 @@ export default function MyPage({navigation}) {
                 }
                 <View style={[styles.myPageInfo]}>
                     <Text style={[globalStyle.heading2, styles.userName]}>이름</Text>
-                    <Text style={[globalStyle.body2, styles.userNameInfo]}>김태리</Text>
+                    <Text style={[globalStyle.body2, styles.userNameInfo]}>{userData.user.name}</Text>
                 </View>
-                { userAuth === "member"?
+                { userInfo[0].type === "MEMBER"?
                     <>
                     <View style={[styles.myPageInfo]}>
                         <Text style={[globalStyle.heading2, styles.userName]}>성별</Text>
-                        <Text style={[globalStyle.body2, styles.userNameInfo]}>여</Text>
+                        <Text style={[globalStyle.body2, styles.userNameInfo]}>{userData.gender === "WOMAN"? "여":"남"}</Text>
                     </View>
                     <View style={[styles.myPageInfo]}>
                         <Text style={[globalStyle.heading2, styles.userName]}>생년월일</Text>
-                        <Text style={[globalStyle.body2, styles.userNameInfo]}>1992.08.03 (30세)</Text>
+                        <Text style={[globalStyle.body2, styles.userNameInfo]}>{userData.birthday}</Text>
                     </View>
                     </>
                     :
@@ -101,16 +181,13 @@ export default function MyPage({navigation}) {
                 <View style={styles.myPageInfo}>
                     <Text style={[globalStyle.heading2, styles.userName]}>자기 소개</Text>
                     <Text style={[globalStyle.body2, styles.userNameInfo]}>
-                        회원님의 건강과 아름다운 몸을 책임질 양치승 트레이너 입니다 ^^{"\n"}
-                        -생활 체육지도사 보디빌딩 2급 {"\n"}
-                        -운동처방사 교육 수료 {"\n"}
-                        -재활운동처방사 자격 취득
+                        {userData.user.description}
                     </Text>
                 </View>
                 <View style={[styles.myPageInfo, globalStyle.row]}>
                     <View style={globalStyle.col_1}>
-                        <Text style={[globalStyle.heading2, styles.userName]}>{userAuth === "member"? "회원코드" : "트레이너 코드"}</Text>
-                        <Text style={[globalStyle.body2, styles.userNameInfo]}>{trainerCode}</Text>
+                        <Text style={[globalStyle.heading2, styles.userName]}>{userInfo[0].type === "MEMBER"? "회원코드" : "트레이너 코드"}</Text>
+                        <Text style={[globalStyle.body2, styles.userNameInfo]}>{userInfo[0].oAuthId}</Text>
                     </View>
                     <View style={globalStyle.col_1, styles.alignCenter}>
                         <Pressable
@@ -144,6 +221,14 @@ const styles = StyleSheet.create({
     mainForm: {
         backgroundColor:"#ffff",
         flex: 1,
+    },
+    profile: {
+        marginTop: 20,
+        width: 70,
+        height: 70,
+        borderRadius: 50,
+        borderWidth: 3,
+        borderColor: '#E101FF',
     },
     disableText:{
         ...globalStyle.body2,

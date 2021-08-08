@@ -18,10 +18,13 @@ import TextField from '../../components/Common/TextField'
 import ButtonLarge from '../../components/Common/ButtonLarge'
 import ButtonSmall from '../../components/Common/ButtonSmall'
 import ButtonSmallRed from '../../components/Common/ButtonSmallRed'
+import { decode } from 'js-base64';
+
 //icons image
 import closeIcon from '../../../assets/icon/Common/closeIcon.svg'
 import arrow_left from '../../../assets/arrow_left.png'
 import Asterisk from '../../../assets/icon/asterisk.svg'
+
 
 // context
 import { UserContext } from '../../store/user'
@@ -30,7 +33,7 @@ import { UserContext } from '../../store/user'
 import { _axios } from '../../utils/http-utils'
 export default function SignUpStep2(props) {
   const [buttonEnable, setButtonEnable] = React.useState('false')
-  const [userAuth, setUserAuth] = React.useState()
+
   const [image, setImage] = React.useState(null)
   //const [name, setName] = React.useState('')
   //const [birthday, setBirthday] = React.useState('')
@@ -39,7 +42,12 @@ export default function SignUpStep2(props) {
 
   const { goBackStep, openModal, onPress } = props //앞에서 전달받은 정보
   const { userState, userDispatch } = useContext(UserContext)
-  const { name, gender, birthday, intro, accessToken, refreshToken, expiresIn } = userState
+  const { name, gender, birthday, intro, accessToken, refreshToken, expiresIn } = userState;
+
+  //jwt token decode
+  const splitJwt = userState.jwtToken.split(".")
+  const userInfo = JSON.parse(decode(splitJwt[1]))
+
   useEffect(() => {
     ;(async () => {
       if (Platform.OS !== 'web') {
@@ -53,20 +61,17 @@ export default function SignUpStep2(props) {
   }, [])
 
   useEffect(() => {
-    if (userAuth === 'trainer') {
+    if (userInfo.type === "TRAINER") {
       if (name.length > 0) setButtonEnable(true)
       else setButtonEnable(false)
-    } else if (userAuth === 'member') {
+    } else if (userInfo.type === "MEMBER") {
       if (name.length > 0 && birthday.length == 8) setButtonEnable(true)
       else setButtonEnable(false)
     }
   }, [name, gender, birthday])
 
   function AddtoLocalUserAuth() {
-    AsyncStorage.getItem('userAuth', (err, result) => {
-      //user_id에 담긴 아이디 불러오기
-      setUserAuth(result) // result에 담김 //불러온거 출력
-    })
+  
   }
 
   const pickImage = async () => {
@@ -94,7 +99,7 @@ export default function SignUpStep2(props) {
           <Image source={arrow_left} style={globalStyle.title} />
         </Pressable>
         <Appbar.Content
-          title={userAuth === 'member' ? '회원으로 가입' : '트레이너로 가입'}
+          title={userInfo.type === "MEMBER" ? '회원으로 가입' : '트레이너로 가입'}
           titleStyle={styles.appbarTitle}
         />
         <Pressable
@@ -110,10 +115,10 @@ export default function SignUpStep2(props) {
         ) : (
           <Image
             style={
-              userAuth === 'member' ? [styles.profile, { borderColor: '#11F37E' }] : styles.profile
+              userInfo.type === "MEMBER" ? [styles.profile, { borderColor: '#11F37E' }] : styles.profile
             }
             source={require('../../../assets/img/SignUp/emptyProfile.png')}
-          ></Image>
+          />
         )}
         <View style={styles.buttonWrapper}>
           <ButtonSmall
@@ -150,7 +155,7 @@ export default function SignUpStep2(props) {
             }}
           />
         </View>
-        {userAuth !== 'member' ? null : (
+        {userInfo.type === "MEMBER" ? null : (
           <>
             <View style={globalStyle.textField}>
               <View style={styles.titleWrapper}>
@@ -222,7 +227,7 @@ export default function SignUpStep2(props) {
           />
         </View>
         <Text style={styles.notificationText}>
-          {userAuth === 'member'
+          {userInfo.type === "MEMBER"
             ? '나의 트레이너에게 보여지는 정보입니다.'
             : '나의 회원들에게 보여지는 정보입니다.'}
         </Text>

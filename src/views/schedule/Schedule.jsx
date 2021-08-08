@@ -13,7 +13,6 @@ export default function Schedule({ navigation }) {
     await SplashScreen.hideAsync()
   })
   const [appBarArray, setAppBarArray] = React.useState([])
-
   const [firstDayOfWeek, setFirstDayOfWeek] = useState('')
   const [lastDayOfWeek, setLastDayOfWeek] = useState('')
   const [date, setDate] = useState(new Date())

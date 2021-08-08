@@ -1,16 +1,83 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState, useContext } from 'react'
 import { StyleSheet, Text, View, SafeAreaView, Pressable, Image,ScrollView } from 'react-native'
 import globalStyle from '../../utils/globalStyle'
 import { Appbar } from 'react-native-paper';
 import NewMembers from './NewMember'
 import sortArrow from "../../../assets/sortArrow.png"
 import cross from "../../../assets/cross.png"
+import { decode } from 'js-base64';
+
+// context
+import { UserContext } from '../../store/user'
+import config from "../../utils/config" 
+
 
 export default function Members({navigation}) {
     const [appBarArray, setAppBarArray] = React.useState([])
     const [userCount, setUserCount]     = React.useState(1);
     const [isNew, setIsNew]             = React.useState("Y");
-    const [userData, setUserData]       = React.useState(["1","2","3","4","5","6","7","8","9","1","2","3","4","5","6","7","8","9"])
+    const [userData, setUserData]       = React.useState([])
+    const { userState, userDispatch } = useContext(UserContext)
+    const splitJwt = userState.jwtToken.split(".")
+    const userInfo = JSON.parse(decode(splitJwt[1]))
+
+
+    React.useEffect(()=>{
+        //비동기로 멤버 리스트 불러오기
+        MemberList(userState.jwtToken)
+    },[])
+
+
+    async function MemberList(token) {
+        if(userInfo.type === "TRAINER"){
+            await fetch(`${config.BASE_URL}/partners/${userInfo.sub}/trainers`,{
+                method: 'GET', // *GET, POST, PUT, DELETE, etc.
+                cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                credentials: 'include', // include, *same-origin, omit
+                headers: {
+                    'Authorization' : token,
+                    'Content-Type'  : 'application/json',
+                    
+                },
+            })
+            .then((res) => res.json())
+            .then((res) => {
+                console.log(res)
+                if(res.code ===  0){
+                    setUserData(res.data)
+                }else if(res.code === -13){
+                    setUserData([])
+                }
+                
+
+            })
+            .catch((e) => console.log(e))  
+        }else{
+            await fetch(`${config.BASE_URL}/partners/${userInfo.sub}/members`,{
+                method: 'GET', // *GET, POST, PUT, DELETE, etc.
+                cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                credentials: 'include', // include, *same-origin, omit
+                headers: {
+                    'Authorization' : token,
+                    'Content-Type'  : 'application/json',
+                    
+                },
+            })
+            .then((res) => res.json())
+            .then((res) => {
+                console.log(res)
+                if(res.code ===  0){
+                    setUserData(res.data)
+                }else if(res.code === -13){
+                    setUserData([])
+                }
+                
+
+            })
+            .catch((e) => console.log(e))
+        }
+        
+    }
 
     return (
         <>
@@ -30,8 +97,8 @@ export default function Members({navigation}) {
             </Pressable>
             
         </Appbar.Header>
-        <SafeAreaView style={userCount === 0? styles.mainForm : styles.mainFormUser}>
-            {userCount === 0?
+        <SafeAreaView style={userData.length === 0? styles.mainForm : styles.mainFormUser}>
+            {userData.length === 0?
         
                 <View>
                     <Text style={styles.disableText}>등록된 회원이 없습니다.</Text>
@@ -39,6 +106,7 @@ export default function Members({navigation}) {
             :
             
                 <ScrollView>
+                    
                     {userData.map((item,index)=>{
                         return (
                             <View key={index} style={[globalStyle.row, styles.userInfo]}>
