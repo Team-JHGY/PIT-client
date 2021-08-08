@@ -4,7 +4,7 @@ import { WithLocalSvg } from 'react-native-svg'
 import globalStyle from '../../utils/globalStyle'
 import Asterisk from '../../../assets/icon/asterisk.svg'
 import selectArrow from '../../../assets/img/Schedule/selectArrow.svg'
-const SelectBoxField = ({ title, input, clickEvent }) => {
+const SelectBoxField = ({ title, input, clickEvent, isTextAdded, addedText }) => {
   return (
     <View>
       <View style={styles.titleWrapper}>
@@ -13,18 +13,22 @@ const SelectBoxField = ({ title, input, clickEvent }) => {
           <WithLocalSvg asset={Asterisk}></WithLocalSvg>
         </View>
       </View>
-      <Pressable
-        onPress={() => {
-          clickEvent()
-        }}
-      >
-        <View style={styles.selectField}>
-          <Text>{input}</Text>
-          <View style={{ marginLeft: 'auto', marginRight: '6.25%' }}>
-            <WithLocalSvg asset={selectArrow} />
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Pressable
+          onPress={() => {
+            clickEvent()
+          }}
+          style={{ flex: 1 }}
+        >
+          <View style={styles.selectField}>
+            <Text>{input}</Text>
+            <View style={{ marginLeft: 'auto', marginRight: '6.25%' }}>
+              <WithLocalSvg asset={selectArrow} />
+            </View>
           </View>
-        </View>
-      </Pressable>
+        </Pressable>
+        {isTextAdded && <Text style={{ flex: 1 }}>{' 회까지 반복'}</Text>}
+      </View>
     </View>
   )
 }

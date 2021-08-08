@@ -1,27 +1,28 @@
-import React, { useState, useEffect } from 'react'
-import { View, Text, Pressable, StyleSheet, FlatList } from 'react-native'
-import closeIcon from '../../../assets/icon/Common/closeIcon.svg'
-import check from '../../../assets/img/Schedule/check.svg'
-import { WithLocalSvg } from 'react-native-svg'
+import { styleSheets } from 'min-document'
+import React, { useState } from 'react'
+import { View, Text, StyleSheet, Pressable, FlatList } from 'react-native'
+
 import globalStyle from '../../utils/globalStyle'
 
+import { WithLocalSvg } from 'react-native-svg'
+import closeIcon from '../../../assets/icon/Common/closeIcon.svg'
+import check from '../../../assets/img/Schedule/check.svg'
 import CancelButton from '../Schedule/CancelButton'
 import ConfirmButton from '../Schedule/ConfirmButton'
-const dummyData = [
-  { id: 1, title: '김회원(남, 23세) 수업', isChecked: true, isLast: false },
-  { id: 2, title: '정회원(여, 21세) 수업', isChecked: false, isLast: false },
-  { id: 3, title: '박회원(여, 45세) 수업', isChecked: false, isLast: false },
-  { id: 4, title: '이회원(남, 31세) 수업', isChecked: false, isLast: false },
-  { id: 5, title: '비수업 시간', isChecked: false, isLast: true },
-]
-const ScheduleChooseModal = ({ closeModal, chooseMember, memberIdx, setMemberIdx }) => {
-  const [schedules, setSchedules] = useState(dummyData)
-  const [tempIdx, setTempIdx] = useState(memberIdx)
+
+const data = []
+for (var i = 1; i <= 20; i++) {
+  data.push({ id: i, title: i + '' })
+}
+const RepeatChooseModal = ({ closeModal, repeatOptionIdx, setRepeatOptionIdx }) => {
+  const [options, setOptions] = useState(data)
+  const [tempIdx, setTempIdx] = useState(repeatOptionIdx)
+
   return (
     <View style={styles.body}>
       <View style={styles.modalDialog}>
         <View style={styles.header}>
-          <Text style={globalStyle.heading2}>{'스케쥴 선택'}</Text>
+          <Text style={globalStyle.heading2}>{'반복 횟수 선택'}</Text>
           <Pressable
             style={styles.closeIcon}
             onPress={() => {
@@ -32,24 +33,14 @@ const ScheduleChooseModal = ({ closeModal, chooseMember, memberIdx, setMemberIdx
           </Pressable>
         </View>
         <FlatList
+          style={{ alignSelf: 'stretch', width: '100%' }}
           keyExtractor={(item) => item.id.toString()}
-          data={schedules}
+          data={options}
           renderItem={({ item }) => {
-            const memberStyle = (isLast) => {
-              if (isLast === true) {
-                return {
-                  height: 100,
-                }
-              } else if (isLast === false) {
-                return {
-                  header: 30,
-                }
-              }
-            }
             return (
-              <View style={[styles.memberItem, memberStyle(item.isLast)]}>
+              <View style={styles.optionItem}>
                 {tempIdx === item.id ? (
-                  <View style={styles.selectedMemberBox}>
+                  <View style={styles.selectedOptionBox}>
                     <WithLocalSvg asset={check} />
                   </View>
                 ) : (
@@ -58,23 +49,15 @@ const ScheduleChooseModal = ({ closeModal, chooseMember, memberIdx, setMemberIdx
                       setTempIdx(item.id)
                     }}
                   >
-                    <View style={styles.unSelectedMemberBox}></View>
+                    <View style={styles.unSelectedOptionBox}></View>
                   </Pressable>
                 )}
                 <View>
-                  <Text style={styles.memberBoxTitle}>{item.title}</Text>
-                  {item.isLast === true && (
-                    <Text style={styles.lastOption}>회원들이 선생님의 스케쥴을 보았을</Text>
-                  )}
-                  {item.isLast === true && (
-                    <Text style={styles.lastOption}>때 해당 시간대에 일정이 있는 것 처럼</Text>
-                  )}
-                  {item.isLast === true && <Text style={styles.lastOption}>보입니다.</Text>}
+                  <Text style={styles.optionBoxTitle}>{item.title}</Text>
                 </View>
               </View>
             )
           }}
-          style={{ alignSelf: 'stretch', width: '100%' }}
         />
         <View
           style={{
@@ -85,10 +68,9 @@ const ScheduleChooseModal = ({ closeModal, chooseMember, memberIdx, setMemberIdx
         >
           <CancelButton clickEvent={closeModal} />
           <ConfirmButton
-            chooseMember={chooseMember}
             closeModal={closeModal}
-            setMemberIdx={setMemberIdx}
-            item={schedules[tempIdx - 1]}
+            setRepeatOptionIdx={setRepeatOptionIdx}
+            item={options[tempIdx - 1]}
           />
         </View>
       </View>
@@ -124,14 +106,14 @@ const styles = StyleSheet.create({
     right: '5%',
     position: 'absolute',
   },
-  memberItem: {
+  optionItem: {
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'stretch',
     marginLeft: '7.5%',
     marginTop: 30,
   },
-  selectedMemberBox: {
+  selectedOptionBox: {
     width: 30,
     height: 30,
     borderRadius: 6,
@@ -140,7 +122,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#2AFF91',
   },
-  unSelectedMemberBox: {
+  unSelectedOptionBox: {
     width: 30,
     height: 30,
     borderWidth: 1,
@@ -148,7 +130,7 @@ const styles = StyleSheet.create({
     borderStyle: 'solid',
     borderColor: '#C2C7CC',
   },
-  memberBoxTitle: {
+  optionBoxTitle: {
     marginLeft: 10,
     fontStyle: 'normal',
     fontWeight: 'normal',
@@ -156,14 +138,6 @@ const styles = StyleSheet.create({
     letterSpacing: 0.15,
     ...globalStyle.body1,
   },
-  lastOption: {
-    ...globalStyle.body2,
-    lineHeight: 19,
-    color: '#5A5757',
-    marginLeft: 10,
-    fontStyle: 'normal',
-    fontWeight: 'normal',
-  },
 })
 
-export default ScheduleChooseModal
+export default RepeatChooseModal

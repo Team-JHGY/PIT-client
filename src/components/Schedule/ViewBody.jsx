@@ -2,11 +2,19 @@ import React from 'react'
 import { View, Text, StyleSheet, Pressable } from 'react-native'
 import { WithLocalSvg } from 'react-native-svg'
 import globalStyle from '../../utils/globalStyle'
+import { getDayOfWeek, getMonthOfDate, getDayOfDate } from '../../utils/commonFunctions'
 import addFloating from '../../../assets/img/Schedule/addFloating.svg'
-const ViewBody = ({ navigation }) => {
+const ViewBody = ({ navigation, selectedDate }) => {
+  var strToday =
+    getMonthOfDate(selectedDate) +
+    '/' +
+    getDayOfDate(selectedDate) +
+    ' (' +
+    getDayOfWeek(selectedDate) +
+    ')'
   return (
-    <View style={{ top: '31%', alignSelf: 'stretch', flex: 1 }}>
-      <Text style={styles.date}>7/13(화)</Text>
+    <View style={{ marginBottom: 20, alignSelf: 'stretch', flex: 1 }}>
+      <Text style={styles.date}>{strToday}</Text>
       <Text style={styles.placeholder}>등록된 스케쥴이 없습니다.</Text>
       <Pressable
         style={styles.floatingButton}
@@ -34,9 +42,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   floatingButton: {
-    position: 'absolute',
-    bottom: '35%',
-    right: '5%',
+    position: 'relative',
+    marginTop: 'auto',
+    marginBottom: 0,
+    marginLeft: 'auto',
+    marginRight: 30,
   },
 })
 

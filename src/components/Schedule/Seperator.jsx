@@ -8,8 +8,8 @@ const styles = StyleSheet.create({
   seperator: {
     backgroundColor: '#EFF3F7',
     height: '2%',
-    top: '30.5%',
     width: '100%',
+    marginTop: 0,
   },
 })
 

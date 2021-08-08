@@ -3,15 +3,15 @@ import { View, Text, StyleSheet, Pressable } from 'react-native'
 import globalStyle from '../../utils/globalStyle'
 const CancelButton = ({ clickEvent }) => {
   return (
-    <Pressable
-      onPress={() => {
-        clickEvent()
-      }}
-    >
-      <View style={styles.button}>
+    <View style={styles.button}>
+      <Pressable
+        onPress={() => {
+          clickEvent()
+        }}
+      >
         <Text style={styles.text}>{'취소'}</Text>
-      </View>
-    </Pressable>
+      </Pressable>
+    </View>
   )
 }
 
@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: '4.68%',
-    marginBottom: 20,
+    marginBottom: '4.54%',
     marginRight: '1.56%',
   },
   text: {

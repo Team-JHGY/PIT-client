@@ -77,8 +77,6 @@ export default function SignUpStep2(props) {
       quality: 1,
     })
 
-    console.log(result)
-
     if (!result.cancelled) {
       setImage(result.uri)
     }
@@ -306,7 +304,7 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     marginLeft: 20,
     marginTop: 20,
-    marginBottom:20,
+    marginBottom: 20,
     color: '#5A5757',
     lineHeight: 22,
     fontSize: 14,
