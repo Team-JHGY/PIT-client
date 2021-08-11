@@ -22,23 +22,36 @@ import { UserContext } from '../../store/user'
 import config from "../../utils/config" 
 
 export default function AddMembersCode({ navigation }) {
-  const [text, onChangeText]            = React.useState(null)
-  const [modalVisible, setModalVisible] = useState(false)
-  const [disableBtn, setDisableBtn]     = useState(false)
-  
+  const [text, onChangeText]                = React.useState(null)
+  const [modalVisible, setModalVisible]     = useState(false)
+  const [disableBtn, setDisableBtn]         = useState(false)
+  const [modalUserData, setModalUserData]   = React.useState([])
+  const [userData, setUserData]             = React.useState({
+
+    "createdAt": "",
+    "id": "",
+    "modifedAt": "",
+    "user": {
+        "accessToken": "",
+        "code": "",
+        "description": "",
+        "expiresIn": "",
+        "id": "",
+        "name": "",
+        "oauthId": "",
+        "profileImage": "",
+        "provider": "",
+        "refreshToken": "",
+        "type": "",
+    }
+
+  })
+
   const { userState, userDispatch }     = useContext(UserContext)
 
   //jwt token decode
   const splitJwt = userState.jwtToken.split(".")
-  const userInfo = JSON.parse(decode(splitJwt[1]))
-
-  React.useEffect(() => {
-      AddtoLocalUserAuth()
-  },[])
-
-  function AddtoLocalUserAuth(){
-  
-  }
+  const userInfo = React.useState(JSON.parse(decode(splitJwt[1])))
 
 
   function RegCheckName(text) {
@@ -57,7 +70,7 @@ export default function AddMembersCode({ navigation }) {
   }
 
   function AddCodePartners(){
-    
+
     fetch(`${config.BASE_URL}/users/code/${text}`,{
         method: 'GET', // *GET, POST, PUT, DELETE, etc.
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -70,10 +83,12 @@ export default function AddMembersCode({ navigation }) {
     })
     .then((res) => res.json())
     .then((res) => {
-        console.log(res)
+        console.log("test",res)
         if(res.code ===  0){
+          setModalVisible(true)
+          setModalUserData(res.data)
             //완료
-            navigation.goBack()
+            //navigation.goBack()
         }else if(res.code === -13){
             alert(res.data)
         }
@@ -81,6 +96,107 @@ export default function AddMembersCode({ navigation }) {
     .catch((e) => console.log(e))
 
   }
+
+  function RelationPartner() {
+    setModalVisible(false)
+      
+    var bodyForm
+    if(modalUserData.type === "TRAINER"){
+      bodyForm = { 
+        trainerId : String(modalUserData.id),
+        memberId  : String(userInfo[0].sub)
+      }
+    }else{
+      bodyForm = { 
+        trainerId : String(userInfo[0].sub),
+        memberId  : String(modalUserData.id)
+      }
+    }
+
+
+    fetch(`${config.BASE_URL}/partners`,{
+      method      : 'POST', // *GET, POST, PUT, DELETE, etc.
+      cache       : 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+      credentials : 'include', // include, *same-origin, omit
+      headers: {
+          'Authorization' : userState.jwtToken,
+          'Content-Type'  : 'application/json',
+          
+      },
+      body: JSON.stringify(bodyForm)
+    })
+    .then((res) => res.json())
+    .then((res) => {
+        console.log("test",res)
+        if(res.code ===  0){
+          alert("완료 되었습니다.")
+          //완료
+          navigation.goBack()
+          //초기화
+          bodyForm.length = 0;
+        }else if(res.code === -13){
+          alert(res.data)
+        }
+    })
+    .catch((e) => console.log(e))
+
+  }
+
+  function AddtoLocalUserAuth(){
+    if(userInfo[0].type === "MEMBER"){
+        fetch(`${config.BASE_URL}/members/${userInfo[0].sub}`,{
+            method: 'GET', // *GET, POST, PUT, DELETE, etc.
+            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: 'include', // include, *same-origin, omit
+            headers: {
+                'Authorization' : userState.jwtToken,
+                'Content-Type'  : 'application/json',
+                
+            },
+        })
+        .then((res) => res.json())
+        .then((res) => {
+            
+            if(res.code ===  0){
+                setUserData(res.data)
+                
+            }else if(res.code === -13){
+                setUserData([])
+            }
+            
+
+        })
+        .catch((e) => console.log(e))
+    }else{
+        fetch(`${config.BASE_URL}/trainers/${userInfo[0].sub}`,{
+            method: 'GET', // *GET, POST, PUT, DELETE, etc.
+            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: 'include', // include, *same-origin, omit
+            headers: {
+                'Authorization' : userState.jwtToken,
+                'Content-Type'  : 'application/json',
+                
+            },
+        })
+        .then((res) => res.json())
+        .then((res) => {
+            
+            if(res.code ===  0){
+                setUserData(res.data)
+                
+            }else if(res.code === -13){
+                setUserData([])
+            }
+            
+
+        })
+        .catch((e) => console.log(e))
+      }
+  }
+
+  React.useEffect(()=>{
+      AddtoLocalUserAuth()
+  },[])
 
   return (
     <>
@@ -124,18 +240,21 @@ export default function AddMembersCode({ navigation }) {
                   </Pressable>
                 </View>
                 <View style={modalstyles.UserInfo}>
-                  <Image
-                    source={{
-                      uri: 'https://img.sbs.co.kr/newsnet/etv/upload/2021/04/23/30000684130_500.jpg',
-                    }}
-                    style={modalstyles.UserImg}
-                  />
+                  {modalUserData.profileImage !== null ? (
+                    <Image source={{ uri: modalUserData.profileImage }} style={modalstyles.UserImg} />
+                  ) : (
+                    <Image
+                      style={modalstyles.UserImg}
+                      source={require('../../../assets/img/SignUp/emptyProfile.png')}
+                    ></Image>
+                  )}
+                 
 
-                  <Text style={globalStyle.heading2}>김태리</Text>
+                  <Text style={globalStyle.heading2}>{modalUserData.name}</Text>
                   {userInfo.type === "MEMBER"?
                     null
                     :
-                    <Text style={globalStyle.body2}>(여, ??세)</Text>
+                    <Text style={globalStyle.body2}>({modalUserData.name}, ??세)</Text>
                   } 
                   <Text style={[globalStyle.body2, modalstyles.infoText]}>
                     {userInfo.type === "MEMBER"? 
@@ -159,7 +278,7 @@ export default function AddMembersCode({ navigation }) {
 
                     <Pressable
                       style={[modalstyles.button, modalstyles.buttonOpen, globalStyle.center]}
-                      onPress={() => setModalVisible(!modalVisible)}
+                      onPress={() => RelationPartner()}
                     >
                       <Text style={[globalStyle.button, modalstyles.btnText]}>
                         확인

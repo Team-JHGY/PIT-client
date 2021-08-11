@@ -199,6 +199,7 @@ export default function EditMyPage ({navigation,userData}) {
           console.log(res.data)
           if(res.code ===  0){
             alert("편집 완료했습니다.")
+            navigation.goBack()
           }else{
             alert("편집 실패했습니다.")
           }
@@ -235,6 +236,7 @@ export default function EditMyPage ({navigation,userData}) {
           console.log(res.data)
           if(res.code ===  0){
             alert("편집 완료했습니다.")
+            navigation.goBack()
           }else{
             alert("편집 실패했습니다.")
           }

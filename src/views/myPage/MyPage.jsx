@@ -37,11 +37,12 @@ export default function MyPage({navigation}) {
     //jwt token decode
     const splitJwt                        = userState.jwtToken.split(".")
     const userInfo                        = React.useState(JSON.parse(decode(splitJwt[1])))
-
+  
 
     const copyToClipboard = () => {
-            Clipboard.setString(String(userInfo[0].oAuthId))
-            toastRef.current.show('클립보드에 복사했습니다.');
+
+        Clipboard.setString(String(userData.user.code))
+        toastRef.current.show('클립보드에 복사했습니다.');
     };
 
     function AddtoLocalUserAuth(){
@@ -58,7 +59,7 @@ export default function MyPage({navigation}) {
             })
             .then((res) => res.json())
             .then((res) => {
-                console.log(res.data)
+                
                 if(res.code ===  0){
                     setUserData(res.data)
                     
@@ -82,7 +83,7 @@ export default function MyPage({navigation}) {
             })
             .then((res) => res.json())
             .then((res) => {
-                console.log(res.data)
+                
                 if(res.code ===  0){
                     setUserData(res.data)
                     
@@ -100,7 +101,7 @@ export default function MyPage({navigation}) {
         AddtoLocalUserAuth()
     },[])
 
-
+   
     return (
         <>
         <Toast ref={toastRef}
@@ -137,7 +138,7 @@ export default function MyPage({navigation}) {
                 </View>
                 
                 
-                {userInfo[0].type === "MEMBERS"?
+                {userInfo[0].type === "MEMBER"?
                     <Pressable 
                         style={[styles.myPageInfo, globalStyle.row, globalStyle.buttonLightGreen, styles.trainerBtn]}
                         onPress={() => {navigation.navigate('MyTrainers')}}
@@ -187,7 +188,9 @@ export default function MyPage({navigation}) {
                 <View style={[styles.myPageInfo, globalStyle.row]}>
                     <View style={globalStyle.col_1}>
                         <Text style={[globalStyle.heading2, styles.userName]}>{userInfo[0].type === "MEMBER"? "회원코드" : "트레이너 코드"}</Text>
-                        <Text style={[globalStyle.body2, styles.userNameInfo]}>{userInfo[0].oAuthId}</Text>
+                        <Text style={[globalStyle.body2, styles.userNameInfo]}>
+                            {userData.user.code}
+                        </Text>
                     </View>
                     <View style={globalStyle.col_1, styles.alignCenter}>
                         <Pressable

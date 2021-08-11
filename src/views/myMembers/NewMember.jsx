@@ -9,30 +9,103 @@ import { decode } from 'js-base64';
 
 // context
 import { UserContext } from '../../store/user'
-
+import config from "../../utils/config"
 
 export default function NewMembers({navigation}) {
     const [modalVisible, setModalVisible] = useState(false);
+    const [userData, setUserData]         = React.useState({
+
+        "createdAt": "",
+        "id": "",
+        "modifedAt": "",
+        "user": {
+            "accessToken": "",
+            "code": "",
+            "description": "",
+            "expiresIn": "",
+            "id": "",
+            "name": "",
+            "oauthId": "",
+            "profileImage": "",
+            "provider": "",
+            "refreshToken": "",
+            "type": "",
+        }
+    })
 
     const toastRef                        = useRef(); // toast ref 생성
     const { userState, userDispatch }     = useContext(UserContext)
     const splitJwt                        = userState.jwtToken.split(".")
     const userInfo                        = React.useState(JSON.parse(decode(splitJwt[1])))
 
-    React.useEffect(() => {
+    React.useEffect(()=>{
         AddtoLocalUserAuth()
-        console.log(userInfo[0].oAuthId)
     },[])
+    console.log(userInfo[0].sub)
 
     function copyToClipboard() {
-        Clipboard.setString(String(userInfo[0].oAuthId))
+        Clipboard.setString(String(userData.user.code))
         //alert("클립보드에 복사했습니다.")
         toastRef.current.show('클립보드에 복사했습니다.');
     };
 
+
     function AddtoLocalUserAuth(){
-  
+        console.log(userInfo[0].type)
+        if(userInfo[0].type === "MEMBER"){
+            
+            fetch(`${config.BASE_URL}/members/${userInfo[0].sub}`,{
+                method: 'GET', // *GET, POST, PUT, DELETE, etc.
+                cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                credentials: 'include', // include, *same-origin, omit
+                headers: {
+                    'Authorization' : userState.jwtToken,
+                    'Content-Type'  : 'application/json',
+                    
+                },
+            })
+            .then((res) => res.json())
+            .then((res) => {
+                console.log(res.data)
+                if(res.code ===  0){
+                    setUserData(res.data)
+                    
+                }else if(res.code === -13){
+                    setUserData([])
+                }
+                
+
+            })
+            .catch((e) => console.log(e))
+        }else{
+            fetch(`${config.BASE_URL}/trainers/${userInfo[0].sub}`,{
+                method: 'GET', // *GET, POST, PUT, DELETE, etc.
+                cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                credentials: 'include', // include, *same-origin, omit
+                headers: {
+                    'Authorization' : userState.jwtToken,
+                    'Content-Type'  : 'application/json',
+                    
+                },
+            })
+            .then((res) => res.json())
+            .then((res) => {
+                
+                if(res.code ===  0){
+                    setUserData(res.data)
+                    
+                }else if(res.code === -13){
+                    setUserData([])
+                }
+                
+
+            })
+            .catch((e) => console.log(e))
+        }
     }
+
+
+
 
     return (
         <>
@@ -85,7 +158,9 @@ export default function NewMembers({navigation}) {
                         <View style={modalstyles.UserInfo}>
 
                             
-                            <Text style={modalstyles.codeText}>{userInfo[0].oAuthId}</Text>
+                            <Text style={modalstyles.codeText}>
+                                {userData.user.code}
+                            </Text>
                             <Text style={[globalStyle.body2, globalStyle.textDartGery, styles.breakText]}>
                                 {userInfo.type === "MEMBER"?
                                     "회원코드를 클립보드에 복사했습니다.   트레이너 선생님에게 해당 코드를 공유해 회원 추가하도록 안내해 주세요."

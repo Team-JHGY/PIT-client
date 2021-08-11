@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useContext } from 'react'
+import React, {useContext } from 'react'
 import { StyleSheet, Text, View, SafeAreaView, Pressable, Image,ScrollView } from 'react-native'
 import globalStyle from '../../utils/globalStyle'
 import { Appbar } from 'react-native-paper';
@@ -17,10 +17,10 @@ export default function Members({navigation}) {
     const [userCount, setUserCount]     = React.useState(1);
     const [isNew, setIsNew]             = React.useState("Y");
     const [userData, setUserData]       = React.useState([])
-    const { userState, userDispatch } = useContext(UserContext)
-    const splitJwt = userState.jwtToken.split(".")
-    const userInfo = JSON.parse(decode(splitJwt[1]))
-
+    const { userState, userDispatch }   = useContext(UserContext)
+    const splitJwt                      = userState.jwtToken.split(".")
+    const userInfo                      = JSON.parse(decode(splitJwt[1]))
+    
 
     React.useEffect(()=>{
         //비동기로 멤버 리스트 불러오기
@@ -30,7 +30,7 @@ export default function Members({navigation}) {
 
     async function MemberList(token) {
         if(userInfo.type === "TRAINER"){
-            await fetch(`${config.BASE_URL}/partners/${userInfo.sub}/trainers`,{
+            await fetch(`${config.BASE_URL}/partners/${userInfo.sub}/members`,{
                 method: 'GET', // *GET, POST, PUT, DELETE, etc.
                 cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
                 credentials: 'include', // include, *same-origin, omit
@@ -53,7 +53,7 @@ export default function Members({navigation}) {
             })
             .catch((e) => console.log(e))  
         }else{
-            await fetch(`${config.BASE_URL}/partners/${userInfo.sub}/members`,{
+            await fetch(`${config.BASE_URL}/partners/${userInfo.sub}/trainers`,{
                 method: 'GET', // *GET, POST, PUT, DELETE, etc.
                 cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
                 credentials: 'include', // include, *same-origin, omit
@@ -65,9 +65,13 @@ export default function Members({navigation}) {
             })
             .then((res) => res.json())
             .then((res) => {
-                console.log(res)
+                
                 if(res.code ===  0){
+                    res.data.forEach((item) => {
+                        item.modifedAt = item.modifedAt.split("T")[0].replace(/-/gi, ".")
+                    })
                     setUserData(res.data)
+                    console.log(res.data)
                 }else if(res.code === -13){
                     setUserData([])
                 }
@@ -78,6 +82,7 @@ export default function Members({navigation}) {
         }
         
     }
+
 
     return (
         <>
@@ -111,23 +116,46 @@ export default function Members({navigation}) {
                         return (
                             <View key={index} style={[globalStyle.row, styles.userInfo]}>
                                 <View>
-                                    <Image source={{uri:'https://img.sbs.co.kr/newsnet/etv/upload/2021/04/23/30000684130_500.jpg'}} style={[styles.userImg]}/>
+                                    {item.user.profileImage !== null ? (
+                                        <Image source={{ uri: item.user.profileImage }} style={styles.userImg} />
+                                    ) : (
+                                        <Image
+                                        style={styles.userImg}
+                                        source={require('../../../assets/img/SignUp/emptyProfile.png')}
+                                        ></Image>
+                                    )}
+                                    
                                 </View>
                                 
                                 <View style={globalStyle.col_2}>
-                                    <Text style={[globalStyle.body2,styles.textmargin]}>김회원 (남, 23세)</Text>
-                                    <Text style={[globalStyle.body2, globalStyle.textDartGery,styles.textmargin]}>2021.06.13 등록</Text>
+                                    <Text style={[globalStyle.body2,styles.textmargin]}>
+                                        {item.user.name} 
+                                        (
+                                            {userData.gender === "MAN"? "남":"여"},   
+                                            {new Date().getFullYear() - new Date(item.birthday).getFullYear()}세 
+                                        )
+                                    </Text>
+                                    <Text style={[globalStyle.body2, globalStyle.textDartGery,styles.textmargin]}>
+                                        {item.modifedAt === null? "null": item.modifedAt.split("T")[0].replace(/-/gi, ".")} 등록
+                                    </Text>
                                 </View>
-                                {isNew === "Y"? 
+                                {   item.modifedAt !== null && 
+                                    new Date().getFullYear() === new Date(item.modifedAt).getFullYear() && 
+                                    new Date().getMonth() === new Date(item.modifedAt).getMonth() && 
+                                    new Date().getDate() === new Date(item.modifedAt).getDate() ? 
                                     <>
                                     <View style={styles.newMark}>
                                         <Text style={[globalStyle.body2, globalStyle.textDimmedGrey, styles.newMarkText]}>
                                             N
                                         </Text>
                                     </View>
-                                    <Text style={[globalStyle.body2, globalStyle.textDimmedGrey, styles.date, styles.greenText,styles.textmargin]}>06.13</Text>
+                                    <Text style={[globalStyle.body2, globalStyle.textDimmedGrey, styles.date, styles.greenText,styles.textmargin]}>
+                                        {item.modifedAt === null? "null": item.modifedAt.split("T")[0].replace(/-/gi, ".").slice(5)}
+                                    </Text>
                                     </>
-                                    :<Text style={[globalStyle.body2, globalStyle.textDimmedGrey, styles.date]}>06.13</Text>
+                                    :<Text style={[globalStyle.body2, globalStyle.textDimmedGrey, styles.date]}>
+                                        {item.modifedAt === null? "null": item.modifedAt.split("T")[0].replace(/-/gi, ".").slice(5)}
+                                    </Text>
                                 }
                                 
                             </View>
