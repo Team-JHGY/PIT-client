@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, Text, View, SafeAreaView, Pressable, Image, ScrollView, AsyncStorage } from 'react-native'
+import { StyleSheet, Text, View, SafeAreaView, Pressable, Image, ScrollView } from 'react-native'
 import Clipboard from "expo-clipboard"
 import globalStyle from '../../utils/globalStyle'
 import { Appbar } from 'react-native-paper'

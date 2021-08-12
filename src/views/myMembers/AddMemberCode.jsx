@@ -7,8 +7,7 @@ import {
   Pressable,
   Image,
   TextInput,
-  Modal,
-  AsyncStorage
+  Modal
 } from 'react-native'
 import globalStyle from '../../utils/globalStyle'
 import { Appbar } from 'react-native-paper'
@@ -26,6 +25,7 @@ export default function AddMembersCode({ navigation }) {
   const [modalVisible, setModalVisible]     = useState(false)
   const [disableBtn, setDisableBtn]         = useState(false)
   const [modalUserData, setModalUserData]   = React.useState([])
+  const [modalBirth, setBrith]              = React.useState()
   const [userData, setUserData]             = React.useState({
 
     "createdAt": "",
@@ -69,9 +69,9 @@ export default function AddMembersCode({ navigation }) {
     }
   }
 
-  function AddCodePartners(){
+  async function AddCodePartners(){
 
-    fetch(`${config.BASE_URL}/users/code/${text}`,{
+    await fetch(`${config.BASE_URL}/users/code/${text}`,{
         method: 'GET', // *GET, POST, PUT, DELETE, etc.
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
         credentials: 'include', // include, *same-origin, omit
@@ -87,6 +87,37 @@ export default function AddMembersCode({ navigation }) {
         if(res.code ===  0){
           setModalVisible(true)
           setModalUserData(res.data)
+          if(userInfo[0].type !== "MEMBER"){
+            SearchMemberInfo(res.data.id)
+          }
+          
+            //완료
+            //navigation.goBack()
+        }else if(res.code === -13){
+            alert(res.data)
+        }
+    })
+    .catch((e) => console.log(e))
+
+  }
+
+  async function SearchMemberInfo(id){
+    console.log(id)
+    await fetch(`${config.BASE_URL}/members/${id}`,{
+      method: 'GET', // *GET, POST, PUT, DELETE, etc.
+      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: 'include', // include, *same-origin, omit
+      headers: {
+          'Authorization' : userState.jwtToken,
+          'Content-Type'  : 'application/json',
+          
+      },
+    })
+    .then((res) => res.json())
+    .then((res) => {
+        console.log("test",res)
+        if(res.code ===  0){
+          setBrith(res.data.birthday)
             //완료
             //navigation.goBack()
         }else if(res.code === -13){
@@ -132,6 +163,7 @@ export default function AddMembersCode({ navigation }) {
           alert("완료 되었습니다.")
           //완료
           navigation.goBack()
+          
           //초기화
           bodyForm.length = 0;
         }else if(res.code === -13){
@@ -158,10 +190,10 @@ export default function AddMembersCode({ navigation }) {
         .then((res) => {
             
             if(res.code ===  0){
-                setUserData(res.data)
+              setUserData(res.data)
                 
             }else if(res.code === -13){
-                setUserData([])
+              setUserData([])
             }
             
 
@@ -206,7 +238,7 @@ export default function AddMembersCode({ navigation }) {
           <Image source={arrow_left} style={globalStyle.title} />
         </Pressable>
         <Appbar.Content 
-          title={userInfo.type === "MEMBER"? "트레이너코드 입력으로 ":"회원코드 입력으로 추가"} 
+          title={userInfo[0].type === "MEMBER"? "트레이너코드 입력으로 ":"회원코드 입력으로 추가"} 
           titleStyle={[globalStyle.header,globalStyle.center]} 
         />
       </Appbar.Header>
@@ -226,7 +258,7 @@ export default function AddMembersCode({ navigation }) {
               <View style={modalstyles.modalView}>
                 <View style={modalstyles.row}>
                   <Text style={[globalStyle.heading2, modalstyles.headerText]}>
-                    {userInfo.type === "MEMBER"? 
+                    {userInfo[0].type === "MEMBER"? 
                       "트레이너 확인"
                       :
                       "회원확인"
@@ -251,13 +283,18 @@ export default function AddMembersCode({ navigation }) {
                  
 
                   <Text style={globalStyle.heading2}>{modalUserData.name}</Text>
-                  {userInfo.type === "MEMBER"?
+                  {userInfo[0].type === "MEMBER"?
                     null
                     :
-                    <Text style={globalStyle.body2}>({modalUserData.name}, ??세)</Text>
+                    <Text style={globalStyle.body2}>
+                      (
+                        {modalUserData.name},
+                        {new Date().getFullYear() - new Date(modalBirth).getFullYear()}세
+                      )
+                    </Text>
                   } 
                   <Text style={[globalStyle.body2, modalstyles.infoText]}>
-                    {userInfo.type === "MEMBER"? 
+                    {userInfo[0].type === "MEMBER"? 
                       "추가하려는 트레이너 선생님이 맞는지 확인해주세요."
                       :
                       "추가하려는 회원님이 맞는지 확인해주세요."
@@ -290,12 +327,12 @@ export default function AddMembersCode({ navigation }) {
             </View>
           </Modal>
 
-          <Text style={globalStyle.heading2}>{userInfo.type === "MEMBER"? "트레이너 코드":"회원 코드"}</Text>
+          <Text style={globalStyle.heading2}>{userInfo[0].type === "MEMBER"? "트레이너 코드":"회원 코드"}</Text>
           
           <TextInput style={styles.input} onChangeText={(text)=>RegCheckName(text)} value={text} />
 
           <Text style={styles.infoText}>
-          {userInfo.type === "MEMBER"?
+          {userInfo[0].type === "MEMBER"?
             "추가하려는 트레이너님의 앱 마이 > 트레이너 코드에서 확인할 수 있습니다."
             :
             "추가하려는 회원님의 앱에서 마이 > 회원코드에서 회원코드를 확인할 수 있습니다."

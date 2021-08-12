@@ -17,20 +17,28 @@ export default function Members({navigation}) {
     const [userCount, setUserCount]     = React.useState(1);
     const [isNew, setIsNew]             = React.useState("Y");
     const [userData, setUserData]       = React.useState([])
+    const [reloadFunc, setReload]       = React.useState("true")
     const { userState, userDispatch }   = useContext(UserContext)
     const splitJwt                      = userState.jwtToken.split(".")
-    const userInfo                      = JSON.parse(decode(splitJwt[1]))
-    
+    const userInfo                      = React.useState(JSON.parse(decode(splitJwt[1])))
+
 
     React.useEffect(()=>{
-        //비동기로 멤버 리스트 불러오기
         MemberList(userState.jwtToken)
     },[])
 
+    React.useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            MemberList(userState.jwtToken)
+        });
+        return unsubscribe;
+    }, [navigation]);
+
+    
 
     async function MemberList(token) {
-        if(userInfo.type === "TRAINER"){
-            await fetch(`${config.BASE_URL}/partners/${userInfo.sub}/members`,{
+        if(userInfo[0].type === "TRAINER"){
+            await fetch(`${config.BASE_URL}/partners/${userInfo[0].sub}/members`,{
                 method: 'GET', // *GET, POST, PUT, DELETE, etc.
                 cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
                 credentials: 'include', // include, *same-origin, omit
@@ -42,18 +50,19 @@ export default function Members({navigation}) {
             })
             .then((res) => res.json())
             .then((res) => {
-                console.log(res)
+                console.log(res.data)
                 if(res.code ===  0){
                     setUserData(res.data)
+                    
                 }else if(res.code === -13){
                     setUserData([])
                 }
                 
-
+                setReload(false)
             })
             .catch((e) => console.log(e))  
         }else{
-            await fetch(`${config.BASE_URL}/partners/${userInfo.sub}/trainers`,{
+            await fetch(`${config.BASE_URL}/partners/${userInfo[0].sub}/trainers`,{
                 method: 'GET', // *GET, POST, PUT, DELETE, etc.
                 cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
                 credentials: 'include', // include, *same-origin, omit
@@ -71,11 +80,11 @@ export default function Members({navigation}) {
                         item.modifedAt = item.modifedAt.split("T")[0].replace(/-/gi, ".")
                     })
                     setUserData(res.data)
-                    console.log(res.data)
+                    
                 }else if(res.code === -13){
                     setUserData([])
                 }
-                
+                setReload(false)
 
             })
             .catch((e) => console.log(e))

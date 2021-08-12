@@ -24,8 +24,14 @@ export default function MyTrainers({navigation}) {
 
     React.useEffect(() =>{
         MyTrainersList(userState.jwtToken)
-       
     },[])
+
+    React.useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            MyTrainersList(userState.jwtToken)
+        });
+        return unsubscribe;
+    }, [navigation]);
 
     async function MyTrainersList(token){
         await fetch(`${config.BASE_URL}/partners/${userInfo[0].sub}/trainers`,{

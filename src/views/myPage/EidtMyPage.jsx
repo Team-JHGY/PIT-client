@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, StyleSheet, Image, Platform, AsyncStorage, Pressable,SafeAreaView, ScrollView } from 'react-native'
+import { View, Text, StyleSheet, Image, Platform, Pressable,SafeAreaView, ScrollView } from 'react-native'
 import { WithLocalSvg } from 'react-native-svg'
 import { Appbar } from 'react-native-paper'
 import * as ImagePicker from 'expo-image-picker'
@@ -27,11 +27,11 @@ export default function EditMyPage ({navigation,userData}) {
   const [gender, setGender]             = React.useState('M')
   const { userState, userDispatch }     = React.useContext(UserContext)
   const splitJwt                        = userState.jwtToken.split(".")
-  const userInfo                        = JSON.parse(decode(splitJwt[1]))
+  const userInfo                        = React.useState(JSON.parse(decode(splitJwt[1])))
 
   function AddtoLocalUserAuth(){
-    if(userInfo.type === "MEMBER"){
-        fetch(`${config.BASE_URL}/members/${userInfo.sub}`,{
+    if(userInfo[0].type === "MEMBER"){
+        fetch(`${config.BASE_URL}/members/${userInfo[0].sub}`,{
             method: 'GET', // *GET, POST, PUT, DELETE, etc.
             cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
             credentials: 'include', // include, *same-origin, omit
@@ -57,7 +57,7 @@ export default function EditMyPage ({navigation,userData}) {
         })
         .catch((e) => console.log(e))
     }else{
-        fetch(`${config.BASE_URL}/trainers/${userInfo.sub}`,{
+        fetch(`${config.BASE_URL}/trainers/${userInfo[0].sub}`,{
             method: 'GET', // *GET, POST, PUT, DELETE, etc.
             cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
             credentials: 'include', // include, *same-origin, omit
@@ -109,6 +109,7 @@ export default function EditMyPage ({navigation,userData}) {
   }, [name])
 
   const pickImage = async () => {
+    
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
@@ -116,26 +117,35 @@ export default function EditMyPage ({navigation,userData}) {
       quality: 1,
     })
 
+    let smallresult = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.3,
+    })
 
-    console.log(result)
+
+    
     const imageValue = {
-      uri:result.uri,
-      name:"test",
-      type:"image/jpeg"
+      uri   : result.uri,
+      name  : "test",
+      type  : "image/jpeg"
     }
-    console.log(imageValue)
+    const smallimageValue = {
+      uri   : smallresult.uri,
+      name  : "test",
+      type  : "image/jpeg"
+    }
+    
 
    
     const formData = new FormData()
-    formData.append("profile", imageValue)
-    formData.append("thumbnail", imageValue)
-    console.log(userState.jwtToken)
-
-    
+      formData.append("profile", imageValue)
+      formData.append("thumbnail", smallimageValue)
       setImage(result.uri)
       
-      fetch(`${config.BASE_URL}/profile-image/${userInfo.id}`,formData,{
-        method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      fetch(`${config.BASE_URL}/profile-image/${userInfo[0].sub}`,formData,{
+        method  : 'POST', // *GET, POST, PUT, DELETE, etc.
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
         credentials: 'include', // include, *same-origin, omit
         headers: {
@@ -146,9 +156,9 @@ export default function EditMyPage ({navigation,userData}) {
       })
       .then((res) => res.json())
       .then((res) => {
-          console.log(res)
-          
-          
+        if(res.code !== 0){
+          alert(res.data)
+        }
 
       })
       .catch((e) => console.log(e))
@@ -170,7 +180,7 @@ export default function EditMyPage ({navigation,userData}) {
   }
 
   function EditMyinfo(){
-    if(userInfo.type === "MEMBER"){
+    if(userInfo[0].type === "MEMBER"){
       console.log({
         "name"        : name,
         "gender"      : gender,
@@ -178,7 +188,7 @@ export default function EditMyPage ({navigation,userData}) {
         "description" : intro
         
       })
-      fetch(`${config.BASE_URL}/members/${userInfo.sub}`,{
+      fetch(`${config.BASE_URL}/members/${userInfo[0].sub}`,{
           method: 'PATCH', // *GET, POST, PUT, DELETE, etc.
           cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
           credentials: 'include', // include, *same-origin, omit
@@ -199,6 +209,7 @@ export default function EditMyPage ({navigation,userData}) {
           console.log(res.data)
           if(res.code ===  0){
             alert("편집 완료했습니다.")
+            //AsyncStorage.setItem('reload', "true")
             navigation.goBack()
           }else{
             alert("편집 실패했습니다.")
@@ -215,7 +226,7 @@ export default function EditMyPage ({navigation,userData}) {
         "description" : intro
         
       })
-      fetch(`${config.BASE_URL}/trainers/${userInfo.sub}`,{
+      fetch(`${config.BASE_URL}/trainers/${userInfo[0].sub}`,{
           method: 'PATCH', // *GET, POST, PUT, DELETE, etc.
           cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
           credentials: 'include', // include, *same-origin, omit
@@ -236,6 +247,7 @@ export default function EditMyPage ({navigation,userData}) {
           console.log(res.data)
           if(res.code ===  0){
             alert("편집 완료했습니다.")
+            //AsyncStorage.setItem('reload', "true")
             navigation.goBack()
           }else{
             alert("편집 실패했습니다.")
@@ -298,7 +310,7 @@ export default function EditMyPage ({navigation,userData}) {
             setInput={(name) => RegCheckName(name)}
           />
         </View>
-        { userInfo.type === "TRAINER"?
+        { userInfo[0].type === "TRAINER"?
           null
           :
           <>
@@ -359,7 +371,7 @@ export default function EditMyPage ({navigation,userData}) {
           />
         </View>
         <Text style={styles.notificationText}>
-          {userInfo.type === "MEMBER"?  "나의 트레이너에게 보여지는 정보입니다." : "나의 회원들에게 보여지는 정보입니다."}
+          {userInfo[0].type === "MEMBER"?  "나의 트레이너에게 보여지는 정보입니다." : "나의 회원들에게 보여지는 정보입니다."}
         </Text>
         
           <ButtonLarge name={'편집완료'} isEnable={buttonEnable} onPress={()=>EditMyinfo()} />
