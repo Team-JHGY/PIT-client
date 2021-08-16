@@ -25,14 +25,19 @@ import {
 import cross from '../../../assets/cross.png'
 import Asterisk from '../../../assets/icon/asterisk.svg'
 
-const AddSchedule = ({ navigation }) => {
+const AddSchedule = ({ navigation, route }) => {
+  // mode
+  const { mode } = route.params
+  // state
   const [isModal, setIsModal] = useState(false)
+  const [isUpdateConfirmModal, setIsUpdateConfirmModal] = useState(false)
   const [isScheduleChooseModal, setIsScheduleChooseModal] = useState(false)
   const [isRepeatModal, setIsRepeatModal] = useState(false)
-  const [clickButton, setClickButton] = useState(1)
+  const [clickButton, setClickButton] = useState(2)
   const [member, setMember] = useState('수업 또는 비수업을 선택해주세요.')
   const [memberIdx, setMemberIdx] = useState(1)
   const [repeatOptionIdx, setRepeatOptionIdx] = useState(1)
+
   // datetimepicker - 날짜
   const [date, setDate] = useState(new Date())
   const [show, setShow] = useState(false)
@@ -92,11 +97,11 @@ const AddSchedule = ({ navigation }) => {
           closeModal={() => {
             setIsModal(false)
           }}
-          goBackPage={() => {
+          clickEvent={() => {
             navigation.goBack()
           }}
           title={'일정 등록 취소'}
-          body={'일정 등록을 취소하고 나가시겠어요?'}
+          body={'일정 등록을 취소하고 나가시겠어요?\n모든 데이터가 지워질 수 있어요.'}
           buttonTitle={'일정 등록 취소하기'}
         />
       )}
@@ -117,6 +122,23 @@ const AddSchedule = ({ navigation }) => {
           }}
           setRepeatOptionIdx={(option) => setRepeatOptionIdx(option)}
           repeatOptionIdx={repeatOptionIdx}
+        />
+      )}
+      {isUpdateConfirmModal && (
+        <ModalDialog
+          closeModal={() => {
+            setIsUpdateConfirmModal(false)
+          }}
+          clickEvent={() => {
+            // 수정 api 호출
+
+            // 성공이면
+            setIsUpdateConfirmModal(false)
+            navigation.goBack()
+          }}
+          title={'스케쥴 수정'}
+          body={'반복 일정이 포함되어 있어,\n이후 일정을 모두 변경하게 됩니다.'}
+          buttonTitle={'수정하기'}
         />
       )}
       {show && (
@@ -150,10 +172,17 @@ const AddSchedule = ({ navigation }) => {
         />
       )}
       <Appbar.Header style={globalStyle.titleAppbar}>
-        <Appbar.Content
-          title={'스케쥴 등록'}
-          titleStyle={[globalStyle.heading1, globalStyle.center]}
-        />
+        {mode === 'create' ? (
+          <Appbar.Content
+            title={'스케쥴 등록'}
+            titleStyle={[globalStyle.heading1, globalStyle.center]}
+          />
+        ) : (
+          <Appbar.Content
+            title={'스케쥴 수정'}
+            titleStyle={[globalStyle.heading1, globalStyle.center]}
+          />
+        )}
 
         <Pressable
           style={[globalStyle.header, globalStyle.absoluteRight]}
@@ -170,6 +199,7 @@ const AddSchedule = ({ navigation }) => {
             clickEvent={() => {
               setIsScheduleChooseModal(true)
             }}
+            mode={mode}
           />
           <SelectBoxField
             title={'날짜'}
@@ -184,6 +214,7 @@ const AddSchedule = ({ navigation }) => {
               ')'
             }
             clickEvent={showDatepicker}
+            mode={mode}
           />
           <View style={{ flexDirection: 'row' }}>
             <View style={{ flex: 1, marginRight: 5 }}>
@@ -191,6 +222,7 @@ const AddSchedule = ({ navigation }) => {
                 title={'시작 시간'}
                 input={getTimeOfDate(fromTime)}
                 clickEvent={showFromTimepicker}
+                mode={mode}
               />
             </View>
             <View style={{ flex: 1, marginLeft: 5 }}>
@@ -198,6 +230,7 @@ const AddSchedule = ({ navigation }) => {
                 title={'끝 시간'}
                 input={getTimeOfDate(toTime)}
                 clickEvent={showToTimepicker}
+                mode={mode}
               />
             </View>
           </View>
@@ -213,18 +246,21 @@ const AddSchedule = ({ navigation }) => {
               isFirst={true}
               isFocus={clickButton === 1 ? true : false}
               clickEvent={() => setClickButton(1)}
+              mode={mode}
             />
             <Chip
               title={'매일'}
               isFirst={false}
               isFocus={clickButton === 2 ? true : false}
               clickEvent={() => setClickButton(2)}
+              mode={mode}
             />
             <Chip
               title={'매주'}
               isFirst={false}
               isFocus={clickButton === 3 ? true : false}
               clickEvent={() => setClickButton(3)}
+              mode={mode}
             />
           </View>
           {clickButton !== 1 && (
@@ -237,12 +273,30 @@ const AddSchedule = ({ navigation }) => {
                   clickEvent={() => {
                     setIsRepeatModal(true)
                   }}
+                  mode={mode}
                 />
               </View>
             </View>
           )}
         </View>
-        <ButtonLarge name={'등록'} isEnable={buttonEnable} />
+        {mode === 'create' ? (
+          <ButtonLarge name={'등록'} isEnable={buttonEnable} />
+        ) : (
+          <ButtonLarge
+            name={'수정'}
+            isEnable={true}
+            onPress={() => {
+              if (clickButton === 0) {
+                // 스케쥴 수정 api
+
+                // 성공이면
+                navigation.goBack()
+              } else {
+                setIsUpdateConfirmModal(true)
+              }
+            }}
+          />
+        )}
       </View>
     </SafeAreaView>
   )

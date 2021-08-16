@@ -83,7 +83,7 @@ const ScheduleChooseModal = ({ closeModal, chooseMember, memberIdx, setMemberIdx
             paddingBottom: '4.54%',
           }}
         >
-          <CancelButton clickEvent={closeModal} />
+          <CancelButton clickEvent={closeModal} buttonTitle={'취소'} />
           <ConfirmButton
             chooseMember={chooseMember}
             closeModal={closeModal}

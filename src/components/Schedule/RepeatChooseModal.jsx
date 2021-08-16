@@ -66,7 +66,7 @@ const RepeatChooseModal = ({ closeModal, repeatOptionIdx, setRepeatOptionIdx }) 
             paddingBottom: '4.54%',
           }}
         >
-          <CancelButton clickEvent={closeModal} />
+          <CancelButton clickEvent={closeModal} buttonTitle={'취소'} />
           <ConfirmButton
             closeModal={closeModal}
             setRepeatOptionIdx={setRepeatOptionIdx}

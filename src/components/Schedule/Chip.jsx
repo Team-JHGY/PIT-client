@@ -1,8 +1,8 @@
 import React from 'react'
 import { View, Text, Pressable, StyleSheet } from 'react-native'
 import globalStyle from '../../utils/globalStyle'
-const Chip = ({ title, isFirst, isFocus, clickEvent }) => {
-  const chipStyle = (isFirst, isFocus) => {
+const Chip = ({ title, isFirst, isFocus, clickEvent, mode }) => {
+  const getChipStyle = (isFirst, isFocus) => {
     if (isFirst === false && isFocus === false)
       return {
         marginLeft: '2.22%',
@@ -27,11 +27,25 @@ const Chip = ({ title, isFirst, isFocus, clickEvent }) => {
       }
     }
   }
+  const getUpdateChipStyle = (mode, isFocus) => {
+    if (mode === 'update') {
+      if (isFocus === true) {
+        return {
+          backgroundColor: '#00D98B',
+        }
+      } else {
+        return {
+          backgroundColor: '#F9F9F9',
+          borderColor: '#E9E9E9',
+        }
+      }
+    }
+  }
   return (
-    <View style={[styles.body, chipStyle(isFirst, isFocus)]}>
+    <View style={[styles.body, getChipStyle(isFirst, isFocus), getUpdateChipStyle(mode, isFocus )]}>
       <Pressable
         onPress={() => {
-          clickEvent()
+          if (mode === 'create') clickEvent()
         }}
       >
         <Text style={styles.text}>{title}</Text>

@@ -4,7 +4,15 @@ import { WithLocalSvg } from 'react-native-svg'
 import globalStyle from '../../utils/globalStyle'
 import Asterisk from '../../../assets/icon/asterisk.svg'
 import selectArrow from '../../../assets/img/Schedule/selectArrow.svg'
-const SelectBoxField = ({ title, input, clickEvent, isTextAdded, addedText }) => {
+const SelectBoxField = ({ title, input, clickEvent, isTextAdded, addedText, mode }) => {
+  const getSelectBoxFieldStyle = (mode) => {
+    if (mode === 'update' && (title === '스케쥴 선택' || title === '반복 횟수 선택')) {
+      return {
+        backgroundColor: '#F9F9F9',
+        borderColor: '#D8E4F1',
+      }
+    }
+  }
   return (
     <View>
       <View style={styles.titleWrapper}>
@@ -16,11 +24,13 @@ const SelectBoxField = ({ title, input, clickEvent, isTextAdded, addedText }) =>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <Pressable
           onPress={() => {
-            clickEvent()
+            if (mode !== 'update' || (title !== '스케쥴 선택' && title !== '반복 횟수 선택')) {
+              clickEvent()
+            }
           }}
           style={{ flex: 1 }}
         >
-          <View style={styles.selectField}>
+          <View style={[styles.selectField, getSelectBoxFieldStyle(mode)]}>
             <Text>{input}</Text>
             <View style={{ marginLeft: 'auto', marginRight: '6.25%' }}>
               <WithLocalSvg asset={selectArrow} />

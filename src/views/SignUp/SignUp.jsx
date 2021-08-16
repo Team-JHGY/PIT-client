@@ -16,11 +16,11 @@ const SignUpView = ({ navigation }) => {
           closeModal={() => {
             setIsModal(false)
           }}
-          goBackPage={() => {
+          clickEvent={() => {
             navigation.goBack()
           }}
           title={'회원가입 취소'}
-          body={'회원가입을 취소하고 나가시겠어요?'}
+          body={'회원가입을 취소하고 나가시겠어요?\n모든 데이터가 지워질 수 있어요.'}
           buttonTitle={'회원가입 취소하기'}
         />
       )}

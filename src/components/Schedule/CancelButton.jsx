@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, Text, StyleSheet, Pressable } from 'react-native'
 import globalStyle from '../../utils/globalStyle'
-const CancelButton = ({ clickEvent }) => {
+const CancelButton = ({ clickEvent, buttonTitle }) => {
   return (
     <View style={styles.button}>
       <Pressable
@@ -9,7 +9,7 @@ const CancelButton = ({ clickEvent }) => {
           clickEvent()
         }}
       >
-        <Text style={styles.text}>{'취소'}</Text>
+        <Text style={styles.text}>{buttonTitle}</Text>
       </Pressable>
     </View>
   )

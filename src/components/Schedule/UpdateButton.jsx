@@ -1,21 +1,18 @@
 import React from 'react'
-import { View, Text, StyleSheet, Pressable } from 'react-native'
+import { View, StyleSheet, Pressable, Text } from 'react-native'
+
+//utils
 import globalStyle from '../../utils/globalStyle'
-const ConfirmButton = ({ chooseMember, closeModal, setMemberIdx, setRepeatOptionIdx, item }) => {
+
+const UpdateButton = ({ clickEvent }) => {
   return (
     <View style={styles.button}>
       <Pressable
         onPress={() => {
-          if (setMemberIdx !== undefined) {
-            chooseMember(item.title)
-            setMemberIdx(item.id)
-          } else if (setRepeatOptionIdx !== undefined) {
-            setRepeatOptionIdx(item.id)
-          }
-          closeModal()
+          clickEvent()
         }}
       >
-        <Text style={styles.text}>{'확인'}</Text>
+        <Text style={styles.text}>{'수정'}</Text>
       </Pressable>
     </View>
   )
@@ -25,7 +22,8 @@ const styles = StyleSheet.create({
   button: {
     borderStyle: 'solid',
     borderRadius: 10,
-    backgroundColor: '#2AFF91',
+    borderColor: '#C2C7CC',
+    borderWidth: 2,
     height: '100%',
     flex: 1,
     justifyContent: 'center',
@@ -39,7 +37,7 @@ const styles = StyleSheet.create({
     lineHeight: 25,
     fontStyle: 'normal',
     fontWeight: 'normal',
-    color: '#000000',
   },
 })
-export default ConfirmButton
+
+export default UpdateButton

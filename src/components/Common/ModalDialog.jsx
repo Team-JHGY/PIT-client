@@ -5,7 +5,7 @@ import ButtonLarge from './ButtonLarge'
 import globalStyle from '../../utils/globalStyle'
 import CloseIcon from '../../../assets/icon/Common/closeIcon.svg'
 
-const ModalDialog = ({ closeModal, goBackPage, title, body, buttonTitle }) => {
+const ModalDialog = ({ closeModal, clickEvent, title, body, buttonTitle }) => {
   return (
     <View style={styles.body}>
       <View style={styles.modalDialog}>
@@ -17,10 +17,9 @@ const ModalDialog = ({ closeModal, goBackPage, title, body, buttonTitle }) => {
         </View>
         <View style={styles.textWrapper}>
           <Text style={styles.text}>{body}</Text>
-          <Text style={styles.text}>모든 데이터가 지워질 수 있어요.</Text>
         </View>
 
-        <ButtonLarge name={buttonTitle} isEnable={true} onPress={goBackPage}></ButtonLarge>
+        <ButtonLarge name={buttonTitle} isEnable={true} onPress={clickEvent}></ButtonLarge>
       </View>
     </View>
   )
