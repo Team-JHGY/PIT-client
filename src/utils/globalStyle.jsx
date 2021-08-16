@@ -107,7 +107,7 @@ export default StyleSheet.create({
     borderRadius: 5,
     borderWidth: 1,
     borderColor: '#eee',
-    alignItems: "center",
+    alignItems: 'center',
     textAlign: 'center',
     justifyContent: 'center',
   },
@@ -131,7 +131,7 @@ export default StyleSheet.create({
   appbarBtnText: {
     fontFamily: 'NotoSansKRMedium',
     fontSize: 14,
-    alignItems: "center",
+    alignItems: 'center',
     color: '#5A5757',
     textAlign: 'center',
     justifyContent: 'center',
@@ -192,7 +192,7 @@ export default StyleSheet.create({
   },
   BasicBtn: {
     width: '100%',
-    height:60,
+    height: 60,
     borderRadius: 10,
     backgroundColor: '#2AFF91',
   },
@@ -207,20 +207,20 @@ export default StyleSheet.create({
     fontFamily: 'NotoSansKRBold',
     fontSize: 18,
   },
-  center:{
+  center: {
     textAlign: 'center',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  absolute:{
-    position:"absolute",
-    margin:10,
-    zIndex: 99999
+  absolute: {
+    position: 'absolute',
+    margin: 10,
+    zIndex: 99999,
   },
-  absoluteRight:{
-    position:"absolute",
-    margin:10,
-    right:0,
-    zIndex: 99999
-  }
+  absoluteRight: {
+    position: 'absolute',
+    margin: 10,
+    right: 0,
+    zIndex: 99999,
+  },
 })
