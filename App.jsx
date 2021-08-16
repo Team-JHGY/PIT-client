@@ -46,6 +46,8 @@ export function BottomNav() {
 
   const { role } = userState
 
+
+
   return (
     <Tab.Navigator
       style={styles.bottomNavMain}

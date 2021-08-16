@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import ButtonLarge from '../../components/Common/ButtonLarge'
-import { Text, StyleSheet, View, Pressable, AsyncStorage } from 'react-native'
+import { Text, StyleSheet, View, Pressable } from 'react-native'
 
 import { WithLocalSvg } from 'react-native-svg'
 import { Appbar } from 'react-native-paper'

@@ -46,7 +46,7 @@ export default function SignUpStep2(props) {
 
   //jwt token decode
   const splitJwt = userState.jwtToken.split(".")
-  const userInfo = JSON.parse(decode(splitJwt[1]))
+  const userInfo = React.useState(JSON.parse(decode(splitJwt[1])))
 
   useEffect(() => {
     ;(async () => {
@@ -61,10 +61,10 @@ export default function SignUpStep2(props) {
   }, [])
 
   useEffect(() => {
-    if (userInfo.type === "TRAINER") {
+    if (userInfo[0].type === "TRAINER") {
       if (name.length > 0) setButtonEnable(true)
       else setButtonEnable(false)
-    } else if (userInfo.type === "MEMBER") {
+    } else if (userInfo[0].type === "MEMBER") {
       if (name.length > 0 && birthday.length == 8) setButtonEnable(true)
       else setButtonEnable(false)
     }
@@ -99,7 +99,7 @@ export default function SignUpStep2(props) {
           <Image source={arrow_left} style={globalStyle.title} />
         </Pressable>
         <Appbar.Content
-          title={userInfo.type === "MEMBER" ? '회원으로 가입' : '트레이너로 가입'}
+          title={userInfo[0].type === "MEMBER" ? '회원으로 가입' : '트레이너로 가입'}
           titleStyle={styles.appbarTitle}
         />
         <Pressable
@@ -115,7 +115,7 @@ export default function SignUpStep2(props) {
         ) : (
           <Image
             style={
-              userInfo.type === "MEMBER" ? [styles.profile, { borderColor: '#11F37E' }] : styles.profile
+              userInfo[0].type === "MEMBER" ? [styles.profile, { borderColor: '#11F37E' }] : styles.profile
             }
             source={require('../../../assets/img/SignUp/emptyProfile.png')}
           />
@@ -155,7 +155,7 @@ export default function SignUpStep2(props) {
             }}
           />
         </View>
-        {userInfo.type === "MEMBER" ? null : (
+        {userInfo[0].type === "MEMBER" ? null : (
           <>
             <View style={globalStyle.textField}>
               <View style={styles.titleWrapper}>
@@ -227,7 +227,7 @@ export default function SignUpStep2(props) {
           />
         </View>
         <Text style={styles.notificationText}>
-          {userInfo.type === "MEMBER"
+          {userInfo[0].type === "MEMBER"
             ? '나의 트레이너에게 보여지는 정보입니다.'
             : '나의 회원들에게 보여지는 정보입니다.'}
         </Text>

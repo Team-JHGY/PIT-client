@@ -4,10 +4,61 @@ import globalStyle from '../../utils/globalStyle'
 import { Appbar } from 'react-native-paper';
 import arrow_left from '../../../assets/arrow_left.png'
 
+import { decode } from 'js-base64';
+
+// context
+import { UserContext } from '../../store/user'
+import config from "../../utils/config" 
+
+
 
 export default function MyTrainers({navigation}) {
     const [userCount, setUserCount]     = React.useState(1);
-    const [userData, setUserData]       = React.useState(["1","2","3","4","5"])
+    const [userData, setUserData]       = React.useState([])
+    const { userState, userDispatch }     = React.useContext(UserContext)
+
+    //jwt token decode
+    const splitJwt = userState.jwtToken.split(".")
+    const userInfo = React.useState(JSON.parse(decode(splitJwt[1])))
+
+
+    React.useEffect(() =>{
+        MyTrainersList(userState.jwtToken)
+    },[])
+
+    React.useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            MyTrainersList(userState.jwtToken)
+        });
+        return unsubscribe;
+    }, [navigation]);
+
+    async function MyTrainersList(token){
+        await fetch(`${config.BASE_URL}/partners/${userInfo[0].sub}/trainers`,{
+            method: 'GET', // *GET, POST, PUT, DELETE, etc.
+            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: 'include', // include, *same-origin, omit
+            headers: {
+                'Authorization' : token,
+                'Content-Type'  : 'application/json',
+                
+            },
+        })
+        .then((res) => res.json())
+        .then((res) => {
+            
+            if(res.code ===  0){
+                setUserData(res.data)
+            }else {
+                alert("fail")
+                setUserData([])
+            }
+            
+
+        })
+        .catch((e) => console.log(e))
+    }
+
 
     return (
         <>
@@ -32,21 +83,34 @@ export default function MyTrainers({navigation}) {
                         return (
                             <View key={index} style={[globalStyle.row, styles.userInfo]}>
                                 <View>
-                                    <Image source={{uri:'https://img.sbs.co.kr/newsnet/etv/upload/2021/04/23/30000684130_500.jpg'}} style={[styles.userImg]}/>
+                                    {item.user.profileImage !== null ? (
+                                        <Image source={{ uri: item.user.profileImage }} style={styles.userImg} />
+                                    ) : (
+                                        <Image
+                                        style={styles.userImg}
+                                        source={require('../../../assets/img/SignUp/emptyProfile.png')}
+                                        ></Image>
+                                    )}
+                                    
                                 </View>
                                 
                                 <View style={globalStyle.col_2}>
-                                    <Text style={[globalStyle.body2, styles.textmargin]}>김회원 (남, 23세)</Text>
-                                    <Text style={[globalStyle.body2, globalStyle.textDartGery, styles.textmargin]}>2021.06.13 등록</Text>
+                                    <Text style={[globalStyle.body2, styles.textmargin]}>
+                                        {item.user.name} 
+                                        
+                                    </Text>
+                                    <Text style={[globalStyle.body2, globalStyle.textDartGery, styles.textmargin]}>
+                                        {item.createdAt.split("T")[0].replace(/-/gi, ".")} 등록
+                                    </Text>
                                 </View>
-                                {index === 0? 
+                                {item.isOwn  === true? 
                                     
                                     <Text style={[globalStyle.body2, globalStyle.textDimmedGrey, styles.greenText]}>
                                         현재 트레이너
                                     </Text>
                                     
                                     :
-                                    <Text style={[globalStyle.body2, globalStyle.textDimmedGrey, styles.date]}>06.13</Text>
+                                    <Text style={[globalStyle.body2, globalStyle.textDimmedGrey, styles.date]}>{item.createdAt.split("T")[0].replace(/-/gi, ".")}</Text>
                                 }
                                 
                             </View>
