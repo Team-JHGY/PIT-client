@@ -16,6 +16,7 @@ import MyPage from './src/views/myPage/MyPage'
 import Schedule from './src/views/schedule/Schedule'
 import ScheduleGuide from './src/views/schedule/ScheduleGuide'
 import AddSchedule from './src/views/schedule/AddSchedule'
+import ScheduleDetailInfo from './src/views/schedule/ScheduleDetailInfo'
 import AddMembersCode from './src/views/myMembers/AddMemberCode'
 import SignUpView from './src/views/SignUp/SignUp'
 import EditMyPage from './src/views/myPage/EidtMyPage'
@@ -155,6 +156,7 @@ export default function App() {
           <Stack.Screen name="Schedule" component={Schedule} />
           <Stack.Screen name="ScheduleGuide" component={ScheduleGuide} />
           <Stack.Screen name="AddSchedule" component={AddSchedule} />
+          <Stack.Screen name="ScheduleDetailInfo" component={ScheduleDetailInfo} />
           <Stack.Screen name="MyPage" component={MyPage} />
           <Stack.Screen name="EditMyPage" component={EditMyPage} />
           <Stack.Screen name="AddMembersCode" component={AddMembersCode} />
