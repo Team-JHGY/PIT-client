@@ -10,8 +10,8 @@ const initialState = {
   accessToken: '',
   refreshToken: '',
   expiresIn: '',
-  // 테스트용 필드
   role: '',
+  // 테스트용 필드
   jwtToken: '',
 }
 

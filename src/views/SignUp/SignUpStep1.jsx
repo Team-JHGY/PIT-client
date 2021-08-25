@@ -1,20 +1,29 @@
-import React, { useEffect, useState } from 'react'
-import ButtonLarge from '../../components/Common/ButtonLarge'
+import React, { useEffect, useState, useContext } from 'react'
 import { Text, StyleSheet, View, Pressable } from 'react-native'
-
 import { WithLocalSvg } from 'react-native-svg'
 import { Appbar } from 'react-native-paper'
-import closeIcon from '../../../assets/icon/Common/closeIcon.svg'
+
+// components
+import ButtonLarge from '../../components/Common/ButtonLarge'
+
+// utils
 import globalStyle from '../../utils/globalStyle'
+
+// assets
+import closeIcon from '../../../assets/icon/Common/closeIcon.svg'
 import TrainerCard from '../../components/SignUp/TrainerCard'
 import MemberCard from '../../components/SignUp/MemberCard'
+
+// context
+import { UserContext } from '../../store/user'
 
 export default function SignUpStep1(props) {
   //changeStep 은 숫자
   const [buttonEnable, setButtonEnable] = useState('false')
   const { changeStep, goBack, openModal } = props
-  const [role, setRole] = useState('')
+  const { userState, userDispatch } = useContext(UserContext)
 
+  const { role } = userState
   useEffect(() => {
     if (role !== '') setButtonEnable(true)
   }, [])
@@ -36,39 +45,39 @@ export default function SignUpStep1(props) {
           <Pressable
             style={{ flex: 1 }}
             onPress={() => {
-              setRole('trainer')
+              userDispatch({ type: 'SET_ROLE', payload: { role: 'TRAINER' } })
               setButtonEnable(true)
             }}
           >
-            <TrainerCard isChecked={role === 'trainer'} />
+            <TrainerCard isChecked={role === 'TRAINER'} />
           </Pressable>
           <Pressable
             style={{ flex: 1 }}
             onPress={() => {
-              setRole('member')
+              userDispatch({ type: 'SET_ROLE', payload: { role: 'MEMBER' } })
               setButtonEnable(true)
             }}
           >
-            <MemberCard isChecked={role === 'member'} />
+            <MemberCard isChecked={role === 'MEMBER'} />
           </Pressable>
         </View>
         <View style={styles.description}>
-          {role === 'trainer' && (
+          {role === 'TRAINER' && (
             <Text style={styles.text}>트레이너 계정으로 가입하면 회원에게 나의 일정을</Text>
           )}
-          {role === 'trainer' && (
+          {role === 'TRAINER' && (
             <Text style={styles.text}>공유하고, 수업때 회원이 진행한 운동을 기록하고</Text>
           )}
-          {role === 'trainer' && (
+          {role === 'TRAINER' && (
             <Text style={styles.text}>식단과 개인운동에 대한 피드백을 줄 수 있어요.</Text>
           )}
-          {role === 'member' && (
+          {role === 'MEMBER' && (
             <Text style={styles.text}>회원 계정으로 가입하면 선생님의 일정을 확인할 수</Text>
           )}
-          {role === 'member' && (
+          {role === 'MEMBER' && (
             <Text style={styles.text}>있고, 수업때 진행한 운동리스트 확인과 개인운동</Text>
           )}
-          {role === 'member' && (
+          {role === 'MEMBER' && (
             <Text style={styles.text}>및 식단에 대한 피드백을 받아볼 수 있어요.</Text>
           )}
         </View>

@@ -18,13 +18,11 @@ import TextField from '../../components/Common/TextField'
 import ButtonLarge from '../../components/Common/ButtonLarge'
 import ButtonSmall from '../../components/Common/ButtonSmall'
 import ButtonSmallRed from '../../components/Common/ButtonSmallRed'
-import { decode } from 'js-base64';
 
 //icons image
 import closeIcon from '../../../assets/icon/Common/closeIcon.svg'
 import arrow_left from '../../../assets/arrow_left.png'
 import Asterisk from '../../../assets/icon/asterisk.svg'
-
 
 // context
 import { UserContext } from '../../store/user'
@@ -42,11 +40,7 @@ export default function SignUpStep2(props) {
 
   const { goBackStep, openModal, onPress } = props //앞에서 전달받은 정보
   const { userState, userDispatch } = useContext(UserContext)
-  const { name, gender, birthday, intro, accessToken, refreshToken, expiresIn } = userState;
-
-  //jwt token decode
-  const splitJwt = userState.jwtToken.split(".")
-  const userInfo = React.useState(JSON.parse(decode(splitJwt[1])))
+  const { name, gender, birthday, intro, accessToken, refreshToken, expiresIn, role } = userState
 
   useEffect(() => {
     ;(async () => {
@@ -61,18 +55,16 @@ export default function SignUpStep2(props) {
   }, [])
 
   useEffect(() => {
-    if (userInfo[0].type === "TRAINER") {
+    if (role === 'TRAINER') {
       if (name.length > 0) setButtonEnable(true)
       else setButtonEnable(false)
-    } else if (userInfo[0].type === "MEMBER") {
+    } else if (role === 'MEMBER') {
       if (name.length > 0 && birthday.length == 8) setButtonEnable(true)
       else setButtonEnable(false)
     }
   }, [name, gender, birthday])
 
-  function AddtoLocalUserAuth() {
-  
-  }
+  function AddtoLocalUserAuth() {}
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -99,7 +91,7 @@ export default function SignUpStep2(props) {
           <Image source={arrow_left} style={globalStyle.title} />
         </Pressable>
         <Appbar.Content
-          title={userInfo[0].type === "MEMBER" ? '회원으로 가입' : '트레이너로 가입'}
+          title={role === 'MEMBER' ? '회원으로 가입' : '트레이너로 가입'}
           titleStyle={styles.appbarTitle}
         />
         <Pressable
@@ -115,7 +107,7 @@ export default function SignUpStep2(props) {
         ) : (
           <Image
             style={
-              userInfo[0].type === "MEMBER" ? [styles.profile, { borderColor: '#11F37E' }] : styles.profile
+              role === 'MEMBER' ? [styles.profile, { borderColor: '#11F37E' }] : styles.profile
             }
             source={require('../../../assets/img/SignUp/emptyProfile.png')}
           />
@@ -155,7 +147,7 @@ export default function SignUpStep2(props) {
             }}
           />
         </View>
-        {userInfo[0].type === "MEMBER" ? null : (
+        {role === 'MEMBER' ? null : (
           <>
             <View style={globalStyle.textField}>
               <View style={styles.titleWrapper}>
@@ -227,7 +219,7 @@ export default function SignUpStep2(props) {
           />
         </View>
         <Text style={styles.notificationText}>
-          {userInfo[0].type === "MEMBER"
+          {role === 'MEMBER'
             ? '나의 트레이너에게 보여지는 정보입니다.'
             : '나의 회원들에게 보여지는 정보입니다.'}
         </Text>
