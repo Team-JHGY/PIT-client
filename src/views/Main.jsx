@@ -11,6 +11,7 @@ import globalStyle from '../utils/globalStyle'
 import trainer from '../../assets/img/SignUp/trainer.svg'
 import calendar from '../../assets/img/Schedule/calendar.png'
 import goal from '../../assets/img/Schedule/goal.png'
+import report from '../../assets/img/Schedule/report.png'
 
 // components
 import ScheduleActionItem from '../components/Schedule/ScheduleActionItem'
@@ -49,7 +50,7 @@ export default function MainView({ navigation }) {
             }}
           />
           <ScheduleActionItem image={goal} text={'PT 목표'} />
-          <ScheduleActionItem text={'레포트'} />
+          <ScheduleActionItem image={report} text={'레포트'} />
         </View>
         <Text style={[globalStyle.heading2, { marginTop: 20 }]}>{'다음 수업'}</Text>
         <View style={styles.lesson}>

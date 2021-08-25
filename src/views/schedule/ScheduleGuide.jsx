@@ -36,14 +36,11 @@ const ScheduleGuide = ({ navigation }) => {
               다릅니다. 각 회원들은 트레이너와의 1:1 방 홈에서 선생님의 스케쥴을 확인할 수 있는
               화면에 접근할 수 있습니다.
             </Text>
-            <Image source={scheduleEx} style={{ marginTop: 20, width: '100%', height: 320 }} />
-            <Text style={[styles.answer, { marginTop: 20 }]}>
-              트레이너 선생님이 등록한 스케쥴들은 여기에 노출됩니다. 수업 스케쥴 뿐 아니라
-              비수업시간으로 등록한 시간도 보여지며, 다만 어떤 회원의 수업인지 혹은 비수업시간인지
-              여부는 보여지지 않습니다. 회원은 등록된 스케쥴만을 보고 선생님의 비어있는 시간대를
-              추측, 수업시간 등록 및 변경을 요청하시면 됩니다. (회원 측에서 스케쥴 등록이나 수정을
-              할 수 는 없습니다. 메신저나 구두로 요청해서 선생님이 직접 스케쥴을 등록해주셔야
-              합니다.)
+            <View style={{ alignItems: 'center' }}>
+              <Image source={scheduleEx} style={{ marginTop: 20, width: 355, height: 330 }} />
+            </View>
+            <Text textBreakStrategy="highQuality" style={[styles.answer, { marginTop: 20 }]}>
+              {`트레이너 선생님이 등록한 스케쥴들은 여기에 노출됩니다. 수업 스케쥴 뿐 아니라 비수업시간으로 등록한 시간도 보여지며, 다만 어떤 회원의 수업인지 혹은 비수업시간인지 여부는 보여지지 않습니다. 회원은 등록된 스케쥴만을 보고 선생님의 비어있는 시간대를 추측, 수업시간 등록 및 변경을 요청하시면 됩니다.\n(회원 측에서 스케쥴 등록이나 수정을 할 수 는 없습니다. 메신저나 구두로 요청해서 선생님이 직접 스케쥴을 등록해주셔야 합니다.)\n\n\n`}
             </Text>
           </View>
         </View>

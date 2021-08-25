@@ -1,6 +1,14 @@
 import React from 'react'
 import { View, StyleSheet, Image, Text, Pressable } from 'react-native'
 const ScheduleActionItem = ({ image, text, clickEvent }) => {
+  const scheduleActionItemStyle = () => {
+    if (text === '레포트') {
+      return {
+        width: 23,
+        height: 31,
+      }
+    }
+  }
   return (
     <Pressable
       style={styles.body}
@@ -8,7 +16,7 @@ const ScheduleActionItem = ({ image, text, clickEvent }) => {
         clickEvent()
       }}
     >
-      <Image style={{ width: 40, height: 40 }} source={image} />
+      <Image style={[{ width: 32, height: 32 }, scheduleActionItemStyle()]} source={image} />
       <Text>{text}</Text>
     </Pressable>
   )
