@@ -21,14 +21,25 @@ import {
   getTimeOfDate,
 } from '../../utils/commonFunctions'
 
+import { decode } from 'js-base64';
+
+
 // assets
 import cross from '../../../assets/cross.png'
 import Asterisk from '../../../assets/icon/asterisk.svg'
+
+// context
+import { UserContext } from '../../store/user'
+import config from "../../utils/config"
 
 const AddSchedule = ({ navigation, route }) => {
   // mode
   const { mode } = route.params
   // state
+  const { userState, userDispatch }     = React.useContext(UserContext)
+  const splitJwt                        = userState.jwtToken.split(".")
+  const userInfo                        = React.useState(JSON.parse(decode(splitJwt[1])))
+
   const [isModal, setIsModal] = useState(false)
   const [isUpdateConfirmModal, setIsUpdateConfirmModal] = useState(false)
   const [isScheduleChooseModal, setIsScheduleChooseModal] = useState(false)
@@ -89,7 +100,49 @@ const AddSchedule = ({ navigation, route }) => {
 
   useEffect(() => {
     if (member !== '수업 또는 비수업을 선택해주세요.') setButtonEnable(true)
+    
   }, [member])
+
+  function AddSchedulesFuc() {
+    const addScheduleRequest = {
+      "trainerId"     : Number(userInfo[0].sub),
+      "startAt"       : fromTime,
+      "endAt"         : toTime,
+      "partnershipId" : Number(memberIdx),
+      "scheduleRepeat": {
+        "type"    : clickButton === 1? "NONE":clickButton === 2? "EVERY":"WEEK",
+        "count"   : Number(repeatOptionIdx)
+      }
+    }
+
+    fetch(`${config.BASE_URL}/schedules `,
+    {
+      method  : 'POST', // *GET, POST, PUT, DELETE, etc.
+      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: 'include', // include, *same-origin, omit
+      headers: {
+        'Authorization' : userState.jwtToken,
+        'Content-Type'  : 'application/json',
+          
+      },
+      body:JSON.stringify({"addScheduleRequest": addScheduleRequest})
+    })
+    .then((res) => res.json())
+    .then((res) => {
+      console.log(res)
+      if(res.code !== 0){
+        alert(res.data)
+      }else{
+        alert(res.data)
+      }
+
+    })
+    .catch((e) => console.log(e))
+    
+    
+  }
+
+
   return (
     <SafeAreaView style={{ backgroundColor: '#FFFFFF', flex: 1 }}>
       {isModal && (
@@ -280,7 +333,7 @@ const AddSchedule = ({ navigation, route }) => {
           )}
         </View>
         {mode === 'create' ? (
-          <ButtonLarge name={'등록'} isEnable={buttonEnable} />
+          <ButtonLarge name={'등록'} isEnable={buttonEnable} onPress={AddSchedulesFuc}/>
         ) : (
           <ButtonLarge
             name={'수정'}

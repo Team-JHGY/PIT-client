@@ -11,6 +11,7 @@ import ButtonSmallRed from '../../components/Common/ButtonSmallRed'
 import closeIcon from '../../../assets/icon/Common/closeIcon.svg'
 import Asterisk from '../../../assets/icon/asterisk.svg'
 
+
 import { decode } from 'js-base64';
 
 // context
@@ -111,17 +112,12 @@ export default function EditMyPage ({navigation,userData}) {
   const pickImage = async () => {
     
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    })
-
-    let smallresult = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 0.3,
+      mediaTypes    : ImagePicker.MediaTypeOptions.All,
+      allowsEditing : true,
+      maxWidth      : 64, 
+      maxHeight     : 64,
+      aspect        : [4, 3],
+      quality       : 1,
     })
 
 
@@ -131,37 +127,30 @@ export default function EditMyPage ({navigation,userData}) {
       name  : "test",
       type  : "image/jpeg"
     }
-    const smallimageValue = {
-      uri   : smallresult.uri,
-      name  : "test",
-      type  : "image/jpeg"
-    }
-    
-
    
     const formData = new FormData()
-      formData.append("profile", imageValue)
-      formData.append("thumbnail", smallimageValue)
-      setImage(result.uri)
+    formData.append("profile", imageValue)
+    
+    setImage(result.uri)
       
-      fetch(`${config.BASE_URL}/profile-image/${userInfo[0].sub}`,formData,{
-        method  : 'POST', // *GET, POST, PUT, DELETE, etc.
-        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: 'include', // include, *same-origin, omit
-        headers: {
-            'Authorization' : userState.jwtToken,
-            'Content-Type'  : 'multipart/form-data',
-            
-        }
-      })
-      .then((res) => res.json())
-      .then((res) => {
-        if(res.code !== 0){
-          alert(res.data)
-        }
+    fetch(`${config.BASE_URL}/profile-image/${userInfo[0].sub}`,formData,{
+      method  : 'POST', // *GET, POST, PUT, DELETE, etc.
+      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: 'include', // include, *same-origin, omit
+      headers: {
+        'Authorization' : userState.jwtToken,
+        'Content-Type'  : 'multipart/form-data',
+          
+      }
+    })
+    .then((res) => res.json())
+    .then((res) => {
+      if(res.code !== 0){
+        alert(res.data)
+      }
 
-      })
-      .catch((e) => console.log(e))
+    })
+    .catch((e) => console.log(e))
     
   }
 
@@ -181,28 +170,22 @@ export default function EditMyPage ({navigation,userData}) {
 
   function EditMyinfo(){
     if(userInfo[0].type === "MEMBER"){
-      console.log({
-        "name"        : name,
-        "gender"      : gender,
-        "birthday"    : birthday,
-        "description" : intro
-        
-      })
+
       fetch(`${config.BASE_URL}/members/${userInfo[0].sub}`,{
-          method: 'PATCH', // *GET, POST, PUT, DELETE, etc.
-          cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-          credentials: 'include', // include, *same-origin, omit
-          headers: {
-              'Authorization' : userState.jwtToken,
-              'Content-Type'  : 'application/json',
-          },
-          body: JSON.stringify({
-            "name"        : name,
-            "gender"      : gender,
-            "birthday"    : birthday,
-            "description" : intro
-            
-          })
+        method: 'PATCH', // *GET, POST, PUT, DELETE, etc.
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'include', // include, *same-origin, omit
+        headers: {
+            'Authorization' : userState.jwtToken,
+            'Content-Type'  : 'application/json',
+        },
+        body: JSON.stringify({
+          name        : name,
+          gender      : gender,
+          birthday    : birthday,
+          description : intro
+          
+        })
       })
       .then((res) => res.json())
       .then((res) => {
@@ -219,13 +202,8 @@ export default function EditMyPage ({navigation,userData}) {
       })
       .catch((e) => console.log(e))
     }else{
-      console.log({
-        "name"        : name,
-        "gender"      : gender,
-        "birthday"    : birthday,
-        "description" : intro
-        
-      })
+      
+
       fetch(`${config.BASE_URL}/trainers/${userInfo[0].sub}`,{
           method: 'PATCH', // *GET, POST, PUT, DELETE, etc.
           cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
