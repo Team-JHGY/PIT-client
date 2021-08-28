@@ -104,10 +104,14 @@ const AddSchedule = ({ navigation, route }) => {
   }, [member])
 
   function AddSchedulesFuc() {
+    const startAt = `${fromTime.getFullYear()}-${fromTime.getMonth()<10? "0"+fromTime.getMonth():fromTime.getMonth()}-${fromTime.getDate()<10? "0"+fromTime.getDate():fromTime.getDate()}T${fromTime.getHours()<10? "0"+fromTime.getHours():fromTime.getHours()}:${fromTime.getMinutes()<10? "0"+fromTime.getMinutes():fromTime.getMinutes()}:${fromTime.getSeconds()<10? "0"+fromTime.getSeconds():fromTime.getSeconds()}`
+
+    const endAt   = `${toTime.getFullYear()}-${toTime.getMonth()<10? "0"+toTime.getMonth():toTime.getMonth()}-${toTime.getDate()<10? "0"+toTime.getDate():toTime.getDate()}T${toTime.getHours()<10? "0"+toTime.getHours():toTime.getHours()}:${toTime.getMinutes()<10? "0"+toTime.getMinutes():toTime.getMinutes()}:${toTime.getSeconds()<10? "0"+toTime.getSeconds():toTime.getSeconds()}`
+                     
     const addScheduleRequest = {
       "trainerId"     : Number(userInfo[0].sub),
-      "startAt"       : fromTime,
-      "endAt"         : toTime,
+      "startAt"       : startAt,
+      "endAt"         : endAt,
       "partnershipId" : Number(memberIdx),
       "scheduleRepeat": {
         "type"    : clickButton === 1? "NONE":clickButton === 2? "EVERY":"WEEK",
