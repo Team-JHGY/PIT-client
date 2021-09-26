@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react'
-import { View, StyleSheet, Text, SafeAreaView, Image } from 'react-native'
+import { View, StyleSheet, Text, SafeAreaView, Image, ScrollView } from 'react-native'
 import * as SplashScreen from 'expo-splash-screen'
 import { Appbar } from 'react-native-paper'
 import { WithLocalSvg } from 'react-native-svg'

@@ -21,7 +21,7 @@ const ViewBody = ({ navigation, selectedDate }) => {
 
   const data = [
     { id: '1', startTime: '오전 9:00', endTime: '오전 10:00', name: '김회원', numOfLesson: 1 },
-    { id: '2', startTime: '오후 1:00', endTime: '오후 2:00', name: '정회원', numOfLesson: 5 },
+    { id: '2', startTime: '오후 1:00', endTime: '오후 2:00', name: '정dddd회원', numOfLesson: 5 },
     { id: '3', startTime: '오후 3:30', endTime: '오후 4:20', name: '박회원', numOfLesson: 1 },
     {
       id: '4',
@@ -46,7 +46,7 @@ const ViewBody = ({ navigation, selectedDate }) => {
     }
   }, [selectedDate])
   return (
-    <View style={{ marginBottom: 20, alignSelf: 'stretch', flex: 1 }}>
+    <View style={{ marginBottom: 20, alignSelf: 'stretch', flex: 1 ,  flexGrow: 1}}>
       <Text style={styles.date}>{strToday}</Text>
       {lessonsInfo.length === 0 ? (
         <Text style={styles.placeholder}>등록된 스케쥴이 없습니다.</Text>
@@ -141,6 +141,8 @@ const styles = StyleSheet.create({
     marginBottom: 0,
     marginLeft: 'auto',
     marginRight: 30,
+    alignSelf:'flex-end',
+
   },
   userImg: {
     width: 44,

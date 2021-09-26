@@ -13,7 +13,9 @@ import { UserContext } from '../../store/user'
 import config from "../../utils/config" 
 
 export default function MyPage({navigation}) {
-    const [userData, setUserData]       = React.useState({
+    
+    const [count, setCount]                     = React.useState(0)
+    const [userData, setUserData]               = React.useState({
         "createdAt": "",
         "id": "",
         "modifedAt": "",
@@ -29,15 +31,19 @@ export default function MyPage({navigation}) {
             "provider": "",
             "refreshToken": "",
             "type": "",
-        },
+        }
     })
-    const toastRef                        = React.useRef(); 
-    const { userState, userDispatch }     = React.useContext(UserContext)
+    const toastRef                              = React.useRef(); 
+    const { userState, userDispatch }           = React.useContext(UserContext)
     
     //jwt token decode
     const splitJwt                        = userState.jwtToken.split(".")
     const userInfo                        = React.useState(JSON.parse(decode(splitJwt[1])))
-  
+    
+    React.useEffect(() => {
+        AddtoLocalUserAuth()
+        MyTrainersList(userState.jwtToken)
+    },[])
 
     const copyToClipboard = () => {
 
@@ -45,7 +51,39 @@ export default function MyPage({navigation}) {
         toastRef.current.show('클립보드에 복사했습니다.');
     };
 
+    //연결된 트레이너 숫자 구하기
+    async function MyTrainersList(token){
+        if(userInfo[0].type === "MEMBER"){
+            await fetch(`${config.BASE_URL}/partnerships/${userInfo[0].sub}/trainers`,{
+                method: 'GET', // *GET, POST, PUT, DELETE, etc.
+                cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                credentials: 'include', // include, *same-origin, omit
+                headers: {
+                    'Authorization' : token,
+                    'Content-Type'  : 'application/json',
+                    
+                },
+            })
+            .then((res) => res.json())
+            .then((res) => {
+                
+                if(res.code ===  0){
+                    setCount(res.data.trainers.length)
+                }else{
+                    alert("fail")
+                    setCount(0)
+                }
+                
+
+            })
+            .catch((e) => console.log(e))
+        }
+    }   
+
+
+
     function AddtoLocalUserAuth(){
+     
         if(userInfo[0].type === "MEMBER"){
             fetch(`${config.BASE_URL}/members/${userInfo[0].sub}`,{
                 method: 'GET', // *GET, POST, PUT, DELETE, etc.
@@ -62,7 +100,7 @@ export default function MyPage({navigation}) {
                 
                 if(res.code ===  0){
                     setUserData(res.data)
-                    
+                    console.log("res.data", res.data)
                 }else if(res.code === -13){
                     setUserData([])
                 }
@@ -79,14 +117,14 @@ export default function MyPage({navigation}) {
                     'Authorization' : userState.jwtToken,
                     'Content-Type'  : 'application/json',
                     
-                },
+                }
             })
             .then((res) => res.json())
             .then((res) => {
                 
                 if(res.code ===  0){
                     setUserData(res.data)
-                    
+                    console.log("res.data", res.data)
                 }else if(res.code === -13){
                     setUserData([])
                 }
@@ -97,18 +135,16 @@ export default function MyPage({navigation}) {
         }
     }
 
-    React.useEffect(()=>{
-        AddtoLocalUserAuth()
-    },[])
+
 
    
     return (
         <>
         <Toast ref={toastRef}
-            positionValue={100}
+            positionValue={50}
             fadeInDuration={200}
             fadeOutDuration={1000}
-            style={{backgroundColor:'rgba(33, 87, 243, 0.5)', width:'90%'}}
+            style={{backgroundColor:'rgba(0,0,0, 0.5)', width:'90%'}}
         />
         <Appbar.Header style={globalStyle.appbarMain}>
             <Appbar.Content title="마이"  titleStyle={[globalStyle.heading1, styles.barHeader]}/>
@@ -128,12 +164,12 @@ export default function MyPage({navigation}) {
             <ScrollView>
                 <View style={styles.myPageInfoImg}>
                     {userData.user.profileImage === null?
-                    <Image
-                        style={styles.profile}
-                        source={require('../../../assets/img/SignUp/emptyProfile.png')}
-                    />
+                        <Image
+                            style={styles.profile}
+                            source={require('../../../assets/img/SignUp/emptyProfile.png')}
+                        />
                     :
-                    <Image source={{uri:`${userData.user.profileImage}`}} style={styles.userImg}/>
+                        <Image source={{uri:`${userData.user.profileImage}`}} style={styles.userImg}/>
                     }   
                 </View>
                 
@@ -149,7 +185,7 @@ export default function MyPage({navigation}) {
                         </View>
                         <View style={[globalStyle.col_2, styles.alignCenter, styles.padding_Left]}>
                             <Text style={globalStyle.body2, globalStyle.textDartGery}>함께 운동했던 선생님들</Text>
-                            <Text style={globalStyle.heading2}>총 3 명</Text>
+                            <Text style={globalStyle.heading2}>총 {count} 명</Text>
                         </View>
                         <View style={[globalStyle.col_1, styles.alignCenter, styles.padding_Left]}>
                             <Image source={arrow_right} style={styles.arrow_right} />

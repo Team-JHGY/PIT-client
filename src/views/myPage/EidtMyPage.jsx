@@ -124,27 +124,30 @@ export default function EditMyPage ({navigation,userData}) {
     
     const imageValue = {
       uri   : result.uri,
-      name  : "test",
-      type  : "image/jpeg"
+      name  : result.uri,
+      type  : "multipart/form-data"
     }
    
     const formData = new FormData()
-    formData.append("profile", imageValue)
+          formData.append("profile", imageValue)
     
     setImage(result.uri)
-      
+    
+    console.log(userState.jwtToken)
+    console.log(userInfo[0].sub)
+
     fetch(`${config.BASE_URL}/profile-image/${userInfo[0].sub}`,formData,{
       method  : 'POST', // *GET, POST, PUT, DELETE, etc.
       cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
       credentials: 'include', // include, *same-origin, omit
       headers: {
-        'Authorization' : userState.jwtToken,
-        'Content-Type'  : 'multipart/form-data',
-          
+        "Authorization" : userState.jwtToken,
+        "Content-Type"  : 'multipart/form-data',
       }
     })
     .then((res) => res.json())
     .then((res) => {
+      console.log(res)
       if(res.code !== 0){
         alert(res.data)
       }

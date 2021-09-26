@@ -6,7 +6,8 @@ import CheckButton from '../../../assets/img/SignUp/checkButton.svg'
 import CheckButtonSelected from '../../../assets/img/SignUp/checkButtonSelected.svg'
 
 import globalStyle from '../../utils/globalStyle'
-const TrainerCard = ({ isChecked }) => {
+
+const MemberCard = ({ isChecked }) => {
   return (
     <View
       style={
@@ -56,4 +57,4 @@ const styles = StyleSheet.create({
     ...globalStyle.heading2,
   },
 })
-export default TrainerCard
+export default MemberCard

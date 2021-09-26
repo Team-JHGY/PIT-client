@@ -30,11 +30,12 @@ export default function MyTrainers({navigation}) {
         const unsubscribe = navigation.addListener('focus', () => {
             MyTrainersList(userState.jwtToken)
         });
+
         return unsubscribe;
     }, [navigation]);
 
     async function MyTrainersList(token){
-        await fetch(`${config.BASE_URL}/partners/${userInfo[0].sub}/trainers`,{
+        await fetch(`${config.BASE_URL}/partnerships/${userInfo[0].sub}/trainers`,{
             method: 'GET', // *GET, POST, PUT, DELETE, etc.
             cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
             credentials: 'include', // include, *same-origin, omit
@@ -48,7 +49,10 @@ export default function MyTrainers({navigation}) {
         .then((res) => {
             
             if(res.code ===  0){
-                setUserData(res.data)
+                setUserData(res.data.trainers)
+                console.log(res.data.trainers)
+                console.log(res.data.trainers.createdAt)
+                setUserCount((res.data.trainers).length)
             }else {
                 alert("fail")
                 setUserData([])
@@ -83,8 +87,8 @@ export default function MyTrainers({navigation}) {
                         return (
                             <View key={index} style={[globalStyle.row, styles.userInfo]}>
                                 <View>
-                                    {item.user.profileImage !== null ? (
-                                        <Image source={{ uri: item.user.profileImage }} style={styles.userImg} />
+                                    {item.trainer.user.profileImage !== null? (
+                                        <Image source={{ uri: item.trainer.user.profileImage }} style={styles.userImg} />
                                     ) : (
                                         <Image
                                         style={styles.userImg}
@@ -96,21 +100,27 @@ export default function MyTrainers({navigation}) {
                                 
                                 <View style={globalStyle.col_2}>
                                     <Text style={[globalStyle.body2, styles.textmargin]}>
-                                        {item.user.name} 
+                                        {item.trainer.user.name} 
                                         
                                     </Text>
                                     <Text style={[globalStyle.body2, globalStyle.textDartGery, styles.textmargin]}>
-                                        {item.createdAt.split("T")[0].replace(/-/gi, ".")} 등록
+                                        {item.trainer.createdAt === null? "없음": item.trainer.createdAt.split("T")[0].replace(/-/gi, ".")} 등록
                                     </Text>
                                 </View>
-                                {item.isOwn  === true? 
+                                {item.isEnabled  === true? 
                                     
                                     <Text style={[globalStyle.body2, globalStyle.textDimmedGrey, styles.greenText]}>
                                         현재 트레이너
                                     </Text>
                                     
                                     :
-                                    <Text style={[globalStyle.body2, globalStyle.textDimmedGrey, styles.date]}>{item.createdAt.split("T")[0].replace(/-/gi, ".")}</Text>
+                                    <Text style={[globalStyle.body2, globalStyle.textDimmedGrey, styles.date]}>
+                                        {item.trainer.createdAt === null? 
+                                            "없음"
+                                            :
+                                            item.trainer.createdAt.split("T")[0].replace(/-/gi, ".")
+                                        }
+                                    </Text>
                                 }
                                 
                             </View>

@@ -2,9 +2,8 @@ import React, {useContext } from 'react'
 import { StyleSheet, Text, View, SafeAreaView, Pressable, Image,ScrollView } from 'react-native'
 import globalStyle from '../../utils/globalStyle'
 import { Appbar } from 'react-native-paper';
-import NewMembers from './NewMember'
 import sortArrow from "../../../assets/sortArrow.png"
-import cross from "../../../assets/cross.png"
+//import cross from "../../../assets/cross.png"
 import { decode } from 'js-base64';
 
 // context
@@ -13,11 +12,11 @@ import config from "../../utils/config"
 
 
 export default function Members({navigation}) {
-    const [appBarArray, setAppBarArray] = React.useState([])
-    const [userCount, setUserCount]     = React.useState(1);
-    const [isNew, setIsNew]             = React.useState("Y");
+    //const [appBarArray, setAppBarArray] = React.useState([])
+    //const [userCount, setUserCount]     = React.useState(1);
+    //const [isNew, setIsNew]             = React.useState("Y");
     const [userData, setUserData]       = React.useState([])
-    const [reloadFunc, setReload]       = React.useState("true")
+    //const [reloadFunc, setReload]       = React.useState("true")
     const { userState, userDispatch }   = useContext(UserContext)
     const splitJwt                      = userState.jwtToken.split(".")
     const userInfo                      = React.useState(JSON.parse(decode(splitJwt[1])))
@@ -38,7 +37,7 @@ export default function Members({navigation}) {
 
     async function MemberList(token) {
         if(userInfo[0].type === "TRAINER"){
-            await fetch(`${config.BASE_URL}/partners/${userInfo[0].sub}/members`,{
+            await fetch(`${config.BASE_URL}/partnerships/${userInfo[0].sub}/members`,{
                 method: 'GET', // *GET, POST, PUT, DELETE, etc.
                 cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
                 credentials: 'include', // include, *same-origin, omit
@@ -50,19 +49,19 @@ export default function Members({navigation}) {
             })
             .then((res) => res.json())
             .then((res) => {
-                console.log(res.data)
+                
                 if(res.code ===  0){
-                    setUserData(res.data)
-                    
+                    setUserData(res.data.members)
+                    console.log(res.data.members)
                 }else if(res.code === -13){
                     setUserData([])
                 }
                 
-                setReload(false)
+                
             })
             .catch((e) => console.log(e))  
         }else{
-            await fetch(`${config.BASE_URL}/partners/${userInfo[0].sub}/trainers`,{
+            await fetch(`${config.BASE_URL}/partnerships/${userInfo[0].sub}/trainers`,{
                 method: 'GET', // *GET, POST, PUT, DELETE, etc.
                 cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
                 credentials: 'include', // include, *same-origin, omit
@@ -74,17 +73,14 @@ export default function Members({navigation}) {
             })
             .then((res) => res.json())
             .then((res) => {
-                
+         
                 if(res.code ===  0){
-                    res.data.forEach((item) => {
-                        item.modifedAt = item.modifedAt.split("T")[0].replace(/-/gi, ".")
-                    })
-                    setUserData(res.data)
+                    setUserData(res.data.trainers)
                     
                 }else if(res.code === -13){
                     setUserData([])
                 }
-                setReload(false)
+                
 
             })
             .catch((e) => console.log(e))
@@ -123,51 +119,97 @@ export default function Members({navigation}) {
                     
                     {userData.map((item,index)=>{
                         return (
-                            <View key={index} style={[globalStyle.row, styles.userInfo]}>
-                                <View>
-                                    {item.user.profileImage !== null ? (
-                                        <Image source={{ uri: item.user.profileImage }} style={styles.userImg} />
-                                    ) : (
-                                        <Image
-                                        style={styles.userImg}
-                                        source={require('../../../assets/img/SignUp/emptyProfile.png')}
-                                        ></Image>
-                                    )}
+                            <Pressable key={index} onPress={()=> navigation.navigate('Main',{memberInfo:item})} >
+                                <View style={[globalStyle.row, styles.userInfo]}>
+                                    <View>
+                                        {item.member.user.profileImage !== null ? (
+                                            <Image source={{ uri: item.member.user.profileImage }} style={styles.userImg} />
+                                        ) : (
+                                            <Image
+                                            style={styles.userImg}
+                                            source={require('../../../assets/img/SignUp/emptyProfile.png')}
+                                            ></Image>
+                                        )}
+                                        
+                                    </View>
                                     
-                                </View>
-                                
-                                <View style={globalStyle.col_2}>
-                                    <Text style={[globalStyle.body2,styles.textmargin]}>
-                                        {item.user.name} 
-                                        (
-                                            {userData.gender === "MAN"? "남":"여"},   
-                                            {new Date().getFullYear() - new Date(item.birthday).getFullYear()}세 
-                                        )
-                                    </Text>
-                                    <Text style={[globalStyle.body2, globalStyle.textDartGery,styles.textmargin]}>
-                                        {item.modifedAt === null? "null": item.modifedAt.split("T")[0].replace(/-/gi, ".")} 등록
-                                    </Text>
-                                </View>
-                                {   item.modifedAt !== null && 
-                                    new Date().getFullYear() === new Date(item.modifedAt).getFullYear() && 
-                                    new Date().getMonth() === new Date(item.modifedAt).getMonth() && 
-                                    new Date().getDate() === new Date(item.modifedAt).getDate() ? 
-                                    <>
-                                    <View style={styles.newMark}>
-                                        <Text style={[globalStyle.body2, globalStyle.textDimmedGrey, styles.newMarkText]}>
-                                            N
+                                    <View style={globalStyle.col_2}>
+                                        <Text style={[globalStyle.body2,styles.textmargin]}>
+                                            {userInfo[0].type === "TRAINER"?
+
+                                                item.member.user.name
+                                                :   
+                                                item.trainer.user.name
+                                            } 
+                                            (
+                                                {userInfo[0].type === "TRAINER"?
+                                                
+                                                    item.member.gender === "MAN"? "남":"여"
+                                                    :
+                                                    item.trainer.gender === "MAN"? "남":"여"
+                                                }
+                                                ,
+                                                {userInfo[0].type === "TRAINER"?
+                                                
+                                                    new Date().getFullYear() - new Date(item.member.birthday).getFullYear()
+                                                    :
+                                                    new Date().getFullYear() - new Date(item.trainer.birthday).getFullYear()
+                                                
+                                                }세 
+                                            )
+                                        </Text>
+                                        <Text style={[globalStyle.body2, globalStyle.textDartGery,styles.textmargin]}>
+                                            {userInfo[0].type === "TRAINER"?
+
+                                                item.member.modifedAt === null? "null": item.member.modifedAt.split("T")[0].replace(/-/gi, ".")
+                                                :
+                                                item.trainer.modifedAt === null? "null": item.trainer.modifedAt.split("T")[0].replace(/-/gi, ".")
+                                            }
                                         </Text>
                                     </View>
-                                    <Text style={[globalStyle.body2, globalStyle.textDimmedGrey, styles.date, styles.greenText,styles.textmargin]}>
-                                        {item.modifedAt === null? "null": item.modifedAt.split("T")[0].replace(/-/gi, ".").slice(5)}
-                                    </Text>
-                                    </>
-                                    :<Text style={[globalStyle.body2, globalStyle.textDimmedGrey, styles.date]}>
-                                        {item.modifedAt === null? "null": item.modifedAt.split("T")[0].replace(/-/gi, ".").slice(5)}
-                                    </Text>
-                                }
-                                
-                            </View>
+                                    {userInfo[0].type === "TRAINER"?
+                                        
+                                        item.member.modifedAt !== null && 
+                                        new Date().getFullYear() === new Date(item.member.modifedAt).getFullYear() && 
+                                        new Date().getMonth() === new Date(item.member.modifedAt).getMonth() && 
+                                        new Date().getDate() === new Date(item.member.modifedAt).getDate() ? 
+                                        <>
+                                        <View style={styles.newMark}>
+                                            <Text style={[globalStyle.body2, globalStyle.textDimmedGrey, styles.newMarkText]}>
+                                                N
+                                            </Text>
+                                        </View>
+                                        <Text style={[globalStyle.body2, globalStyle.textDimmedGrey, styles.date, styles.greenText,styles.textmargin]}>
+                                            {item.member.modifedAt === null? "null": item.member.modifedAt.split("T")[0].replace(/-/gi, ".").slice(5)}
+                                        </Text>
+                                        </>
+                                        :<Text style={[globalStyle.body2, globalStyle.textDimmedGrey, styles.date]}>
+                                            {item.member.modifedAt === null? "null": item.member.modifedAt.split("T")[0].replace(/-/gi, ".").slice(5)}
+                                        </Text>
+
+                                        :
+                                        
+                                        item.trainer.modifedAt !== null && 
+                                        new Date().getFullYear() === new Date(item.trainer.modifedAt).getFullYear() && 
+                                        new Date().getMonth() === new Date(item.trainer.modifedAt).getMonth() && 
+                                        new Date().getDate() === new Date(item.trainer.modifedAt).getDate() ? 
+                                        <>
+                                        <View style={styles.newMark}>
+                                            <Text style={[globalStyle.body2, globalStyle.textDimmedGrey, styles.newMarkText]}>
+                                                N
+                                            </Text>
+                                        </View>
+                                        <Text style={[globalStyle.body2, globalStyle.textDimmedGrey, styles.date, styles.greenText,styles.textmargin]}>
+                                            {item.trainer.modifedAt === null? "null": item.trainer.modifedAt.split("T")[0].replace(/-/gi, ".").slice(5)}
+                                        </Text>
+                                        </>
+                                        :<Text style={[globalStyle.body2, globalStyle.textDimmedGrey, styles.date]}>
+                                            {item.trainer.modifedAt === null? "null": item.trainer.modifedAt.split("T")[0].replace(/-/gi, ".").slice(5)}
+                                        </Text>
+                                    }
+                                    
+                                </View>
+                            </Pressable>
                         )
                     })}
 

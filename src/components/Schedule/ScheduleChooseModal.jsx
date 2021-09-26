@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { View, Text, Pressable, StyleSheet, FlatList } from 'react-native'
 import closeIcon from '../../../assets/icon/Common/closeIcon.svg'
 import check from '../../../assets/img/Schedule/check.svg'
@@ -7,16 +7,56 @@ import globalStyle from '../../utils/globalStyle'
 
 import CancelButton from '../Schedule/CancelButton'
 import ConfirmButton from '../Schedule/ConfirmButton'
-const dummyData = [
-  { id: 1, title: '김회원(남, 23세) 수업', isChecked: true, isLast: false },
-  { id: 2, title: '정회원(여, 21세) 수업', isChecked: false, isLast: false },
-  { id: 3, title: '박회원(여, 45세) 수업', isChecked: false, isLast: false },
-  { id: 4, title: '이회원(남, 31세) 수업', isChecked: false, isLast: false },
-  { id: 5, title: '비수업 시간', isChecked: false, isLast: true },
-]
-const ScheduleChooseModal = ({ closeModal, chooseMember, memberIdx, setMemberIdx }) => {
-  const [schedules, setSchedules] = useState(dummyData)
-  const [tempIdx, setTempIdx] = useState(memberIdx)
+
+import { decode } from 'js-base64';
+// context
+import { UserContext } from '../../store/user'
+import config from "../../utils/config" 
+
+
+
+const ScheduleChooseModal = ({ closeModal, setMember, memberIdx, setMemberIdx }) => {
+  const [schedules, setSchedules]     = React.useState([])
+  const [tempIdx, setTempIdx]         = React.useState(memberIdx)
+  const [choosName, setChooseName]    = React.useState()
+  const { userState, userDispatch }   = React.useContext(UserContext)
+  const splitJwt                      = userState.jwtToken.split(".")
+  const userInfo                      = React.useState(JSON.parse(decode(splitJwt[1])))
+
+  React.useEffect(()=>{
+    MemberList(userState.jwtToken)
+  },[])
+
+  async function MemberList(token) {
+    
+    await fetch(`${config.BASE_URL}/partnerships/${userInfo[0].sub}/members`,{
+        method: 'GET', // *GET, POST, PUT, DELETE, etc.
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'include', // include, *same-origin, omit
+        headers: {
+            'Authorization' : token,
+            'Content-Type'  : 'application/json',
+            
+        },
+    })
+    .then((res) => res.json())
+    .then((res) => {
+        
+        if(res.code ===  0){
+          setSchedules(res.data.members)
+          
+        }else if(res.code === -13){
+            setUserData([])
+        }
+        
+        
+    })
+    .catch((e) => console.log(e))  
+    
+  }
+
+
+
   return (
     <View style={styles.body}>
       <View style={styles.modalDialog}>
@@ -32,7 +72,7 @@ const ScheduleChooseModal = ({ closeModal, chooseMember, memberIdx, setMemberIdx
           </Pressable>
         </View>
         <FlatList
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item) => String(item.member.id)}
           data={schedules}
           renderItem={({ item }) => {
             const memberStyle = (isLast) => {
@@ -48,28 +88,48 @@ const ScheduleChooseModal = ({ closeModal, chooseMember, memberIdx, setMemberIdx
             }
             return (
               <View style={[styles.memberItem, memberStyle(item.isLast)]}>
-                {tempIdx === item.id ? (
-                  <View style={styles.selectedMemberBox}>
-                    <WithLocalSvg asset={check} />
-                  </View>
-                ) : (
-                  <Pressable
-                    onPress={() => {
-                      setTempIdx(item.id)
-                    }}
-                  >
-                    <View style={styles.unSelectedMemberBox}></View>
-                  </Pressable>
-                )}
+                {tempIdx === item.member.id ? 
+                  (
+                    <Pressable
+                      onPress={() => {
+                        setTempIdx(tempIdx===item.member.id? null : item.member.id)
+                      }}
+                    >
+                      <View style={styles.selectedMemberBox}>
+                        <WithLocalSvg asset={check} />
+                      </View>
+                    </Pressable>
+                  ) 
+                : 
+                  (
+                    <Pressable
+                      onPress={() => {
+                        setTempIdx(item.member.id)
+                        setMember(`${item.member.user.name}(${item.member.gender === "MAN"? "남":"여"},${new Date().getFullYear() - new Date(item.member.birthday).getFullYear()}세)`)
+                      }}
+                    >
+                      <View style={styles.unSelectedMemberBox}></View>
+                    </Pressable>
+                  )
+                }
                 <View>
-                  <Text style={styles.memberBoxTitle}>{item.title}</Text>
-                  {item.isLast === true && (
+                  <Text style={styles.memberBoxTitle}>
+                    {item.member.user.name}
+
+                    (
+                      {item.member.gender === "MAN"? "남":"여"}
+                      ,
+                      {new Date().getFullYear() - new Date(item.member.birthday).getFullYear()}
+                    
+                    세)
+                  </Text>
+                  {/*item.isLast === true && (
                     <Text style={styles.lastOption}>회원들이 선생님의 스케쥴을 보았을</Text>
                   )}
                   {item.isLast === true && (
                     <Text style={styles.lastOption}>때 해당 시간대에 일정이 있는 것 처럼</Text>
                   )}
-                  {item.isLast === true && <Text style={styles.lastOption}>보입니다.</Text>}
+                  {item.isLast === true && <Text style={styles.lastOption}>보입니다.</Text>*/}
                 </View>
               </View>
             )
@@ -85,10 +145,10 @@ const ScheduleChooseModal = ({ closeModal, chooseMember, memberIdx, setMemberIdx
         >
           <CancelButton clickEvent={closeModal} buttonTitle={'취소'} />
           <ConfirmButton
-            chooseMember={chooseMember}
             closeModal={closeModal}
             setMemberIdx={setMemberIdx}
-            item={schedules[tempIdx - 1]}
+            item={choosName}
+            id={tempIdx}
           />
         </View>
       </View>

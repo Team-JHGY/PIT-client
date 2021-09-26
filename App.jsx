@@ -22,6 +22,7 @@ import SignUpView from './src/views/SignUp/SignUp'
 import EditMyPage from './src/views/myPage/EidtMyPage'
 import KakaoLogin from './src/views/login/KakaoLogin'
 import MyTrainers from './src/views/myPage/MyTrainers'
+import MealPlan from "./src/views/mealPlan/MealPlan"
 
 //Bottom nav Images
 import calendar_on from './assets/calendar_on.png'
@@ -45,7 +46,7 @@ export function BottomNav() {
   const { userState, userDispatch } = useContext(UserContext)
 
   const { role } = userState
-
+  console.log(initialView)
 
 
   return (
@@ -54,7 +55,7 @@ export function BottomNav() {
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           let iconName
-
+          console.log("route.name", route.name)
           if (route.name === '운동/식단') {
             iconName = focused ? calendar_on : calendar_off
           } else if (route.name === '홈') {
@@ -81,7 +82,7 @@ export function BottomNav() {
       />
       <Tab.Screen
         name={role === 'member' ? '운동/식단' : '회원'}
-        component={role === 'member' ? NewMembers : Members}
+        component={role === 'member' ? MealPlan : Members}
       />
       <Tab.Screen
         name={role === 'member' ? '마이' : '마이'}
@@ -164,6 +165,7 @@ export default function App() {
           <Stack.Screen name="AddMembersCode" component={AddMembersCode} />
           <Stack.Screen name="KakaoLogin" component={KakaoLogin} />
           <Stack.Screen name="MyTrainers" component={MyTrainers} />
+          <Stack.Screen name="MealPlan" component={MealPlan}/>
         </Stack.Navigator>
       </NavigationContainer>
     </UserStore>

@@ -33,7 +33,7 @@ export default KakaoLogin = ({ navigation }) => {
           var data = {
             grant_type: 'authorization_code',
             client_id: '3c28d92bfda00122f68ab8473b9aece5',
-            redirect_uri: 'http://52.79.145.116:8080/client/white',
+            redirect_uri: 'http://3.36.113.168:8080/client/white',
             code: code,
             client_secret: 'LeI9ECMDibQVxnqeSs7mxEAve69l6jA6',
           }

@@ -145,7 +145,7 @@ export default function AddMembersCode({ navigation }) {
     }
 
 
-    fetch(`${config.BASE_URL}/partners`,{
+    fetch(`${config.BASE_URL}/partnerships`,{
       method      : 'POST', // *GET, POST, PUT, DELETE, etc.
       cache       : 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
       credentials : 'include', // include, *same-origin, omit
@@ -177,14 +177,14 @@ export default function AddMembersCode({ navigation }) {
   function AddtoLocalUserAuth(){
     if(userInfo[0].type === "MEMBER"){
         fetch(`${config.BASE_URL}/members/${userInfo[0].sub}`,{
-            method: 'GET', // *GET, POST, PUT, DELETE, etc.
-            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-            credentials: 'include', // include, *same-origin, omit
-            headers: {
-                'Authorization' : userState.jwtToken,
-                'Content-Type'  : 'application/json',
-                
-            },
+          method: 'GET', // *GET, POST, PUT, DELETE, etc.
+          cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+          credentials: 'include', // include, *same-origin, omit
+          headers: {
+              'Authorization' : userState.jwtToken,
+              'Content-Type'  : 'application/json',
+              
+          },
         })
         .then((res) => res.json())
         .then((res) => {
@@ -201,14 +201,14 @@ export default function AddMembersCode({ navigation }) {
         .catch((e) => console.log(e))
     }else{
         fetch(`${config.BASE_URL}/trainers/${userInfo[0].sub}`,{
-            method: 'GET', // *GET, POST, PUT, DELETE, etc.
-            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-            credentials: 'include', // include, *same-origin, omit
-            headers: {
-                'Authorization' : userState.jwtToken,
-                'Content-Type'  : 'application/json',
-                
-            },
+          method: 'GET', // *GET, POST, PUT, DELETE, etc.
+          cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+          credentials: 'include', // include, *same-origin, omit
+          headers: {
+              'Authorization' : userState.jwtToken,
+              'Content-Type'  : 'application/json',
+              
+          },
         })
         .then((res) => res.json())
         .then((res) => {

@@ -114,10 +114,12 @@ const AddSchedule = ({ navigation, route }) => {
       "endAt"         : endAt,
       "partnershipId" : Number(memberIdx),
       "scheduleRepeat": {
-        "type"    : clickButton === 1? "NONE":clickButton === 2? "EVERY":"WEEK",
+        "type"    : clickButton === 1? "NONE" : clickButton === 2? "EVERY":"WEEK",
         "count"   : Number(repeatOptionIdx)
       }
     }
+
+    console.log("addScheduleRequest", addScheduleRequest)
 
     fetch(`${config.BASE_URL}/schedules `,
     {
@@ -167,7 +169,7 @@ const AddSchedule = ({ navigation, route }) => {
           closeModal={() => {
             setIsScheduleChooseModal(false)
           }}
-          chooseMember={(member) => setMember(member)}
+          setMember={setMember}
           memberIdx={memberIdx}
           setMemberIdx={setMemberIdx}
         />

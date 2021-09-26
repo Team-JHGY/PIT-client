@@ -16,7 +16,7 @@ import ViewBodyForMember from '../../components/Schedule/ViewBodyForMember'
 
 let date1 = new Date()
 let date2 = new Date()
-date2.setDate(date2.getDate() - 2)
+    date2.setDate(date2.getDate() - 2)
 let todayDate = new Date()
 let markedDateArray = [
   {
