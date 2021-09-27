@@ -101,6 +101,7 @@ export default StyleSheet.create({
     backgroundColor: '#ffff',
     elevation: 0,
     height: 90,
+    flex:1
   },
   appbarBtn: {
     backgroundColor: '#ffff',

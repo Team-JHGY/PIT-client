@@ -23,6 +23,8 @@ import EditMyPage from './src/views/myPage/EidtMyPage'
 import KakaoLogin from './src/views/login/KakaoLogin'
 import MyTrainers from './src/views/myPage/MyTrainers'
 import MealPlan from "./src/views/mealPlan/MealPlan"
+import AddMealPlan from "./src/views/mealPlan/AddMealPlan"
+import MealCommentPage from "./src/views/mealPlan/MealCommentPage"
 
 //Bottom nav Images
 import calendar_on from './assets/calendar_on.png'
@@ -166,6 +168,8 @@ export default function App() {
           <Stack.Screen name="KakaoLogin" component={KakaoLogin} />
           <Stack.Screen name="MyTrainers" component={MyTrainers} />
           <Stack.Screen name="MealPlan" component={MealPlan}/>
+          <Stack.Screen name="AddMealPlan" component={AddMealPlan}/>
+          <Stack.Screen name="MealCommentPage" component={MealCommentPage}/>
         </Stack.Navigator>
       </NavigationContainer>
     </UserStore>

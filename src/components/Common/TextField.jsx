@@ -22,11 +22,18 @@ const TextField = ({ title, input, height, isMandatory, isMultiLine, setInput, p
   return (
     <View>
       <View style={styles.titleWrapper}>
-        <Text style={styles.titleText}>{title}</Text>
+        {title === null?
+          null
+          :
+          <Text style={styles.titleText}>{title}</Text>
+        }
         {isMandatory === true && (
+          title === null?
+            null:
           <View style={{ justifyContent: 'center', marginLeft: 5 }}>
-            <WithLocalSvg asset={Asterisk}></WithLocalSvg>
+           <WithLocalSvg asset={Asterisk}></WithLocalSvg>
           </View>
+          
         )}
       </View>
       <TextInput

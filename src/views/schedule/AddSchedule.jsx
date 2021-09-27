@@ -119,7 +119,7 @@ const AddSchedule = ({ navigation, route }) => {
       }
     }
 
-    console.log("addScheduleRequest", addScheduleRequest)
+    console.log(JSON.stringify({"addScheduleRequest": addScheduleRequest}))
 
     fetch(`${config.BASE_URL}/schedules `,
     {
