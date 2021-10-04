@@ -44,9 +44,9 @@ const ScheduleChooseModal = ({ closeModal, setMember, memberIdx, setMemberIdx })
         
         if(res.code ===  0){
           setSchedules(res.data.members)
-          
+          console.log("멤버: ",res.data)
         }else if(res.code === -13){
-            setUserData([])
+          setUserData([])
         }
         
         
@@ -88,11 +88,11 @@ const ScheduleChooseModal = ({ closeModal, setMember, memberIdx, setMemberIdx })
             }
             return (
               <View style={[styles.memberItem, memberStyle(item.isLast)]}>
-                {tempIdx === item.member.id ? 
+                {tempIdx === item.partnershipId ? 
                   (
                     <Pressable
                       onPress={() => {
-                        setTempIdx(tempIdx===item.member.id? null : item.member.id)
+                        setTempIdx(tempIdx===item.partnershipId? null : item.partnershipId)
                       }}
                     >
                       <View style={styles.selectedMemberBox}>
@@ -104,7 +104,7 @@ const ScheduleChooseModal = ({ closeModal, setMember, memberIdx, setMemberIdx })
                   (
                     <Pressable
                       onPress={() => {
-                        setTempIdx(item.member.id)
+                        setTempIdx(item.partnershipId)
                         setMember(`${item.member.user.name}(${item.member.gender === "MAN"? "남":"여"},${new Date().getFullYear() - new Date(item.member.birthday).getFullYear()}세)`)
                       }}
                     >

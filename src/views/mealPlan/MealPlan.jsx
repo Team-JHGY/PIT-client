@@ -140,8 +140,7 @@ export default function MealPlan({ navigation, route }) {
             </View>
             
             {/*식단 부분 뷰 */}
-            {
-                seleted ==="meal"?
+            {seleted ==="meal"?
 
                 
 
@@ -164,7 +163,7 @@ export default function MealPlan({ navigation, route }) {
                         :
                         <ScrollView horizontal={true} style={[styles.MealPlan, globalStyle.row]}>
                             {mealPanList.map((item, index) =>{
-                                return <View style={{marginRight:10}}>
+                                return <View key={item.time} style={{marginRight:10}}>
                                             <Pressable onPress={() =>navigation.navigate('MealCommentPage')}>
                                                 <WithLocalSvg asset={AddMealPhoto}/>
                                             </Pressable>

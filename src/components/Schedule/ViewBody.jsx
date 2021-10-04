@@ -6,10 +6,22 @@ import { WithLocalSvg } from 'react-native-svg'
 import globalStyle from '../../utils/globalStyle'
 import { getDayOfWeek, getMonthOfDate, getDayOfDate } from '../../utils/commonFunctions'
 
+// JWT token
+import { UserContext } from '../../store/user'
+import config from "../../utils/config" 
+import { decode } from 'js-base64';
+
+
 // assets
 import addFloating from '../../../assets/img/Schedule/addFloating.svg'
 
 const ViewBody = ({ navigation, selectedDate }) => {
+  
+  const [lessonsInfo, setLessonsInfo] = useState([])
+  const { userState, userDispatch }   = React.useContext(UserContext)
+  const splitJwt                      = userState.jwtToken.split(".")
+  const userInfo                      = React.useState(JSON.parse(decode(splitJwt[1])))
+
   let strToday =
     getMonthOfDate(selectedDate) +
     '/' +
@@ -17,34 +29,59 @@ const ViewBody = ({ navigation, selectedDate }) => {
     ' (' +
     getDayOfWeek(selectedDate) +
     ')'
-  const [lessonsInfo, setLessonsInfo] = useState([])
+  
+  React.useEffect(()=>{
+    GetMonthTrainerSchedule(userState.jwtToken)
+  },[])
 
-  const data = [
-    { id: '1', startTime: '오전 9:00', endTime: '오전 10:00', name: '김회원', numOfLesson: 1 },
-    { id: '2', startTime: '오후 1:00', endTime: '오후 2:00', name: '정dddd회원', numOfLesson: 5 },
-    { id: '3', startTime: '오후 3:30', endTime: '오후 4:20', name: '박회원', numOfLesson: 1 },
-    {
-      id: '4',
-      startTime: '오후 6:00',
-      endTime: '오후 11:55',
-      name: '비수업시간',
-      numOfLesson: null,
-    },
-  ]
   useEffect(() => {
     // dummy
-
+    console.log(selectedDate)
     let daybeforeYesterday = new Date()
     daybeforeYesterday.setDate(daybeforeYesterday.getDate() - 2)
+
     if (
       selectedDate.getDate() === new Date().getDate() ||
       selectedDate.getDate() === daybeforeYesterday.getDate()
     ) {
-      setLessonsInfo(data)
+      setLessonsInfo([])
     } else {
       setLessonsInfo([])
     }
+
+    GetMonthTrainerSchedule(userState.jwtToken)
   }, [selectedDate])
+
+//해당 날짜 데이터 가져오기
+async function GetMonthTrainerSchedule(token) {
+
+  await fetch(`${config.BASE_URL}/schedules/trainer/${userInfo[0].sub}?day=${new Date(selectedDate).getDate()}&month=${new Date(selectedDate).getMonth()}&year=${new Date(selectedDate).getFullYear()}`,{
+    method: 'GET', // *GET, POST, PUT, DELETE, etc.
+    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: 'include', // include, *same-origin, omit
+    headers: {
+        'Authorization' : token,
+        'Content-Type'  : 'application/json',
+        
+    }
+  })
+  .then((res) => res.json())
+  .then((res) => {
+      
+      if(res.code ===  0){
+        setLessonsInfo(res.data)
+        console.log("스케줄 : ", res.data)
+      }else{
+        console.log(res)
+      }
+      
+      
+  })
+  .catch((e) => console.log(e))  
+}
+
+
+
   return (
     <View style={{ marginBottom: 20, alignSelf: 'stretch', flex: 1 ,  flexGrow: 1}}>
       <Text style={styles.date}>{strToday}</Text>
@@ -60,32 +97,37 @@ const ViewBody = ({ navigation, selectedDate }) => {
                 <Pressable
                   onPress={() => {
                     if (item.numOfLesson !== null) {
-                      navigation.navigate('ScheduleDetailInfo', { type: 'reserved' })
+                      navigation.navigate('ScheduleDetailInfo', { type: 'reserved', id:item.id })
                     } else {
-                      navigation.navigate('ScheduleDetailInfo', { type: 'notAvailable' })
+                      navigation.navigate('ScheduleDetailInfo', { type: 'notAvailable', id:item.id })
                     }
                   }}
                 >
                   {item.numOfLesson !== null ? (
                     <View style={[globalStyle.row, styles.scheduleInfo]}>
                       <View>
-                        <Image
-                          source={{
-                            uri: 'https://img.sbs.co.kr/newsnet/etv/upload/2021/04/23/30000684130_500.jpg',
-                          }}
-                          style={[styles.userImg]}
-                        />
+                        {item.partnership.member.user.profileImage === null?
+                            <Image
+                            style={[styles.userImg]}
+                              source={require('../../../assets/img/SignUp/emptyProfile.png')}
+                            />
+                        :
+                            <Image source={{uri:`${item.partnership.member.user.profileImage}`}} style={[styles.userImg]}/>
+                        }   
                       </View>
                       <View style={[globalStyle.col_2]}>
                         <Text
                           style={[globalStyle.body2, globalStyle.textDartGery, styles.textmargin]}
                         >
-                          {item.startTime} ~ {item.endTime}
+                          {new Date(item.startAt).getHours()+":"+new Date(item.startAt).getMilliseconds()} 
+                          ~ 
+                          {new Date(item.endAt).getHours()+":"+new Date(item.endAt).getMilliseconds()}
+                          
                         </Text>
 
                         <Text
                           style={[globalStyle.body2, styles.textmargin]}
-                        >{`${item.name} (${item.numOfLesson}번째 수업)`}</Text>
+                        >{`${item.partnership.member.user.name} (${item.numOfLesson}번째 수업)`}</Text>
                       </View>
                     </View>
                   ) : (
@@ -96,7 +138,9 @@ const ViewBody = ({ navigation, selectedDate }) => {
                         <Text
                           style={[globalStyle.body2, globalStyle.textDartGery, styles.textmargin]}
                         >
-                          {item.startTime} ~ {item.endTime}
+                          {new Date(item.startAt).getFullYear()+"-"+new Date(item.startAt).getMonth()+"-"+new Date(item.startAt).getDate()} 
+                          ~ 
+                          {new Date(item.endAt).getFullYear()+"-"+new Date(item.endAt).getMonth()+"-"+new Date(item.endAt).getDate()}
                         </Text>
 
                         <Text style={[globalStyle.body2, styles.textmargin]}>{`${item.name}`}</Text>

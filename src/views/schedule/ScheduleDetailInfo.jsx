@@ -14,12 +14,44 @@ import globalStyle from '../../utils/globalStyle'
 // assets
 import cross from '../../../assets/cross.png'
 
+// context
+import { UserContext } from '../../store/user'
+import config from "../../utils/config"
+import { decode } from 'js-base64';
+
 const ScheduleDetailInfo = ({ navigation, route }) => {
-  const { type } = route.params
+  const { userState, userDispatch }     = React.useContext(UserContext)
+  const splitJwt                        = userState.jwtToken.split(".")
+  const userInfo                        = React.useState(JSON.parse(decode(splitJwt[1])))
+  const { type, id } = route.params
 
   // state
   const [isModal, setIsModal] = useState(false)
   const [isNotAvailableModal, setIsNotAvailableModal] = useState(false)
+
+  async function DeleteSh() {
+    fetch(`${config.BASE_URL}/schedules/${id}`,
+    {
+      method  : 'DELETE', // *GET, POST, PUT, DELETE, etc.
+      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: 'include', // include, *same-origin, omit
+      headers: {
+        'Authorization' : userState.jwtToken,
+        'Content-Type'  : 'application/json',
+          
+      }
+    })
+    .then((res) => res.json())
+    .then((res) => {
+      navigation.goBack()
+      console.log(res)
+    })
+    .catch((e) => console.log(e))
+    
+  }
+
+
+
   return (
     <SafeAreaView style={{ backgroundColor: '#FFFFFF', flex: 1 }}>
       {isModal && (
@@ -29,7 +61,7 @@ const ScheduleDetailInfo = ({ navigation, route }) => {
           }}
           clickEvent={() => {
             // 삭제 api로 변경되어야 함
-            navigation.goBack()
+            DeleteSh()
           }}
           title={'스케줄 삭제'}
           body={'해당 스케쥴을 삭제합니다.\n회원의 수업 횟수에\n영향을 미칠 수 있으니 유의하세요.'}
@@ -43,7 +75,7 @@ const ScheduleDetailInfo = ({ navigation, route }) => {
           }}
           clickEvent={() => {
             // 삭제 api로 변경되어야 함
-            navigation.goBack()
+            DeleteSh()
           }}
           title={'스케줄 삭제'}
           body={'해당 스케쥴을 삭제합니다.'}

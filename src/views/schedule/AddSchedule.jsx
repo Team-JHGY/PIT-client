@@ -57,6 +57,7 @@ const AddSchedule = ({ navigation, route }) => {
     const currentDate = selectedDate || date
     setShow(Platform.OS === 'ios')
     setDate(currentDate)
+    console.log(selectedDate)
   }
 
   const showDatepicker = () => {
@@ -64,7 +65,7 @@ const AddSchedule = ({ navigation, route }) => {
   }
 
   // datetimepicker - 시작시간
-  const [fromTime, setFromTime] = useState(new Date(2021, 9, 4, 9, 0, 0))
+  const [fromTime, setFromTime] = useState(new Date())
   const [showFromTime, setShowFromTime] = useState(false)
 
   const onFromTimeChange = (event, selectedDate) => {
@@ -80,7 +81,7 @@ const AddSchedule = ({ navigation, route }) => {
   }
 
   // datetimepicker - 종료시간
-  const [toTime, setToTime] = useState(new Date(2021, 9, 4, 10, 0, 0))
+  const [toTime, setToTime] = useState(new Date())
   const [showToTime, setShowToTime] = useState(false)
 
   const onToTimeChange = (event, selectedDate) => {
@@ -103,11 +104,12 @@ const AddSchedule = ({ navigation, route }) => {
     
   }, [member])
 
-  function AddSchedulesFuc() {
-    const startAt = `${fromTime.getFullYear()}-${fromTime.getMonth()<10? "0"+fromTime.getMonth():fromTime.getMonth()}-${fromTime.getDate()<10? "0"+fromTime.getDate():fromTime.getDate()}T${fromTime.getHours()<10? "0"+fromTime.getHours():fromTime.getHours()}:${fromTime.getMinutes()<10? "0"+fromTime.getMinutes():fromTime.getMinutes()}:${fromTime.getSeconds()<10? "0"+fromTime.getSeconds():fromTime.getSeconds()}`
+  async function AddSchedulesFuc() {
 
-    const endAt   = `${toTime.getFullYear()}-${toTime.getMonth()<10? "0"+toTime.getMonth():toTime.getMonth()}-${toTime.getDate()<10? "0"+toTime.getDate():toTime.getDate()}T${toTime.getHours()<10? "0"+toTime.getHours():toTime.getHours()}:${toTime.getMinutes()<10? "0"+toTime.getMinutes():toTime.getMinutes()}:${toTime.getSeconds()<10? "0"+toTime.getSeconds():toTime.getSeconds()}`
-                     
+    const startAt = `${date.getFullYear()}-${date.getMonth()<10? "0"+date.getMonth():date.getMonth()}-${date.getDate()<10? "0"+date.getDate():date.getDate()}T${fromTime.getHours()<10? "0"+fromTime.getHours():fromTime.getHours()}:${fromTime.getMinutes()<10? "0"+fromTime.getMinutes():fromTime.getMinutes()}:${fromTime.getSeconds()<10? "0"+fromTime.getSeconds():fromTime.getSeconds()}`
+
+    const endAt   = `${date.getFullYear()}-${date.getMonth()<10? "0"+date.getMonth():date.getMonth()}-${date.getDate()<10? "0"+date.getDate():date.getDate()}T${toTime.getHours()<10? "0"+toTime.getHours():toTime.getHours()}:${toTime.getMinutes()<10? "0"+toTime.getMinutes():toTime.getMinutes()}:${toTime.getSeconds()<10? "0"+toTime.getSeconds():toTime.getSeconds()}`        
+
     const addScheduleRequest = {
       "trainerId"     : Number(userInfo[0].sub),
       "startAt"       : startAt,
@@ -118,10 +120,8 @@ const AddSchedule = ({ navigation, route }) => {
         "count"   : Number(repeatOptionIdx)
       }
     }
-
-    console.log(JSON.stringify({"addScheduleRequest": addScheduleRequest}))
-
-    fetch(`${config.BASE_URL}/schedules `,
+    
+    await fetch(`${config.BASE_URL}/schedules `,
     {
       method  : 'POST', // *GET, POST, PUT, DELETE, etc.
       cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -131,16 +131,11 @@ const AddSchedule = ({ navigation, route }) => {
         'Content-Type'  : 'application/json',
           
       },
-      body:JSON.stringify({"addScheduleRequest": addScheduleRequest})
+      body:JSON.stringify(addScheduleRequest)
     })
     .then((res) => res.json())
     .then((res) => {
-      console.log(res)
-      if(res.code !== 0){
-        alert(res.data)
-      }else{
-        alert(res.data)
-      }
+      navigation.goBack()
 
     })
     .catch((e) => console.log(e))

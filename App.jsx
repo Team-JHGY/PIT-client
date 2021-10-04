@@ -48,7 +48,6 @@ export function BottomNav() {
   const { userState, userDispatch } = useContext(UserContext)
 
   const { role } = userState
-  console.log(initialView)
 
 
   return (
@@ -57,7 +56,7 @@ export function BottomNav() {
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           let iconName
-          console.log("route.name", route.name)
+          //console.log("route.name", route.name)
           if (route.name === '운동/식단') {
             iconName = focused ? calendar_on : calendar_off
           } else if (route.name === '홈') {
