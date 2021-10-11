@@ -16,13 +16,13 @@ import cross from '../../../assets/cross.png'
 
 // context
 import { UserContext } from '../../store/user'
-import config from "../../utils/config"
-import { decode } from 'js-base64';
+import config from '../../utils/config'
+import { decode } from 'js-base64'
 
 const ScheduleDetailInfo = ({ navigation, route }) => {
-  const { userState, userDispatch }     = React.useContext(UserContext)
-  const splitJwt                        = userState.jwtToken.split(".")
-  const userInfo                        = React.useState(JSON.parse(decode(splitJwt[1])))
+  const { userState, userDispatch } = React.useContext(UserContext)
+  const splitJwt = userState.jwtToken.split('.')
+  const userInfo = React.useState(JSON.parse(decode(splitJwt[1])))
   const { type, id } = route.params
 
   // state
@@ -30,27 +30,22 @@ const ScheduleDetailInfo = ({ navigation, route }) => {
   const [isNotAvailableModal, setIsNotAvailableModal] = useState(false)
 
   async function DeleteSh() {
-    fetch(`${config.BASE_URL}/schedules/${id}`,
-    {
-      method  : 'DELETE', // *GET, POST, PUT, DELETE, etc.
+    fetch(`${config.BASE_URL}/schedules/${id}`, {
+      method: 'DELETE', // *GET, POST, PUT, DELETE, etc.
       cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
       credentials: 'include', // include, *same-origin, omit
       headers: {
-        'Authorization' : userState.jwtToken,
-        'Content-Type'  : 'application/json',
-          
-      }
+        Authorization: userState.jwtToken,
+        'Content-Type': 'application/json',
+      },
     })
-    .then((res) => res.json())
-    .then((res) => {
-      navigation.goBack()
-      console.log(res)
-    })
-    .catch((e) => console.log(e))
-    
+      .then((res) => res.json())
+      .then((res) => {
+        navigation.goBack()
+        console.log(res)
+      })
+      .catch((e) => console.log(e))
   }
-
-
 
   return (
     <SafeAreaView style={{ backgroundColor: '#FFFFFF', flex: 1 }}>
@@ -129,7 +124,7 @@ const ScheduleDetailInfo = ({ navigation, route }) => {
       <Text style={[globalStyle.heading2, { marginLeft: '5.55%', marginTop: 20 }]}>{'날짜'}</Text>
       <Text style={styles.subText}>{'2021.07.13(목)'}</Text>
       <Text style={styles.subText}>{'오전 9:00 ~ 오전 10:00'}</Text>
-      {type !== 'notAvailable' && (
+      {type === 'reserved' && (
         <Pressable>
           <View style={styles.navigateButton}>
             <Text style={globalStyle.body2Bold}>{'회원 수업 날짜로 이동'}</Text>
@@ -137,23 +132,25 @@ const ScheduleDetailInfo = ({ navigation, route }) => {
         </Pressable>
       )}
 
-      <View style={{ marginTop: 'auto', marginBottom: 30, flexDirection: 'row', height: 60 }}>
-        <CancelButton
-          buttonTitle={'삭제'}
-          clickEvent={() => {
-            if (type !== 'notAvailable') {
-              setIsModal(true)
-            } else {
-              setIsNotAvailableModal(true)
-            }
-          }}
-        />
-        <UpdateButton
-          clickEvent={() => {
-            navigation.navigate('AddSchedule', { mode: 'update' })
-          }}
-        />
-      </View>
+      {type !== 'noUpdate' && (
+        <View style={{ marginTop: 'auto', marginBottom: 30, flexDirection: 'row', height: 60 }}>
+          <CancelButton
+            buttonTitle={'삭제'}
+            clickEvent={() => {
+              if (type !== 'notAvailable') {
+                setIsModal(true)
+              } else {
+                setIsNotAvailableModal(true)
+              }
+            }}
+          />
+          <UpdateButton
+            clickEvent={() => {
+              navigation.navigate('AddSchedule', { mode: 'update' })
+            }}
+          />
+        </View>
+      )}
     </SafeAreaView>
   )
 }
