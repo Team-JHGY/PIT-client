@@ -120,7 +120,7 @@ const AddSchedule = ({ navigation, route }) => {
         "count"   : Number(repeatOptionIdx)
       }
     }
-    
+
     await fetch(`${config.BASE_URL}/schedules `,
     {
       method  : 'POST', // *GET, POST, PUT, DELETE, etc.
@@ -135,12 +135,10 @@ const AddSchedule = ({ navigation, route }) => {
     })
     .then((res) => res.json())
     .then((res) => {
+      alert(res.data)
       navigation.goBack()
-
     })
     .catch((e) => console.log(e))
-    
-    
   }
 
 

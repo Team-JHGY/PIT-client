@@ -17,6 +17,7 @@ import { decode } from 'js-base64';
 // context
 import { UserContext } from '../../store/user'
 import config from "../../utils/config"
+import axios from 'axios'
 
 export default function EditMyPage ({navigation,userData}) {
 
@@ -50,6 +51,7 @@ export default function EditMyPage ({navigation,userData}) {
               setBirthday(res.data.birthday)
               setGender(res.data.gender)
               setIntro(res.data.user.description)
+              setImage(res.data.user.profileImage.path)
             }else if(res.code === -13){
                 setUserData([])
             }
@@ -75,7 +77,7 @@ export default function EditMyPage ({navigation,userData}) {
               setName(res.data.user.name)
               setGender(res.data.gender)
               setIntro(res.data.user.description)
-                
+              setImage(res.data.user.profileImage.path)
             }else if(res.code === -13){
                 setUserData([])
             }
@@ -132,24 +134,23 @@ export default function EditMyPage ({navigation,userData}) {
           formData.append("profile", imageValue)
     
     setImage(result.uri)
-    
-    console.log(userState.jwtToken)
-    console.log(userInfo[0].sub)
 
-    fetch(`${config.BASE_URL}/profile-image/${userInfo[0].sub}`,formData,{
-      method  : 'POST', // *GET, POST, PUT, DELETE, etc.
+    axios.post(`${config.BASE_URL}/profile-image/${userInfo[0].sub}`,formData,{
+      //method  : 'POST', // *GET, POST, PUT, DELETE, etc.
       cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
       credentials: 'include', // include, *same-origin, omit
       headers: {
-        "Authorization" : userState.jwtToken,
-        "Content-Type"  : 'multipart/form-data',
+        'Authorization' : userState.jwtToken,
+        'Content-Type'  : 'multipart/form-data',
       }
     })
-    .then((res) => res.json())
+    //.then((res) => res.json())
     .then((res) => {
-      console.log(res)
       if(res.code !== 0){
-        alert(res.data)
+        alert(res.data.code)
+        navigation.goBack()
+      }else{
+        alert(res.data.code)
       }
 
     })
