@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react'
-import { View, StyleSheet, Text, SafeAreaView, Image, ScrollView } from 'react-native'
+import { View, StyleSheet, Text, SafeAreaView, Image, ScrollView, Pressable } from 'react-native'
 import * as SplashScreen from 'expo-splash-screen'
 import { Appbar } from 'react-native-paper'
 import { WithLocalSvg } from 'react-native-svg'
@@ -54,8 +54,14 @@ export default function MainView({ navigation }) {
         </View>
         <Text style={[globalStyle.heading2, { marginTop: 20 }]}>{'다음 수업'}</Text>
         <View style={styles.lesson}>
-          <Text style={styles.numOfLesson}>{'10회차'}</Text>
-          <Text style={styles.lessonTime}>{'6/21(월) 오후 5:00'}</Text>
+          <Pressable
+            onPress={() => {
+              navigation.navigate('ScheduleDetailInfo', { type: 'noUpdate' })
+            }}
+          >
+            <Text style={styles.numOfLesson}>{'10회차'}</Text>
+            <Text style={styles.lessonTime}>{'6/21(월) 오후 5:00'}</Text>
+          </Pressable>
         </View>
       </View>
     </SafeAreaView>

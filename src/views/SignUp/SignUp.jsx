@@ -50,6 +50,7 @@ const SignUpView = ({ navigation }) => {
           openModal={() => {
             setIsModal(true)
           }}
+          navigation={navigation}
         />
       )}
     </View>
