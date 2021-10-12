@@ -273,7 +273,7 @@ export default function AddMembersCode({ navigation }) {
                 </View>
                 <View style={modalstyles.UserInfo}>
                   {modalUserData.profileImage !== null ? (
-                    <Image source={{ uri: modalUserData.profileImage }} style={modalstyles.UserImg} />
+                    <Image source={{ uri: modalUserData.profileImage.path }} style={modalstyles.UserImg} />
                   ) : (
                     <Image
                       style={modalstyles.UserImg}

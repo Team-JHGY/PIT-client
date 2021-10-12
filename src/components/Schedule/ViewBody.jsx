@@ -49,31 +49,41 @@ const ViewBody = ({ navigation, selectedDate }) => {
     GetMonthTrainerSchedule(userState.jwtToken)
   }, [selectedDate])
 
-//해당 날짜 데이터 가져오기
+  //해당 날짜 데이터 가져오기
   async function GetMonthTrainerSchedule(token) {
 
-  await fetch(`${config.BASE_URL}/schedules/trainer/${userInfo[0].sub}?day=${new Date(selectedDate).getDate()}&month=${new Date(selectedDate).getMonth()}&year=${new Date(selectedDate).getFullYear()}`,{
-    method: 'GET', // *GET, POST, PUT, DELETE, etc.
-    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-    credentials: 'include', // include, *same-origin, omit
-    headers: {
-        'Authorization' : token,
-        'Content-Type'  : 'application/json',
-        
-    }
-  })
-  .then((res) => res.json())
-  .then((res) => {
-      
-      if(res.code ===  0){
-        setLessonsInfo(res.data)
-        console.log("스케줄 : ", res.data)
-      }else{
-        console.log(res)
+    await fetch(`${config.BASE_URL}/schedules/trainer/${userInfo[0].sub}?day=${new Date(selectedDate).getDate()}&month=${new Date(selectedDate).getMonth()}&year=${new Date(selectedDate).getFullYear()}`,{
+      method: 'GET', // *GET, POST, PUT, DELETE, etc.
+      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: 'include', // include, *same-origin, omit
+      headers: {
+          'Authorization' : token,
+          'Content-Type'  : 'application/json',
+          
       }
-  })
-  .catch((e) => console.log(e))  
-}
+    })
+    .then((res) => res.json())
+    .then((res) => {
+        
+        if(res.code ===  0){
+          setLessonsInfo(res.data)
+          console.log("스케줄 : ", res.data)
+        }else{
+          console.log(res)
+        }
+        
+        
+    })
+    .catch((e) => console.log(e))  
+  }
+
+  React.useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      GetMonthTrainerSchedule(userState.jwtToken)
+    });
+    return unsubscribe;
+  }, [navigation]);
+
   return (
     <View style={{ marginBottom: 20, alignSelf: 'stretch', flex: 1 ,  flexGrow: 1}}>
       <Text style={styles.date}>{strToday}</Text>
@@ -104,7 +114,7 @@ const ViewBody = ({ navigation, selectedDate }) => {
                               source={require('../../../assets/img/SignUp/emptyProfile.png')}
                             />
                         :
-                            <Image source={{uri:`${item.partnership.member.user.profileImage}`}} style={[styles.userImg]}/>
+                            <Image source={{uri:`${item.partnership.member.user.profileImage.path}`}} style={[styles.userImg]}/>
                         }   
                       </View>
                       <View style={[globalStyle.col_2]}>

@@ -47,6 +47,8 @@ const ViewBodyForMember = ({ selectedDate }) => {
       setTrainerLessonInfo([])
     }
   }, [selectedDate])
+
+  
   return (
     <View style={{ marginBottom: 20, alignSelf: 'stretch', flex: 1 }}>
       <Text style={styles.title}>{strToday}</Text>

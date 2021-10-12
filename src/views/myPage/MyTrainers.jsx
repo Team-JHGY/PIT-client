@@ -79,6 +79,14 @@ export default function MyTrainers({navigation}) {
         
                 <View>
                     <Text style={styles.disableText}>등록된 회원이 없습니다.</Text>
+                    <View style={styles.addTrainer}>
+                        <Pressable 
+                            style={styles.trainerAddBtn}
+                            onPress={()=> {navigation.navigate('NewMembers')}}
+                        >
+                            <Text style={styles.trainerAddBtnTex}>트레이너 추가</Text>
+                        </Pressable>
+                    </View>
                 </View>
             :
             
@@ -88,7 +96,7 @@ export default function MyTrainers({navigation}) {
                             <View key={index} style={[globalStyle.row, styles.userInfo]}>
                                 <View>
                                     {item.trainer.user.profileImage !== null? (
-                                        <Image source={{ uri: item.trainer.user.profileImage }} style={styles.userImg} />
+                                        <Image source={{ uri: item.trainer.user.profileImage.path }} style={styles.userImg} />
                                     ) : (
                                         <Image
                                         style={styles.userImg}

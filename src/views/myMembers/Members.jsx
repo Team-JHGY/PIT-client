@@ -123,7 +123,7 @@ export default function Members({navigation}) {
                                 <View style={[globalStyle.row, styles.userInfo]}>
                                     <View>
                                         {item.member.user.profileImage !== null ? (
-                                            <Image source={{ uri: item.member.user.profileImage }} style={styles.userImg} />
+                                            <Image source={{ uri: item.member.user.profileImage.path }} style={styles.userImg} />
                                         ) : (
                                             <Image
                                             style={styles.userImg}

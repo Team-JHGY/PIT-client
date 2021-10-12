@@ -45,6 +45,13 @@ export default function MyPage({navigation}) {
         MyTrainersList(userState.jwtToken)
     },[])
 
+    React.useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            AddtoLocalUserAuth()
+        });
+        return unsubscribe;
+    }, [navigation]);
+
     const copyToClipboard = () => {
 
         Clipboard.setString(String(userData.user.code))
@@ -169,7 +176,7 @@ export default function MyPage({navigation}) {
                             source={require('../../../assets/img/SignUp/emptyProfile.png')}
                         />
                     :
-                        <Image source={{uri:`${userData.user.profileImage}`}} style={styles.userImg}/>
+                        <Image source={{uri:userData.user.profileImage.path}} style={styles.userImg}/>
                     }   
                 </View>
                 

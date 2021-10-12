@@ -20,7 +20,7 @@ export default function LoginView({ navigation }) {
     _axios
       .post('/auth/fake-signin', JSON.stringify({ accessToken: accessToken, provider: 'KAKAO' }))
       .then((res) => {
-        console.log(res)
+        console.log(res.data.data.token)
         if (res.status === 200) {
           userDispatch({
             type: 'SET_JWT_TOKEN',
