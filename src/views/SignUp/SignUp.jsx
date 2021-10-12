@@ -5,10 +5,15 @@ import ModalDialog from '../../components/Common/ModalDialog'
 
 import { View } from 'react-native'
 
-const SignUpView = ({ navigation }) => {
+const SignUpView = ({ navigation, route }) => {
   const [step, setStep] = useState(1)
   const [isModal, setIsModal] = useState(false)
 
+  // route
+  let routeMsg = null
+  if (route.params !== undefined) {
+    routeMsg = route.params
+  }
   return (
     <View style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
       {isModal && (
@@ -51,6 +56,7 @@ const SignUpView = ({ navigation }) => {
             setIsModal(true)
           }}
           navigation={navigation}
+          provider={routeMsg.provider}
         />
       )}
     </View>

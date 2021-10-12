@@ -105,14 +105,14 @@ export default function LoginView({ navigation }) {
       >
         <Image source={KakaoLogin} style={{ width: 400, height: 70 }} />
       </Pressable>
-      {/* <Pressable
+      <Pressable
         style={styles.svgWrapper}
         onPress={() => {
-          navigation.navigate('SignUp')
+          navigation.navigate('NaverLogin')
         }}
       >
         <Image source={NaverLogin} style={{ width: 400, height: 70, marginTop: 20 }} />
-      </Pressable> */}
+      </Pressable>
       <Text style={styles.footerText}>PIT project</Text>
     </View>
   )

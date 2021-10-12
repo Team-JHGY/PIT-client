@@ -16,7 +16,6 @@ import { decode } from 'js-base64';
 import addFloating from '../../../assets/img/Schedule/addFloating.svg'
 
 const ViewBody = ({ navigation, selectedDate }) => {
-  
   const [lessonsInfo, setLessonsInfo] = useState([])
   const { userState, userDispatch }   = React.useContext(UserContext)
   const splitJwt                      = userState.jwtToken.split(".")
@@ -29,14 +28,12 @@ const ViewBody = ({ navigation, selectedDate }) => {
     ' (' +
     getDayOfWeek(selectedDate) +
     ')'
-  
   React.useEffect(()=>{
     GetMonthTrainerSchedule(userState.jwtToken)
   },[])
 
   useEffect(() => {
     // dummy
-    console.log(selectedDate)
     let daybeforeYesterday = new Date()
     daybeforeYesterday.setDate(daybeforeYesterday.getDate() - 2)
 
@@ -53,7 +50,7 @@ const ViewBody = ({ navigation, selectedDate }) => {
   }, [selectedDate])
 
 //해당 날짜 데이터 가져오기
-async function GetMonthTrainerSchedule(token) {
+  async function GetMonthTrainerSchedule(token) {
 
   await fetch(`${config.BASE_URL}/schedules/trainer/${userInfo[0].sub}?day=${new Date(selectedDate).getDate()}&month=${new Date(selectedDate).getMonth()}&year=${new Date(selectedDate).getFullYear()}`,{
     method: 'GET', // *GET, POST, PUT, DELETE, etc.
@@ -74,14 +71,9 @@ async function GetMonthTrainerSchedule(token) {
       }else{
         console.log(res)
       }
-      
-      
   })
   .catch((e) => console.log(e))  
 }
-
-
-
   return (
     <View style={{ marginBottom: 20, alignSelf: 'stretch', flex: 1 ,  flexGrow: 1}}>
       <Text style={styles.date}>{strToday}</Text>

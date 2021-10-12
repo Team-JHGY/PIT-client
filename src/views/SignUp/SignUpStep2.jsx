@@ -38,10 +38,9 @@ export default function SignUpStep2(props) {
   //const [gender, setGender] = React.useState('M')
   // const [userContext, setUsetContext] = React.useState()
 
-  const { goBackStep, openModal, onPress } = props //앞에서 전달받은 정보
+  const { goBackStep, openModal, navigation, provider } = props //앞에서 전달받은 정보
   const { userState, userDispatch } = useContext(UserContext)
   const { name, gender, birthday, intro, accessToken, refreshToken, expiresIn, role } = userState
-
   useEffect(() => {
     ;(async () => {
       if (Platform.OS !== 'web') {
@@ -227,46 +226,96 @@ export default function SignUpStep2(props) {
           name={'가입완료'}
           isEnable={buttonEnable}
           onPress={() => {
-            const birthdayFormat =
+            if(role === 'MEMBER')
+            {
+              const birthdayFormat =
               birthday.substr(0, 4) + '-' + birthday.substr(4, 2) + '-' + birthday.substr(6, 2)
-            var payload = {
-              name: name,
-              description: intro,
-              gender: gender,
-              birthday: birthdayFormat,
-              provider: 'KAKAO',
-              accessToken: accessToken,
-              refreshToken: refreshToken,
-              expiresIn: expiresIn,
-            }
-            _axios
-              .post('/auth/signup/member', JSON.stringify(payload))
-              .then((res) => {
-                if (res.status === 200) {
-                  var payload = {
-                    accessToken: accessToken,
-                    provider: 'KAKAO',
+              var payload = {
+                name: name,
+                description: intro,
+                gender: gender,
+                birthday: birthdayFormat,
+                provider: provider,
+                accessToken: accessToken,
+                refreshToken: refreshToken,
+                expiresIn: expiresIn,
+              }
+              _axios
+                .post('/auth/signup/member', JSON.stringify(payload))
+                .then((res) => {
+                  if (res.status === 200) {
+                    var payload = {
+                      accessToken: accessToken,
+                      provider: provider,
+                    }
+                    return new Promise((resolve, reject) => {
+                      resolve(payload)
+                    })
+                  } else {
+                    return new Promise((resolve, reject) => {
+                      reject(res.status)
+                    })
                   }
-                  return new Promise((resolve, reject) => {
-                    resolve(payload)
+                })
+                .catch((err) => {
+                  console.log(err)
+                })
+                .then((payload) => {
+                  return _axios.post('/auth/signin', JSON.stringify(payload))
+                })
+                .then((res) => {
+                  AsyncStorage.setItem('JWT', res.data.data.token)
+                  userDispatch({
+                    type: 'SET_JWT_TOKEN',
+                    payload: { jwtToken: res.data.data.token },
                   })
-                } else {
-                  return new Promise((resolve, reject) => {
-                    reject(res.status)
+                  navigation.replace('Home')
+                })   
+            }
+            else
+            {
+              var payload = {
+                name: name,
+                description: intro,
+                provider: provider,
+                accessToken: accessToken,
+                refreshToken: refreshToken,
+                expiresIn: expiresIn,
+              }
+              console.log(payload)
+              _axios
+                .post('/auth/signup/trainer', JSON.stringify(payload))
+                .then((res) => {
+                  console.log('?')
+                  if (res.status === 200) {
+                    var payload = {
+                      accessToken: accessToken,
+                      provider: provider,
+                    }
+                    return new Promise((resolve, reject) => {
+                      resolve(payload)
+                    })
+                  } else {
+                    return new Promise((resolve, reject) => {
+                      reject(res.status)
+                    })
+                  }
+                })
+                .catch((err) => {
+                  console.log(err)
+                })
+                .then((payload) => {
+                  return _axios.post('/auth/signin', JSON.stringify(payload))
+                })
+                .then((res) => {
+                  AsyncStorage.setItem('JWT', res.data.data.token)
+                  userDispatch({
+                    type: 'SET_JWT_TOKEN',
+                    payload: { jwtToken: res.data.data.token },
                   })
-                }
-              })
-              .catch((err) => {
-                console.log(err)
-              })
-              .then((payload) => {
-                return _axios.post('/auth/signin', JSON.stringify(payload))
-              })
-              .then((res) => {
-                console.log(res)
-                AsyncStorage.setItem('JWT', res.data.data.token)
-                props.navigation.replace('Home')
-              })
+                  navigation.replace('Home')
+                })   
+            }
           }}
         />
       </View>
