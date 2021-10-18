@@ -121,9 +121,20 @@ const ViewBody = ({ navigation, selectedDate }) => {
                         <Text
                           style={[globalStyle.body2, globalStyle.textDartGery, styles.textmargin]}
                         >
-                          {new Date(item.startAt).getHours()+":"+new Date(item.startAt).getMilliseconds()} 
-                          ~ 
-                          {new Date(item.endAt).getHours()+":"+new Date(item.endAt).getMilliseconds()}
+                          
+                          {new Date(item.startAt).getHours >12?
+                            "오전"+new Date(item.startAt).getHours()+":"+new Date(item.startAt).getMinutes()
+                            :
+                            "오후"+new Date(item.startAt).getHours()+":"+new Date(item.startAt).getMinutes()
+                          
+                          
+                          +"~"+
+                          
+                            (item.endAt).getHours >12?
+                            "오전"+new Date(item.endAt).getHours()+":"+new Date(item.endAt).getMinutes()
+                            :
+                            "오후"+new Date(item.endAt).getHours()+":"+new Date(item.endAt).getMinutes()
+                          }
                           
                         </Text>
 
@@ -140,9 +151,18 @@ const ViewBody = ({ navigation, selectedDate }) => {
                         <Text
                           style={[globalStyle.body2, globalStyle.textDartGery, styles.textmargin]}
                         >
-                          {new Date(item.startAt).getFullYear()+"-"+new Date(item.startAt).getMonth()+"-"+new Date(item.startAt).getDate()} 
-                          ~ 
-                          {new Date(item.endAt).getFullYear()+"-"+new Date(item.endAt).getMonth()+"-"+new Date(item.endAt).getDate()}
+                           {new Date(item.startAt).getHours >12?
+                            "오전"+new Date(item.startAt).getHours()+":"+new Date(item.startAt).getMinutes()
+                            :
+                            "오후"+new Date(item.startAt).setHours(new Date(item.startAt).getHours()-12).getHours()+":"+new Date(item.startAt).getMinutes()
+                           }
+                           ~
+                           {
+                            new Date(item.endAt).getHours >12?
+                            "오전"+new Date(item.endAt).getHours()+":"+new Date(item.endAt).getMinutes()
+                            :
+                            "오후"+new Date(item.endAt).setHours(new Date(item.endAt).getHours()-12).getHours()+":"+new Date(item.endAt).getMinutes()
+                          }
                         </Text>
 
                         <Text style={[globalStyle.body2, styles.textmargin]}>{`${item.name}`}</Text>
