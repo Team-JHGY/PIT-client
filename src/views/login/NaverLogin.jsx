@@ -4,16 +4,17 @@ import { WebView } from 'react-native-webview'
 import { UserContext } from '../../store/user'
 import axios from 'axios'
 import config from '../../utils/config'
-export default KakaoLogin = ({ navigation }) => {
+export default NaverLogin = ({ navigation }) => {
   var i = 0
   const { userState, userDispatch } = useContext(UserContext)
   const [url, setUrl] = useState(
-    config.KAKAO_OAUTH_URL +
-      '/oauth/authorize?client_id=' +
-      config.CLIENT_ID +
-      '&response_type=code&redirect_uri=' +
+    config.NAVER_OAUTH_URL +
+      '/authorize?response_type=code&client_id=' +
+      config.NAVER_CLIENT_ID +
+      '&redirect_uri=' +
       config.BASE_URL +
-      '/client/white'
+      '/client/white&state=' +
+      config.NAVER_CLIENT_STATE_STRING
   )
   const onNavigationStateChange = (navState) => {
     if (url !== navState.url) {
@@ -32,14 +33,14 @@ export default KakaoLogin = ({ navigation }) => {
           const qs = require('query-string')
           var data = {
             grant_type: 'authorization_code',
-            client_id: config.CLIENT_ID,
-            redirect_uri: 'http://3.36.113.168:8080/client/white',
+            client_id: config.NAVER_CLIENT_ID,
             code: code,
-            client_secret: config.KAKAO_CLIENT_SECRET_ID,
+            client_secret: config.NAVER_CLIENT_SECRET_ID,
+            state: config.NAVER_CLIENT_STATE_STRING
           }
           axios({
             method: 'post',
-            url: 'https://kauth.kakao.com/oauth/token',
+            url: config.NAVER_OAUTH_URL + '/token',
             data: qs.stringify(data),
             config: { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
           })
@@ -53,7 +54,7 @@ export default KakaoLogin = ({ navigation }) => {
                   expiresIn: res.data.expires_in,
                 },
               })
-              navigation.replace('SignUp',{provider:'KAKAO'})
+              navigation.replace('SignUp',{provider:'NAVER'})
             })
             .catch((e) => {
               console.log(e)

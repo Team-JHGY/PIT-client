@@ -16,7 +16,6 @@ import { decode } from 'js-base64';
 import addFloating from '../../../assets/img/Schedule/addFloating.svg'
 
 const ViewBody = ({ navigation, selectedDate }) => {
-  
   const [lessonsInfo, setLessonsInfo] = useState([])
   const { userState, userDispatch }   = React.useContext(UserContext)
   const splitJwt                      = userState.jwtToken.split(".")
@@ -29,14 +28,12 @@ const ViewBody = ({ navigation, selectedDate }) => {
     ' (' +
     getDayOfWeek(selectedDate) +
     ')'
-  
   React.useEffect(()=>{
     GetMonthTrainerSchedule(userState.jwtToken)
   },[])
 
   useEffect(() => {
     // dummy
-    console.log(selectedDate)
     let daybeforeYesterday = new Date()
     daybeforeYesterday.setDate(daybeforeYesterday.getDate() - 2)
 
@@ -51,14 +48,6 @@ const ViewBody = ({ navigation, selectedDate }) => {
 
     GetMonthTrainerSchedule(userState.jwtToken)
   }, [selectedDate])
-
-
-  React.useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      GetMonthTrainerSchedule(userState.jwtToken)
-    });
-    return unsubscribe;
-  }, [navigation]);
 
   //해당 날짜 데이터 가져오기
   async function GetMonthTrainerSchedule(token) {

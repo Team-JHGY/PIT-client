@@ -21,6 +21,7 @@ import AddMembersCode from './src/views/myMembers/AddMemberCode'
 import SignUpView from './src/views/SignUp/SignUp'
 import EditMyPage from './src/views/myPage/EidtMyPage'
 import KakaoLogin from './src/views/login/KakaoLogin'
+import NaverLogin from './src/views/login/NaverLogin'
 import MyTrainers from './src/views/myPage/MyTrainers'
 import MealPlan from "./src/views/mealPlan/MealPlan"
 import AddMealPlan from "./src/views/mealPlan/AddMealPlan"
@@ -165,6 +166,7 @@ export default function App() {
           <Stack.Screen name="EditMyPage" component={EditMyPage} />
           <Stack.Screen name="AddMembersCode" component={AddMembersCode} />
           <Stack.Screen name="KakaoLogin" component={KakaoLogin} />
+          <Stack.Screen name="NaverLogin" component={NaverLogin} />
           <Stack.Screen name="MyTrainers" component={MyTrainers} />
           <Stack.Screen name="MealPlan" component={MealPlan}/>
           <Stack.Screen name="AddMealPlan" component={AddMealPlan}/>
