@@ -146,7 +146,7 @@ export default function SignUpStep2(props) {
             }}
           />
         </View>
-        {role === 'MEMBER' ? null : (
+        {role === 'TRAINER' ? null : (
           <>
             <View style={globalStyle.textField}>
               <View style={styles.titleWrapper}>
@@ -226,10 +226,9 @@ export default function SignUpStep2(props) {
           name={'가입완료'}
           isEnable={buttonEnable}
           onPress={() => {
-            if(role === 'MEMBER')
-            {
+            if (role === 'MEMBER') {
               const birthdayFormat =
-              birthday.substr(0, 4) + '-' + birthday.substr(4, 2) + '-' + birthday.substr(6, 2)
+                birthday.substr(0, 4) + '-' + birthday.substr(4, 2) + '-' + birthday.substr(6, 2)
               var payload = {
                 name: name,
                 description: intro,
@@ -270,10 +269,8 @@ export default function SignUpStep2(props) {
                     payload: { jwtToken: res.data.data.token },
                   })
                   navigation.replace('Home')
-                })   
-            }
-            else
-            {
+                })
+            } else {
               var payload = {
                 name: name,
                 description: intro,
@@ -314,7 +311,7 @@ export default function SignUpStep2(props) {
                     payload: { jwtToken: res.data.data.token },
                   })
                   navigation.replace('Home')
-                })   
+                })
             }
           }}
         />
