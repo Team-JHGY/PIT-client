@@ -7,6 +7,11 @@ import Pitlogo from '../../assets/img/Login/PIT_logo.svg'
 import KakaoLogin from '../../assets/img/Login/Kakao_login.png'
 import NaverLogin from '../../assets/img/Login/Naver_login.png'
 import { WithLocalSvg } from 'react-native-svg'
+import {
+  TEST_TRAINER1_PROFILE,
+  TEST_TRAINER2_PROFILE,
+  TEST_MEMBER1_PROFILE,
+} from '../utils/constant'
 
 // context
 import { UserContext } from '../store/user'
@@ -16,7 +21,7 @@ export default function LoginView({ navigation }) {
     await SplashScreen.hideAsync()
   })
   const { userState, userDispatch } = useContext(UserContext)
-  const fakeLogin = (accessToken, role) => {
+  const fakeLogin = (accessToken, role, name, profile) => {
     _axios
       .post('/auth/fake-signin', JSON.stringify({ accessToken: accessToken, provider: 'KAKAO' }))
       .then((res) => {
@@ -30,6 +35,16 @@ export default function LoginView({ navigation }) {
             type: 'SET_ROLE',
             payload: { role: role },
           })
+          userDispatch({
+            type: 'SET_MEMBER_NAME',
+            payload: { name: name },
+          })
+          if (profile !== undefined) {
+            userDispatch({
+              type: 'SET_PROFILE',
+              payload: { profile: profile },
+            })
+          }
           navigation.navigate('Home')
         }
       })
@@ -42,54 +57,64 @@ export default function LoginView({ navigation }) {
 
       <View style={{ flexDirection: 'row' }}>
         <View style={{ flex: 1, alignItems: 'center' }}>
-          <Pressable onPress={() => fakeLogin('dummytoken11', 'trainer')}>
+          <Pressable
+            onPress={() =>
+              fakeLogin('dummytoken11', 'trainer', '트레이너 계정1', TEST_TRAINER1_PROFILE)
+            }
+          >
             <View style={styles.testAccount}>
               <Text>트레이너 계정 1</Text>
             </View>
           </Pressable>
-          <Pressable onPress={() => fakeLogin('dummytoken12', 'trainer')}>
+          <Pressable
+            onPress={() =>
+              fakeLogin('dummytoken12', 'trainer', '트레이너 계정2', TEST_TRAINER2_PROFILE)
+            }
+          >
             <View style={styles.testAccount}>
               <Text>트레이너 계정 2</Text>
             </View>
           </Pressable>
-          <Pressable onPress={() => fakeLogin('dummytoken13', 'trainer')}>
+          <Pressable onPress={() => fakeLogin('dummytoken13', 'trainer', '트레이너 계정3', '')}>
             <View style={styles.testAccount}>
               <Text>트레이너 계정 3</Text>
             </View>
           </Pressable>
-          <Pressable onPress={() => fakeLogin('dummytoken14', 'trainer')}>
+          <Pressable onPress={() => fakeLogin('dummytoken14', 'trainer', '트레이너 계정4')}>
             <View style={styles.testAccount}>
               <Text>트레이너 계정 4</Text>
             </View>
           </Pressable>
-          <Pressable onPress={() => fakeLogin('dummytoken15', 'trainer')}>
+          <Pressable onPress={() => fakeLogin('dummytoken15', 'trainer', '트레이너 계정5')}>
             <View style={styles.testAccount}>
               <Text>트레이너 계정 5</Text>
             </View>
           </Pressable>
         </View>
         <View style={{ flex: 1, alignItems: 'center' }}>
-          <Pressable onPress={() => fakeLogin('dummytoken21', 'member')}>
+          <Pressable
+            onPress={() => fakeLogin('dummytoken21', 'member', '회원계정1', TEST_MEMBER1_PROFILE)}
+          >
             <View style={styles.testAccount}>
               <Text>회원 계정 1</Text>
             </View>
           </Pressable>
-          <Pressable onPress={() => fakeLogin('dummytoken22', 'member')}>
+          <Pressable onPress={() => fakeLogin('dummytoken22', 'member', '회원계정2')}>
             <View style={styles.testAccount}>
               <Text>회원 계정 2</Text>
             </View>
           </Pressable>
-          <Pressable onPress={() => fakeLogin('dummytoken23', 'member')}>
+          <Pressable onPress={() => fakeLogin('dummytoken23', 'member', '회원계정3')}>
             <View style={styles.testAccount}>
               <Text>회원 계정 3</Text>
             </View>
           </Pressable>
-          <Pressable onPress={() => fakeLogin('dummytoken24', 'member')}>
+          <Pressable onPress={() => fakeLogin('dummytoken24', 'member', '회원계정4')}>
             <View style={styles.testAccount}>
               <Text>회원 계정 4</Text>
             </View>
           </Pressable>
-          <Pressable onPress={() => fakeLogin('dummytoken25', 'member')}>
+          <Pressable onPress={() => fakeLogin('dummytoken25', 'member', '회원계정5')}>
             <View style={styles.testAccount}>
               <Text>회원 계정 5</Text>
             </View>

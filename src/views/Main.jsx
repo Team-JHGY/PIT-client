@@ -12,29 +12,67 @@ import trainer from '../../assets/img/SignUp/trainer.svg'
 import calendar from '../../assets/img/Schedule/calendar.png'
 import goal from '../../assets/img/Schedule/goal.png'
 import report from '../../assets/img/Schedule/report.png'
+import emptyProfile from '../../assets/img/SignUp/emptyProfile.png'
 
 // components
 import ScheduleActionItem from '../components/Schedule/ScheduleActionItem'
 
-export default function MainView({ navigation }) {
+// context
+import { UserContext } from '../store/user'
+
+export default function MainView({ navigation, route }) {
   const onLayoutRootView = useCallback(async () => {
     await SplashScreen.hideAsync()
   })
+
+  const { userState, userDispatch } = React.useContext(UserContext)
+
+  // route
+  let routeMsg = null
+  let memberProfilePath = null
+  if (route.params !== undefined) {
+    routeMsg = route.params
+    if (routeMsg.memberInfo.member.user.profileImage !== null)
+      memberProfilePath = routeMsg.memberInfo.member.user.profileImage.path
+  }
+  if (memberProfilePath === null) {
+    memberProfilePath = emptyProfile
+  }
+
   return (
     <SafeAreaView style={styles.body} onLayout={onLayoutRootView}>
       <View style={{ width: '88.8%', marginTop: 30, flex: 1 }}>
         <View style={[globalStyle.row, styles.appBar]}>
-          <Image
-            style={styles.userImg}
-            source={{
-              uri: 'https://img.sbs.co.kr/newsnet/etv/upload/2021/04/23/30000684130_500.jpg',
-            }}
-          />
-          <Text>양치승 T</Text>
+          {userState.role === 'member' ? (
+            <Image
+              style={[styles.userImg]}
+              source={{
+                uri: userState.profile,
+              }}
+            />
+          ) : (
+            <Image
+              style={[styles.userImg, { borderColor: '#11F37E' }]}
+              source={
+                routeMsg.memberInfo.member.user.profileImage !== null
+                  ? {
+                      uri: memberProfilePath,
+                    }
+                  : memberProfilePath
+              }
+            />
+          )}
+          {userState.role === 'member' ? (
+            <Text>{userState.name}</Text>
+          ) : (
+            <Text>{routeMsg.memberInfo.member.user.name}</Text>
+          )}
         </View>
         <WithLocalSvg style={styles.svgImage} asset={trainer} width={130} height={130} />
         <Text style={[globalStyle.heading1, { marginTop: 5 }]}>
-          {'이재린 회원님 안녕하세요\n오늘도 화이팅!'}
+          {userState.role === 'member'
+            ? `${userState.name}회원님 안녕하세요\n오늘도 화이팅!`
+            : `${routeMsg.memberInfo.member.user.name}회원님 안녕하세요\n오늘도 화이팅!`}
         </Text>
         <View
           style={[
@@ -49,7 +87,13 @@ export default function MainView({ navigation }) {
               navigation.navigate('Schedule', { type: 'member' })
             }}
           />
-          <ScheduleActionItem image={goal} text={'PT 목표'} />
+          <ScheduleActionItem
+            image={goal}
+            text={'PT 목표'}
+            clickEvent={() => {
+              navigation.navigate('PTGoal', { role: userState.role })
+            }}
+          />
           <ScheduleActionItem image={report} text={'레포트'} />
         </View>
         <Text style={[globalStyle.heading2, { marginTop: 20 }]}>{'다음 수업'}</Text>
