@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { View, StyleSheet, Text, SafeAreaView, Image, ScrollView, Pressable } from 'react-native'
 import * as SplashScreen from 'expo-splash-screen'
 import { Appbar } from 'react-native-paper'
@@ -6,6 +6,8 @@ import { WithLocalSvg } from 'react-native-svg'
 
 // utils
 import globalStyle from '../utils/globalStyle'
+import { decode } from 'js-base64'
+import config from '../utils/config'
 
 // assets
 import trainer from '../../assets/img/SignUp/trainer.svg'
@@ -26,18 +28,51 @@ export default function MainView({ navigation, route }) {
   })
 
   const { userState, userDispatch } = React.useContext(UserContext)
+  const [trainerProfile, setTrainerProfile] = useState('')
+  const [trainerName, setTrainerName] = useState('')
+  const splitJwt = userState.jwtToken.split('.')
+  const userInfo = JSON.parse(decode(splitJwt[1]))
 
   // route
   let routeMsg = null
-  let memberProfilePath = null
+  let memberProfilePath = emptyProfile
   if (route.params !== undefined) {
     routeMsg = route.params
     if (routeMsg.memberInfo.member.user.profileImage !== null)
       memberProfilePath = routeMsg.memberInfo.member.user.profileImage.path
   }
-  if (memberProfilePath === null) {
-    memberProfilePath = emptyProfile
+
+  let getActivatedTrainerInfo = async () => {
+    await fetch(`${config.BASE_URL}/partnerships/${userInfo.sub}/trainers`, {
+      method: 'GET', // *GET, POST, PUT, DELETE, etc.
+      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: 'include', // include, *same-origin, omit
+      headers: {
+        Authorization: userState.jwtToken,
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        console.log(res)
+        if (res.code === 0) {
+          let activatedTrainerInfo = res.data.trainers.find((v, i) => {
+            if (v.isEnabled === true) return true
+          })
+          setTrainerProfile(activatedTrainerInfo.trainer.user.profileImage.path)
+          setTrainerName(activatedTrainerInfo.trainer.user.name)
+        } else {
+          console.log(res)
+        }
+      })
+      .catch((e) => console.log(e))
   }
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      if (userState.role === 'member') getActivatedTrainerInfo()
+    })
+    return unsubscribe
+  }, [navigation])
 
   return (
     <SafeAreaView style={styles.body} onLayout={onLayoutRootView}>
@@ -46,9 +81,13 @@ export default function MainView({ navigation, route }) {
           {userState.role === 'member' ? (
             <Image
               style={[styles.userImg]}
-              source={{
-                uri: userState.profile,
-              }}
+              source={
+                trainerProfile !== ''
+                  ? {
+                      uri: trainerProfile,
+                    }
+                  : emptyProfile
+              }
             />
           ) : (
             <Image
@@ -63,7 +102,7 @@ export default function MainView({ navigation, route }) {
             />
           )}
           {userState.role === 'member' ? (
-            <Text>{userState.name}</Text>
+            <Text>{trainerName}</Text>
           ) : (
             <Text>{routeMsg.memberInfo.member.user.name}</Text>
           )}
