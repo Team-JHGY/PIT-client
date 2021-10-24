@@ -28,18 +28,18 @@ export default function MainView({ navigation, route }) {
   })
 
   const { userState, userDispatch } = React.useContext(UserContext)
-  const [trainerProfile, setTrainerProfile] = useState('')
+  const [trainerProfile, setTrainerProfile] = useState(emptyProfile)
   const [trainerName, setTrainerName] = useState('')
+  const [partnershipId, setPartnershipId] = useState(null)
   const splitJwt = userState.jwtToken.split('.')
   const userInfo = JSON.parse(decode(splitJwt[1]))
-
   // route
   let routeMsg = null
-  let memberProfilePath = emptyProfile
+  let memberProfile = emptyProfile
   if (route.params !== undefined) {
     routeMsg = route.params
     if (routeMsg.memberInfo.member.user.profileImage !== null)
-      memberProfilePath = routeMsg.memberInfo.member.user.profileImage.path
+      memberProfile = routeMsg.memberInfo.member.user.profileImage.path
   }
 
   let getActivatedTrainerInfo = async () => {
@@ -54,13 +54,13 @@ export default function MainView({ navigation, route }) {
     })
       .then((res) => res.json())
       .then((res) => {
-        console.log(res)
         if (res.code === 0) {
           let activatedTrainerInfo = res.data.trainers.find((v, i) => {
             if (v.isEnabled === true) return true
           })
           setTrainerProfile(activatedTrainerInfo.trainer.user.profileImage.path)
           setTrainerName(activatedTrainerInfo.trainer.user.name)
+          setPartnershipId(activatedTrainerInfo.partnershipId)
         } else {
           console.log(res)
         }
@@ -70,6 +70,9 @@ export default function MainView({ navigation, route }) {
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       if (userState.role === 'member') getActivatedTrainerInfo()
+      if (userState.role === 'trainer') {
+        setPartnershipId(routeMsg.memberInfo.partnershipId)
+      }
     })
     return unsubscribe
   }, [navigation])
@@ -82,11 +85,11 @@ export default function MainView({ navigation, route }) {
             <Image
               style={[styles.userImg]}
               source={
-                trainerProfile !== ''
+                trainerProfile !== emptyProfile
                   ? {
                       uri: trainerProfile,
                     }
-                  : emptyProfile
+                  : trainerProfile
               }
             />
           ) : (
@@ -95,9 +98,9 @@ export default function MainView({ navigation, route }) {
               source={
                 routeMsg.memberInfo.member.user.profileImage !== null
                   ? {
-                      uri: memberProfilePath,
+                      uri: memberProfile,
                     }
-                  : memberProfilePath
+                  : memberProfile
               }
             />
           )}
@@ -130,7 +133,23 @@ export default function MainView({ navigation, route }) {
             image={goal}
             text={'PT 목표'}
             clickEvent={() => {
-              navigation.navigate('PTGoal', { role: userState.role })
+              if (userState.role === 'member') {
+                navigation.navigate('PTGoal', {
+                  memberName: userState.name,
+                  trainerName: trainerName,
+                  memberProfile: userState.profile,
+                  trainerProfile: trainerProfile,
+                  partnershipId: partnershipId,
+                })
+              } else {
+                navigation.navigate('PTGoal', {
+                  memberName: routeMsg.memberInfo.member.user.name,
+                  trainerName: userState.name,
+                  memberProfile: memberProfile,
+                  trainerProfile: userState.profile,
+                  partnershipId: partnershipId,
+                })
+              }
             }}
           />
           <ScheduleActionItem image={report} text={'레포트'} />
