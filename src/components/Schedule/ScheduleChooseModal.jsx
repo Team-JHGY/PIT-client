@@ -43,8 +43,11 @@ const ScheduleChooseModal = ({ closeModal, setMember, memberIdx, setMemberIdx })
     .then((res) => {
         
         if(res.code ===  0){
-          setSchedules(res.data.members)
-          console.log("멤버: ",res.data)
+          const list = res.data.members
+          list.push({name:"비수업 시간", member:{id:"none"}, isLast:true})
+          console.log(list)
+          setSchedules(list)
+          
         }else if(res.code === -13){
           setUserData([])
         }
@@ -75,24 +78,14 @@ const ScheduleChooseModal = ({ closeModal, setMember, memberIdx, setMemberIdx })
           keyExtractor={(item) => String(item.member.id)}
           data={schedules}
           renderItem={({ item }) => {
-            const memberStyle = (isLast) => {
-              if (isLast === true) {
-                return {
-                  height: 100,
-                }
-              } else if (isLast === false) {
-                return {
-                  header: 30,
-                }
-              }
-            }
+            
             return (
-              <View style={[styles.memberItem, memberStyle(item.isLast)]}>
-                {tempIdx === item.partnershipId ? 
+              <View style={[styles.memberItem]}>
+                {tempIdx === item.partnershipId? 
                   (
                     <Pressable
                       onPress={() => {
-                        setTempIdx(tempIdx===item.partnershipId? null : item.partnershipId)
+                        setTempIdx(tempIdx === item.partnershipId? null : item.partnershipId)
                       }}
                     >
                       <View style={styles.selectedMemberBox}>
@@ -105,7 +98,7 @@ const ScheduleChooseModal = ({ closeModal, setMember, memberIdx, setMemberIdx })
                     <Pressable
                       onPress={() => {
                         setTempIdx(item.partnershipId)
-                        setMember(`${item.member.user.name}(${item.member.gender === "MAN"? "남":"여"},${new Date().getFullYear() - new Date(item.member.birthday).getFullYear()}세)`)
+                        setMember(item.name !== undefined? item.name :`${item.member.user.name}(${item.member.gender === "MAN"? "남":"여"},${new Date().getFullYear() - new Date(item.member.birthday).getFullYear()}세)`)
                       }}
                     >
                       <View style={styles.unSelectedMemberBox}></View>
@@ -114,28 +107,28 @@ const ScheduleChooseModal = ({ closeModal, setMember, memberIdx, setMemberIdx })
                 }
                 <View>
                   <Text style={styles.memberBoxTitle}>
-                    {item.member.user.name}
-
-                    (
-                      {item.member.gender === "MAN"? "남":"여"}
-                      ,
-                      {new Date().getFullYear() - new Date(item.member.birthday).getFullYear()}
+                    {item.name !== undefined?
+                      item.name
+                      :
+                      `${item.member.user.name}(${item.member.gender === "MAN"? "남":"여"},${new Date().getFullYear() - new Date(item.member.birthday).getFullYear()}세)`
+                    }
                     
-                    세)
                   </Text>
-                  {/*item.isLast === true && (
+                  {item.isLast === true && (
                     <Text style={styles.lastOption}>회원들이 선생님의 스케쥴을 보았을</Text>
                   )}
                   {item.isLast === true && (
                     <Text style={styles.lastOption}>때 해당 시간대에 일정이 있는 것 처럼</Text>
                   )}
-                  {item.isLast === true && <Text style={styles.lastOption}>보입니다.</Text>*/}
+                  {item.isLast === true && <Text style={styles.lastOption}>보입니다.</Text>}
                 </View>
               </View>
             )
           }}
           style={{ alignSelf: 'stretch', width: '100%' }}
         />
+         
+          
         <View
           style={{
             flexDirection: 'row',

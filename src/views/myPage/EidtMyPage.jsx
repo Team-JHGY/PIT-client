@@ -145,15 +145,6 @@ export default function EditMyPage ({navigation,userData}) {
       }
     })
     //.then((res) => res.json())
-    .then((res) => {
-      if(res.code !== 0){
-        alert(res.data.code)
-        navigation.goBack()
-      }else{
-        alert(res.data.code)
-      }
-
-    })
     .catch((e) => console.log(e))
     
   }

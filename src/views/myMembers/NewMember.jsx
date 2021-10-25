@@ -136,10 +136,10 @@ export default function NewMembers({navigation}) {
                 }}
             >
                 <Toast ref={toastRef}
-                    positionValue={100}
+                    positionValue={50}
                     fadeInDuration={200}
                     fadeOutDuration={1000}
-                    style={{backgroundColor:'rgba(33, 87, 243, 0.5)'}}
+                    style={{backgroundColor:'rgba(0,0,0, 0.5)', width:'90%'}}
                 />
                 <View style={modalstyles.centeredView}>
                     <View style={modalstyles.modalView}>

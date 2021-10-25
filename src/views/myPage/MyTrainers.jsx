@@ -77,8 +77,8 @@ export default function MyTrainers({navigation}) {
         <SafeAreaView style={userCount === 0? styles.mainForm : styles.mainFormUser}>
             {userCount === 0?
         
-                <View>
-                    <Text style={styles.disableText}>등록된 회원이 없습니다.</Text>
+                <View style={styles.centerArea}>
+                    <Text style={[styles.disableText, styles.centerArea]}>등록된 회원이 없습니다.</Text>
                     <View style={styles.addTrainer}>
                         <Pressable 
                             style={styles.trainerAddBtn}
@@ -156,8 +156,6 @@ const styles = StyleSheet.create({
     mainForm: {
         backgroundColor:"#ffff",
         flex: 1,
-        
-        
     },
     mainFormUser: {
         backgroundColor:"#ffff",
@@ -165,7 +163,8 @@ const styles = StyleSheet.create({
     },
     disableText:{
         ...globalStyle.body2,
-        opacity:0.3
+        opacity:0.3,
+        textAlign:"center"
     },
     disableText:{
         ...globalStyle.body2,
@@ -193,6 +192,11 @@ const styles = StyleSheet.create({
         paddingRight:20,
         flexDirection:"row",
         justifyContent:"center"
+    },
+    centerArea:{
+        justifyContent:"center",
+
+        textAlign:"center"
     },
     date:{
         justifyContent:"center"

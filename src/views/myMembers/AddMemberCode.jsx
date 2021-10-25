@@ -163,7 +163,7 @@ export default function AddMembersCode({ navigation }) {
           alert("완료 되었습니다.")
           //완료
           navigation.goBack()
-          
+          navigation.goBack()
           //초기화
           bodyForm.length = 0;
         }else if(res.code === -13){
@@ -238,7 +238,7 @@ export default function AddMembersCode({ navigation }) {
           <Image source={arrow_left} style={globalStyle.title} />
         </Pressable>
         <Appbar.Content 
-          title={userInfo[0].type === "MEMBER"? "트레이너코드 입력으로 ":"회원코드 입력으로 추가"} 
+          title={userInfo[0].type === "MEMBER"? "트레이너코드 입력으로 추가":"회원코드 입력으로 추가"} 
           titleStyle={[globalStyle.header,globalStyle.center]} 
         />
       </Appbar.Header>
@@ -272,13 +272,13 @@ export default function AddMembersCode({ navigation }) {
                   </Pressable>
                 </View>
                 <View style={modalstyles.UserInfo}>
-                  {modalUserData.profileImage !== null ? (
+                  {modalUserData.profileImage !== null && modalUserData.profileImage !== undefined ? (
                     <Image source={{ uri: modalUserData.profileImage.path }} style={modalstyles.UserImg} />
                   ) : (
                     <Image
                       style={modalstyles.UserImg}
                       source={require('../../../assets/img/SignUp/emptyProfile.png')}
-                    ></Image>
+                    />
                   )}
                  
 

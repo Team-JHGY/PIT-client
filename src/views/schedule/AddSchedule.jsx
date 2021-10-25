@@ -34,7 +34,7 @@ import config from "../../utils/config"
 
 const AddSchedule = ({ navigation, route }) => {
   // mode
-  const { mode } = route.params
+  const { mode, value } = route.params
   // state
   const { userState, userDispatch }     = React.useContext(UserContext)
   const splitJwt                        = userState.jwtToken.split(".")
@@ -45,7 +45,7 @@ const AddSchedule = ({ navigation, route }) => {
   const [isScheduleChooseModal, setIsScheduleChooseModal] = useState(false)
   const [isRepeatModal, setIsRepeatModal] = useState(false)
   const [clickButton, setClickButton] = useState(2)
-  const [member, setMember] = useState('수업 또는 비수업을 선택해주세요.')
+  const [member, setMember] = useState('수업 또는 비수업을 선택해주세요.' )
   const [memberIdx, setMemberIdx] = useState(1)
   const [repeatOptionIdx, setRepeatOptionIdx] = useState(1)
 
@@ -100,8 +100,11 @@ const AddSchedule = ({ navigation, route }) => {
   const [buttonEnable, setButtonEnable] = useState(false)
 
   useEffect(() => {
-    if (member !== '수업 또는 비수업을 선택해주세요.') setButtonEnable(true)
-    
+    if (member !== '수업 또는 비수업을 선택해주세요.') {
+      setButtonEnable(true)
+    }else{
+      //setMember(`${value.name} (${new Date().getFullYear() - new Date(value.brith).getFullYear()}세)`) 
+    }
   }, [member])
 
   async function AddSchedulesFuc() {

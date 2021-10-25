@@ -130,7 +130,7 @@ const ViewBody = ({ navigation, selectedDate }) => {
                           
                           +"~"+
                           
-                            (item.endAt).getHours >12?
+                          new Date(item.endAt).getHours >12?
                             "오전"+new Date(item.endAt).getHours()+":"+new Date(item.endAt).getMinutes()
                             :
                             "오후"+new Date(item.endAt).getHours()+":"+new Date(item.endAt).getMinutes()
