@@ -7,6 +7,7 @@ import CancelButton from '../../components/Schedule/CancelButton'
 import UpdateButton from '../../components/Schedule/UpdateButton'
 import Seperator from '../../components/Schedule/Seperator'
 import ModalDialog from '../../components/Common/ModalDialog'
+import { getTimeOfDate } from '../../utils/commonFunctions'
 
 // utils
 import globalStyle from '../../utils/globalStyle'
@@ -29,7 +30,11 @@ const ScheduleDetailInfo = ({ navigation, route }) => {
   const [profile, setProfile] = React.useState(undefined)
   const [end, setEnd] = React.useState()
   const [start, setStart] = React.useState()
+  const [schedual, setSchedual] = React.useState(0)
+  //name, brith, end, start
 
+  //수정
+  const [scheduleId, setScheduleId]   = React.useState(0)
   // state
   const [isModal, setIsModal] = useState(false)
   const [isNotAvailableModal, setIsNotAvailableModal] = useState(false)
@@ -40,18 +45,20 @@ const ScheduleDetailInfo = ({ navigation, route }) => {
       cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
       credentials: 'include', // include, *same-origin, omit
       headers: {
-        Authorization: userState.jwtToken,
-        'Content-Type': 'application/json',
+        'Authorization' : userState.jwtToken,
+        'Content-Type'  : 'application/json',
       },
     })
       .then((res) => res.json())
       .then((res) => {
-        console.log("정보라고",res)
+        console.log("정보라고",res.data)
+        setScheduleId(res.data.scheduleRepeat.id)
         setname(res.data.partnership.member.user.name)
         setBrith(res.data.partnership.member.birthday)
         setProfile(res.data.partnership.member.user.profileImage.path)
         setEnd(res.data.endAt)
         setStart(res.data.startAt)
+        setSchedual(res.data.sequence)
       })
       .catch((e) => console.log(e))
 
@@ -64,7 +71,7 @@ const ScheduleDetailInfo = ({ navigation, route }) => {
       cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
       credentials: 'include', // include, *same-origin, omit
       headers: {
-        Authorization: userState.jwtToken,
+        'Authorization': userState.jwtToken,
         'Content-Type': 'application/json',
       },
     })
@@ -156,25 +163,15 @@ const ScheduleDetailInfo = ({ navigation, route }) => {
         <Text style={[globalStyle.heading2, { marginLeft: '5.55%' }]}>{'수업 회차'}</Text>
       )}
       {type !== 'notAvailable' && (
-        <Text style={styles.subText}>{'1번째 수업 (등록된 수업 총 10회)'}</Text>
+        <Text style={styles.subText}>{`1번째 수업 (등록된 수업 총 ${schedual}회)`}</Text>
       )}
 
       <Text style={[globalStyle.heading2, { marginLeft: '5.55%', marginTop: 20 }]}>{'날짜'}</Text>
       <Text style={styles.subText}>{new Date(start).getFullYear()}-{new Date(start).getMonth()}-{new Date(start).getDate()}</Text>
       <Text style={styles.subText}>
-          {new Date(start).getHours >12?
-            "오전"+"0"+new Date(start).getHours()+":"+new Date(start).getMinutes()
-            :
-            "오후"+new Date(start).getHours()+":"+new Date(start).getMinutes()
-          
-          
-          }~{
-          
-            new Date(end).getHours >12?
-            "오전"+"0"+new Date(end).getHours()+":"+new Date(end).getMinutes()
-            :
-            "오후"+new Date(end).getHours()+":"+new Date(end).getMinutes()
-          }
+          {getTimeOfDate(new Date(start))}
+          ~
+          {getTimeOfDate(new Date(end))}
       </Text>
       {type === 'reserved' && (
         <Pressable>
@@ -199,7 +196,7 @@ const ScheduleDetailInfo = ({ navigation, route }) => {
           {/*스케줄  수정 버튼 */}
           <UpdateButton
             clickEvent={() => {
-              navigation.navigate('AddSchedule', { mode: 'update', value:{name, brith}})
+              navigation.navigate('AddSchedule', { mode: 'update', value:{name: name === ""?`${name} (${new Date().getFullYear() - new Date(brith).getFullYear()}세) 회원님`:"비 수업시간", end, start,scheduleId}})
             }}
           />
         </View>
