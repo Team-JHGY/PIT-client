@@ -57,7 +57,6 @@ export function BottomNav() {
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           let iconName
-          //console.log("route.name", route.name)
           if (route.name === '운동/식단') {
             iconName = focused ? calendar_on : calendar_off
           } else if (route.name === '홈') {
@@ -94,6 +93,35 @@ export function BottomNav() {
   )
 }
 
+export function memberRoomNav({ navigation, route }) {
+  const { userState, userDispatch } = useContext(UserContext)
+
+  const { role } = userState
+
+  return (
+    <Tab.Navigator
+      style={styles.bottomNavMain}
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName
+          if (route.name === '운동/식단') {
+            iconName = focused ? calendar_on : calendar_off
+          } else if (route.name === '홈') {
+            iconName = focused ? home_on : home_off
+          }
+          return <Image style={styles.icons} source={iconName} color={color} />
+        },
+      })}
+      tabBarOptions={{
+        activeTintColor: 'black',
+        inactiveTintColor: 'gray',
+      }}
+    >
+      <Tab.Screen name={'홈'} children={() => <MainView navigation={navigation} route={route} />} />
+      <Tab.Screen name={'운동/식단'} component={MealPlan} />
+    </Tab.Navigator>
+  )
+}
 const Stack = createStackNavigator()
 var initialView = ''
 
@@ -158,6 +186,7 @@ export default function App() {
           <Stack.Screen name="Members" component={Members} />
           <Stack.Screen name="NewMembers" component={NewMembers} />
           <Stack.Screen name="Home" component={BottomNav} />
+          <Stack.Screen name="MemberRoom" component={memberRoomNav} />
           <Stack.Screen name="Schedule" component={Schedule} />
           <Stack.Screen name="ScheduleGuide" component={ScheduleGuide} />
           <Stack.Screen name="AddSchedule" component={AddSchedule} />

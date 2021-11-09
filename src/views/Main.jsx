@@ -8,6 +8,7 @@ import { WithLocalSvg } from 'react-native-svg'
 import globalStyle from '../utils/globalStyle'
 import { decode } from 'js-base64'
 import config from '../utils/config'
+import { getDayOfWeek, getMonthOfDate, getDayOfDate, getTimeOfDate } from '../utils/commonFunctions'
 
 // assets
 import trainer from '../../assets/img/SignUp/trainer.svg'
@@ -31,6 +32,8 @@ export default function MainView({ navigation, route }) {
   const [trainerProfile, setTrainerProfile] = useState(emptyProfile)
   const [trainerName, setTrainerName] = useState('')
   const [partnershipId, setPartnershipId] = useState(null)
+  const [nextLessonInfo, setNextLessonInfo] = useState('')
+  const [nextLessonSequence, setNextLessonSequence] = useState(null)
   const splitJwt = userState.jwtToken.split('.')
   const userInfo = JSON.parse(decode(splitJwt[1]))
   // route
@@ -67,12 +70,52 @@ export default function MainView({ navigation, route }) {
       })
       .catch((e) => console.log(e))
   }
+
+  let getNextLessonInfo = async () => {
+    let url
+    if (userState.role === 'member') {
+      url = `${config.BASE_URL}/schedules/next/member/${userInfo.sub}`
+    } else if (userState.role === 'trainer') {
+      url = `${config.BASE_URL}/schedules/next/member/${routeMsg.memberInfo.member.id}`
+    }
+    console.log(userState.role)
+    await fetch(url, {
+      method: 'GET', // *GET, POST, PUT, DELETE, etc.
+      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: 'include', // include, *same-origin, omit
+      headers: {
+        Authorization: userState.jwtToken,
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.code === 0) {
+          let startAtDate = new Date(res.data.startAt)
+          let endAtDate = new Date(res.data.endAt)
+
+          setNextLessonInfo(
+            `${getMonthOfDate(startAtDate)}/${getDayOfDate(startAtDate)}(${getDayOfWeek(
+              startAtDate
+            )}) ${getTimeOfDate(startAtDate)} ~ ${getTimeOfDate(endAtDate)}`
+          )
+          setNextLessonSequence(res.data.sequence)
+        } else if (res.code === -13) {
+          setNextLessonInfo('다음 수업 정보가 없습니다.')
+        } else {
+          console.log(res)
+        }
+      })
+      .catch((e) => console.log(e))
+  }
+
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       if (userState.role === 'member') getActivatedTrainerInfo()
       if (userState.role === 'trainer') {
         setPartnershipId(routeMsg.memberInfo.partnershipId)
       }
+      getNextLessonInfo()
     })
     return unsubscribe
   }, [navigation])
@@ -161,8 +204,12 @@ export default function MainView({ navigation, route }) {
               navigation.navigate('ScheduleDetailInfo', { type: 'noUpdate' })
             }}
           >
-            <Text style={styles.numOfLesson}>{'10회차'}</Text>
-            <Text style={styles.lessonTime}>{'6/21(월) 오후 5:00'}</Text>
+            <Text style={styles.numOfLesson}>
+              {nextLessonSequence === null
+                ? '다음 회차 정보가 없습니다. '
+                : `${nextLessonSequence}회차`}
+            </Text>
+            <Text style={styles.lessonTime}>{nextLessonInfo}</Text>
           </Pressable>
         </View>
       </View>
