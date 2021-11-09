@@ -69,7 +69,7 @@ const RepeatChooseModal = ({ closeModal, repeatOptionIdx, setRepeatOptionIdx }) 
           <CancelButton clickEvent={closeModal} buttonTitle={'취소'} />
           <ConfirmButton
             closeModal={closeModal}
-            setRepeatOptionIdx={setRepeatOptionIdx}
+            setRepeatOptionIdx={setRepeatOptionIdx(tempIdx)}
             item={options[tempIdx - 1]}
           />
         </View>

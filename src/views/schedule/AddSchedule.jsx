@@ -34,7 +34,9 @@ import config from "../../utils/config"
 
 const AddSchedule = ({ navigation, route }) => {
   // mode
-  const { mode } = route.params
+  const { mode, value } = route.params
+  console.log("수정용 정보",value)
+  console.log("수정용 정보",mode)
   // state
   const { userState, userDispatch }     = React.useContext(UserContext)
   const splitJwt                        = userState.jwtToken.split(".")
@@ -45,7 +47,7 @@ const AddSchedule = ({ navigation, route }) => {
   const [isScheduleChooseModal, setIsScheduleChooseModal] = useState(false)
   const [isRepeatModal, setIsRepeatModal] = useState(false)
   const [clickButton, setClickButton] = useState(2)
-  const [member, setMember] = useState('수업 또는 비수업을 선택해주세요.')
+  const [member, setMember] = useState(mode !== "update"? '수업 또는 비수업을 선택해주세요.' : value.name)
   const [memberIdx, setMemberIdx] = useState(1)
   const [repeatOptionIdx, setRepeatOptionIdx] = useState(1)
 
@@ -100,15 +102,23 @@ const AddSchedule = ({ navigation, route }) => {
   const [buttonEnable, setButtonEnable] = useState(false)
 
   useEffect(() => {
-    if (member !== '수업 또는 비수업을 선택해주세요.') setButtonEnable(true)
-    
+    if (member !== '수업 또는 비수업을 선택해주세요.') {
+      setButtonEnable(true)
+    }else{
+      //setMember(`${value.name} (${new Date().getFullYear() - new Date(value.brith).getFullYear()}세)`) 
+    }
   }, [member])
 
   async function AddSchedulesFuc() {
 
-    const startAt = `${date.getFullYear()}-${date.getMonth()<10? "0"+date.getMonth():date.getMonth()}-${date.getDate()<10? "0"+date.getDate():date.getDate()}T${fromTime.getHours()<10? "0"+fromTime.getHours():fromTime.getHours()}:${fromTime.getMinutes()<10? "0"+fromTime.getMinutes():fromTime.getMinutes()}:${fromTime.getSeconds()<10? "0"+fromTime.getSeconds():fromTime.getSeconds()}`
+    const startAt = `${date.getFullYear()}-${Number(date.getMonth())+1<10? "0"+Number(date.getMonth())+1:Number(date.getMonth())+1}-${date.getDate()<10? "0"+date.getDate():date.getDate()}T${fromTime.getHours()<10? "0"+fromTime.getHours():fromTime.getHours()}:${fromTime.getMinutes()<10? "0"+fromTime.getMinutes():fromTime.getMinutes()}:${fromTime.getSeconds()<10? "0"+fromTime.getSeconds():fromTime.getSeconds()}`
 
-    const endAt   = `${date.getFullYear()}-${date.getMonth()<10? "0"+date.getMonth():date.getMonth()}-${date.getDate()<10? "0"+date.getDate():date.getDate()}T${toTime.getHours()<10? "0"+toTime.getHours():toTime.getHours()}:${toTime.getMinutes()<10? "0"+toTime.getMinutes():toTime.getMinutes()}:${toTime.getSeconds()<10? "0"+toTime.getSeconds():toTime.getSeconds()}`        
+    const endAt   = `${date.getFullYear()}-${Number(date.getMonth())+1<10? "0"+Number(date.getMonth())+1:Number(date.getMonth())+1}-${date.getDate()<10? "0"+date.getDate():date.getDate()}T${toTime.getHours()<10? "0"+toTime.getHours():toTime.getHours()}:${toTime.getMinutes()<10? "0"+toTime.getMinutes():toTime.getMinutes()}:${toTime.getSeconds()<10? "0"+toTime.getSeconds():toTime.getSeconds()}`        
+    
+    alert(date)
+
+    console.log(startAt)
+    console.log(endAt)
 
     const addScheduleRequest = {
       "trainerId"     : Number(userInfo[0].sub),
@@ -121,6 +131,7 @@ const AddSchedule = ({ navigation, route }) => {
       }
     }
 
+    console.log(addScheduleRequest)
     await fetch(`${config.BASE_URL}/schedules `,
     {
       method  : 'POST', // *GET, POST, PUT, DELETE, etc.
@@ -135,12 +146,49 @@ const AddSchedule = ({ navigation, route }) => {
     })
     .then((res) => res.json())
     .then((res) => {
-      alert(res.data)
+      //alert(res.data)
       navigation.goBack()
     })
     .catch((e) => console.log(e))
   }
 
+  async function EditSchedulesFuc() {
+
+    const startAt = `${date.getFullYear()}-${Number(date.getMonth())+1<10? "0"+Number(date.getMonth())+1:Number(date.getMonth())+1}-${date.getDate()<10? "0"+date.getDate():date.getDate()}T${fromTime.getHours()<10? "0"+fromTime.getHours():fromTime.getHours()}:${fromTime.getMinutes()<10? "0"+fromTime.getMinutes():fromTime.getMinutes()}:${fromTime.getSeconds()<10? "0"+fromTime.getSeconds():fromTime.getSeconds()}`
+
+    const endAt   = `${date.getFullYear()}-${Number(date.getMonth())+1<10? "0"+Number(date.getMonth())+1:Number(date.getMonth())+1}-${date.getDate()<10? "0"+date.getDate():date.getDate()}T${toTime.getHours()<10? "0"+toTime.getHours():toTime.getHours()}:${toTime.getMinutes()<10? "0"+toTime.getMinutes():toTime.getMinutes()}:${toTime.getSeconds()<10? "0"+toTime.getSeconds():toTime.getSeconds()}`        
+    
+    alert(date)
+
+    console.log(startAt)
+    console.log(endAt)
+
+    const addScheduleRequest = {
+      "startAt"       : startAt,
+      "endAt"         : endAt,
+      "partnershipId" : Number(memberIdx),
+    }
+
+    console.log(addScheduleRequest)
+    await fetch(`${config.BASE_URL}/schedules `,
+    {
+      method  : 'POST', // *GET, POST, PUT, DELETE, etc.
+      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: 'include', // include, *same-origin, omit
+      headers: {
+        'Authorization' : userState.jwtToken,
+        'Content-Type'  : 'application/json',
+          
+      },
+      body:JSON.stringify(addScheduleRequest)
+    })
+    .then((res) => res.json())
+    .then((res) => {
+      //alert(res.data)
+      navigation.goBack()
+    })
+    .catch((e) => console.log(e))
+  }
 
   return (
     <SafeAreaView style={{ backgroundColor: '#FFFFFF', flex: 1 }}>
@@ -196,7 +244,7 @@ const AddSchedule = ({ navigation, route }) => {
       {show && (
         <DateTimePicker
           testID="dateTimePicker"
-          value={date}
+          value={mode !== "update"? date: new Date(value.start)}
           mode={'date'}
           is24Hour={false}
           display="spinner"
@@ -206,7 +254,7 @@ const AddSchedule = ({ navigation, route }) => {
       {showFromTime && (
         <DateTimePicker
           testID="fromTimepicker"
-          value={fromTime}
+          value={mode !== "update"? fromTime: new Date(value.start)}
           mode={'time'}
           is24Hour={false}
           display="spinner"
@@ -216,7 +264,7 @@ const AddSchedule = ({ navigation, route }) => {
       {showToTime && (
         <DateTimePicker
           testID="toTimepicker"
-          value={toTime}
+          value={mode !== "update"? toTime: new Date(value.end)}
           mode={'time'}
           is24Hour={false}
           display="spinner"
@@ -340,9 +388,8 @@ const AddSchedule = ({ navigation, route }) => {
             onPress={() => {
               if (clickButton === 0) {
                 // 스케쥴 수정 api
-
+                EditSchedulesFuc()
                 // 성공이면
-                navigation.goBack()
               } else {
                 setIsUpdateConfirmModal(true)
               }

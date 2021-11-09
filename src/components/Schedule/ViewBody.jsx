@@ -4,7 +4,7 @@ import { WithLocalSvg } from 'react-native-svg'
 
 // utils
 import globalStyle from '../../utils/globalStyle'
-import { getDayOfWeek, getMonthOfDate, getDayOfDate } from '../../utils/commonFunctions'
+import { getDayOfWeek, getMonthOfDate, getDayOfDate, getTimeOfDate } from '../../utils/commonFunctions'
 
 // JWT token
 import { UserContext } from '../../store/user'
@@ -52,7 +52,7 @@ const ViewBody = ({ navigation, selectedDate }) => {
   //해당 날짜 데이터 가져오기
   async function GetMonthTrainerSchedule(token) {
 
-    await fetch(`${config.BASE_URL}/schedules/trainer/${userInfo[0].sub}?day=${new Date(selectedDate).getDate()}&month=${new Date(selectedDate).getMonth()}&year=${new Date(selectedDate).getFullYear()}`,{
+    await fetch(`${config.BASE_URL}/schedules/trainer/${userInfo[0].sub}?day=${new Date(selectedDate).getDate()}&month=${Number(new Date(selectedDate).getMonth())+1}&year=${new Date(selectedDate).getFullYear()}`,{
       method: 'GET', // *GET, POST, PUT, DELETE, etc.
       cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
       credentials: 'include', // include, *same-origin, omit
@@ -67,6 +67,7 @@ const ViewBody = ({ navigation, selectedDate }) => {
         
         if(res.code ===  0){
           setLessonsInfo(res.data)
+          console.log("스케줄 : ", res)
           console.log("스케줄 : ", res.data)
         }else{
           console.log(res)
@@ -121,26 +122,16 @@ const ViewBody = ({ navigation, selectedDate }) => {
                         <Text
                           style={[globalStyle.body2, globalStyle.textDartGery, styles.textmargin]}
                         >
-                          
-                          {new Date(item.startAt).getHours >12?
-                            "오전"+new Date(item.startAt).getHours()+":"+new Date(item.startAt).getMinutes()
-                            :
-                            "오후"+new Date(item.startAt).getHours()+":"+new Date(item.startAt).getMinutes()
-                          
-                          
-                          +"~"+
-                          
-                            (item.endAt).getHours >12?
-                            "오전"+new Date(item.endAt).getHours()+":"+new Date(item.endAt).getMinutes()
-                            :
-                            "오후"+new Date(item.endAt).getHours()+":"+new Date(item.endAt).getMinutes()
-                          }
+                          {getTimeOfDate(new Date(item.startAt))}
+                          ~
+                          {getTimeOfDate(new Date(item.endAt))}
                           
                         </Text>
 
                         <Text
                           style={[globalStyle.body2, styles.textmargin]}
-                        >{`${item.partnership.member.user.name} (${item.numOfLesson}번째 수업)`}</Text>
+                        >{`${item.partnership.member.user.name} (${item.sequence}번째 수업)`}</Text>
+                        
                       </View>
                     </View>
                   ) : (
