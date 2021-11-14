@@ -84,37 +84,6 @@ const ViewBody = ({ navigation, selectedDate }) => {
       .catch((e) => console.log(e))
   }
 
-  // 트레이너의 스케쥴이 몇일날에 있는지 조회하기
-  async function GetTrainerScheduleDates(token) {
-    await fetch(
-      `${config.BASE_URL}/schedules/day/${userInfo[0].sub}?day=${new Date(
-        selectedDate
-      ).getDate()}&month=${Number(new Date(selectedDate).getMonth()) + 1}&year=${new Date(
-        selectedDate
-      ).getFullYear()}`,
-      {
-        method: 'GET', // *GET, POST, PUT, DELETE, etc.
-        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: 'include', // include, *same-origin, omit
-        headers: {
-          Authorization: token,
-          'Content-Type': 'application/json',
-        },
-      }
-    )
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.code === 0) {
-          setLessonsInfo(res.data)
-          console.log('스케줄 : ', res)
-          console.log('스케줄 : ', res.data)
-        } else {
-          console.log(res)
-        }
-      })
-      .catch((e) => console.log(e))
-  }
-
   React.useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       GetMonthTrainerSchedule(userState.jwtToken)

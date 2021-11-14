@@ -14,26 +14,25 @@ import ViewBody from '../../components/Schedule/ViewBody'
 import arrow_left from '../../../assets/arrow_left.png'
 import ViewBodyForMember from '../../components/Schedule/ViewBodyForMember'
 
+// JWT token
+import { UserContext } from '../../store/user'
+import config from '../../utils/config'
+import { decode } from 'js-base64'
 
 let date1 = new Date()
 let date2 = new Date()
 date2.setDate(date2.getDate() - 2)
 let todayDate = new Date()
-let markedDateArray = [
-  // {
-  //   date: date1,
-  //   dots: [
-  //     {
-  //       color: '#00D98B',
-  //       selectedColor: '#FFFFFF',
-  //     },
-  //   ],
-  // },
-]
+
 export default function Schedule({ navigation, route }) {
   const onLayoutRootView = useCallback(async () => {
     await SplashScreen.hideAsync()
   })
+
+  // context
+  const { userState, userDispatch } = React.useContext(UserContext)
+  const splitJwt = userState.jwtToken.split('.')
+  const userInfo = React.useState(JSON.parse(decode(splitJwt[1])))
 
   // route
   let routeMsg = null
@@ -46,6 +45,46 @@ export default function Schedule({ navigation, route }) {
   const [firstDayOfWeek, setFirstDayOfWeek] = useState('')
   const [lastDayOfWeek, setLastDayOfWeek] = useState('')
   const [date, setDate] = useState(new Date())
+  const [markedDates, setMarkedDates] = useState([])
+  // 트레이너의 스케쥴이 몇일날에 있는지 조회하기
+  async function GetTrainerScheduleDates(token) {
+    console.log(firstDayOfWeek)
+    await fetch(
+      `${config.BASE_URL}/schedules/days/trainer/${userInfo[0].sub}?month=${
+        Number(new Date(firstDayOfWeek).getMonth()) + 1
+      }&year=${new Date(firstDayOfWeek).getFullYear()}`,
+      {
+        method: 'GET', // *GET, POST, PUT, DELETE, etc.
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'include', // include, *same-origin, omit
+        headers: {
+          Authorization: token,
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.code === 0) {
+          setMarkedDates(
+            res.data.days.map((day) => {
+              let newObj = {}
+              newObj['date'] = new Date(
+                new Date(firstDayOfWeek).getFullYear(),
+                new Date(firstDayOfWeek).getMonth(),
+                day
+              )
+              newObj['dots'] = [{ color: '#00D98B', selectedColor: '#FFFFFF' }]
+
+              return newObj
+            })
+          )
+        } else {
+          console.log(res)
+        }
+      })
+      .catch((e) => console.log(e))
+  }
 
   React.useEffect(() => {
     AsyncStorage.getItem('userAuth', (err, result) => {
@@ -53,6 +92,15 @@ export default function Schedule({ navigation, route }) {
       //   console.log(result) // result에 담김 //불러온거 출력
     })
   }, [])
+
+  React.useEffect(() => {
+    // const unsubscribe = navigation.addListener('focus', () => {
+    //   GetTrainerScheduleDates(userState.jwtToken)
+    // })
+    // return unsubscribe
+    GetTrainerScheduleDates(userState.jwtToken)
+    console.log(markedDates)
+  }, [firstDayOfWeek, lastDayOfWeek])
   return (
     <>
       {routeMsg !== null && routeMsg.type === 'member' && (
@@ -96,7 +144,7 @@ export default function Schedule({ navigation, route }) {
             dayComponentHeight={60}
             setFirstDayOfWeek={setFirstDayOfWeek}
             setLastDayOfWeek={setLastDayOfWeek}
-            markedDates={markedDateArray}
+            markedDates={markedDates}
           />
         </View>
         <Seperator height={'2%'} />
