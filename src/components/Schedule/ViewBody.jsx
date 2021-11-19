@@ -78,6 +78,8 @@ const ViewBody = ({ navigation, selectedDate }) => {
     return unsubscribe
   }, [navigation])
 
+  //TODO : 비수업시간에 대한 코드가 나오면 item.sequence -1 에대한 값을 수정해야한다.
+  //TODO : sequence 에 대한 데이터를 마지막에 넣어달라고 요청해야 한다.
   return (
     <View style={{ marginBottom: 20, alignSelf: 'stretch', flex: 1, flexGrow: 1 }}>
       <Text style={styles.date}>{strToday}</Text>
@@ -102,7 +104,7 @@ const ViewBody = ({ navigation, selectedDate }) => {
                     }
                   }}
                 >
-                  {item.numOfLesson !== null ? (
+                  {item.sequence !== -1 ? (
                     <View style={[globalStyle.row, styles.scheduleInfo]}>
                       <View>
                         {item.partnership.member.user.profileImage === null ? (
@@ -135,7 +137,8 @@ const ViewBody = ({ navigation, selectedDate }) => {
                       style={[globalStyle.row, styles.scheduleInfo, { backgroundColor: '#F5F5F5' }]}
                     >
                       <View style={[globalStyle.col_2]}>
-                        <Text
+                        <Text>{'비수업 시간'}</Text>
+                        {/* <Text
                           style={[globalStyle.body2, globalStyle.textDartGery, styles.textmargin]}
                         >
                           {new Date(item.startAt).getHours > 12
@@ -161,7 +164,7 @@ const ViewBody = ({ navigation, selectedDate }) => {
                                 .getHours() +
                               ':' +
                               new Date(item.endAt).getMinutes()}
-                        </Text>
+                        </Text> */}
 
                         <Text style={[globalStyle.body2, styles.textmargin]}>{`${item.name}`}</Text>
                       </View>
