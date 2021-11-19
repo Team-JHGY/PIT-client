@@ -4,11 +4,17 @@ import { View, Text, StyleSheet, Pressable, FlatList, Image } from 'react-native
 // utils
 import globalStyle from '../../utils/globalStyle'
 import { getDayOfWeek, getMonthOfDate, getDayOfDate } from '../../utils/commonFunctions'
+import config from '../../utils/config'
+import { getTimeOfDate } from '../../utils/commonFunctions'
+
+// context
+import { UserContext } from '../../store/user'
+import { decode } from 'js-base64'
 
 // assets
 import clock from '../../../assets/img/Schedule/clock.png'
 
-const ViewBodyForMember = ({ selectedDate }) => {
+const ViewBodyForMember = ({ selectedDate, trainerId }) => {
   let strToday =
     getMonthOfDate(selectedDate) +
     '/' +
@@ -17,38 +23,59 @@ const ViewBodyForMember = ({ selectedDate }) => {
     getDayOfWeek(selectedDate) +
     ')'
 
-  // dummy data
-  const data1 = [
-    { id: '1', startTime: '오전 9:00', endTime: '오전 10:00', name: '김회원', numOfLesson: 1 },
-  ]
-
-  const data2 = [
-    { id: '1', startTime: '오후 1:00', endTime: '오후 2:00' },
-    { id: '2', startTime: '오후 3:30', endTime: '오후 4:20' },
-    { id: '3', startTime: '오후 6:00', endTime: '오후 11:55' },
-  ]
-
   // states
   const [myLessonInfo, setMyLessonInfo] = useState([])
   const [trainerLessonInfo, setTrainerLessonInfo] = useState([])
+  const { userState, userDispatch } = React.useContext(UserContext)
+
+  const splitJwt = userState.jwtToken.split('.')
+  const userInfo = React.useState(JSON.parse(decode(splitJwt[1])))
 
   // useEffect
   useEffect(() => {
-    let daybeforeYesterday = new Date()
-    daybeforeYesterday.setDate(daybeforeYesterday.getDate() - 2)
-    if (
-      selectedDate.getDate() === new Date().getDate() ||
-      selectedDate.getDate() === daybeforeYesterday.getDate()
-    ) {
-      setMyLessonInfo(data1)
-      setTrainerLessonInfo(data2)
-    } else {
-      setMyLessonInfo([])
-      setTrainerLessonInfo([])
-    }
+    GetTrainerSchedule()
   }, [selectedDate])
 
-  
+  //트레이너 해당 날짜 데이터 가져오기
+  async function GetTrainerSchedule() {
+    await fetch(
+      `${config.BASE_URL}/schedules/trainer/${trainerId}?day=${new Date(
+        selectedDate
+      ).getDate()}&month=${Number(new Date(selectedDate).getMonth()) + 1}&year=${new Date(
+        selectedDate
+      ).getFullYear()}`,
+      {
+        method: 'GET', // *GET, POST, PUT, DELETE, etc.
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'include', // include, *same-origin, omit
+        headers: {
+          Authorization: userState.jwtToken,
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.code === 0) {
+          setTrainerLessonInfo(res.data)
+
+          let isMatch = false
+          res.data.map((v) => {
+            if (v.partnership.member.id === Number(userInfo[0].sub)) {
+              setMyLessonInfo([v])
+              isMatch = true
+            }
+          })
+          if (isMatch === false) {
+            setMyLessonInfo([])
+          }
+        } else {
+          console.log(res)
+        }
+      })
+      .catch((e) => console.log(e))
+  }
+
   return (
     <View style={{ marginBottom: 20, alignSelf: 'stretch', flex: 1 }}>
       <Text style={styles.title}>{strToday}</Text>
@@ -59,26 +86,26 @@ const ViewBodyForMember = ({ selectedDate }) => {
         <FlatList
           style={{ flexGrow: 0 }}
           keyExtractor={(item) => item.id}
-          data={data1}
+          data={myLessonInfo}
           renderItem={({ item }) => {
             return (
               <View style={[globalStyle.row, styles.scheduleInfo]}>
                 <View>
                   <Image
                     source={{
-                      uri: 'https://img.sbs.co.kr/newsnet/etv/upload/2021/04/23/30000684130_500.jpg',
+                      uri: item.partnership.member.user.profileImage.path,
                     }}
                     style={[styles.userImg]}
                   />
                 </View>
                 <View style={[globalStyle.col_2]}>
                   <Text style={[globalStyle.body2, globalStyle.textDartGery, styles.textmargin]}>
-                    {item.startTime} ~ {item.endTime}
+                    {getTimeOfDate(new Date(item.startAt))} ~ {getTimeOfDate(new Date(item.endAt))}
                   </Text>
 
                   <Text
                     style={[globalStyle.body2, styles.textmargin]}
-                  >{`${item.name} (${item.numOfLesson}번째 수업)`}</Text>
+                  >{`${item.partnership.member.user.name} (${item.sequence}번째 수업)`}</Text>
                 </View>
               </View>
             )
@@ -91,12 +118,14 @@ const ViewBodyForMember = ({ selectedDate }) => {
       ) : (
         <FlatList
           keyExtractor={(item) => item.id}
-          data={data2}
+          data={trainerLessonInfo}
           renderItem={({ item }) => {
             return (
               <View style={[globalStyle.row, styles.trainerScheduleInfo]}>
                 <Image style={styles.clockImg} source={clock} />
-                <Text>{`${item.startTime} ~ ${item.endTime}`}</Text>
+                <Text>{`${getTimeOfDate(new Date(item.startAt))} ~ ${getTimeOfDate(
+                  new Date(item.endAt)
+                )}`}</Text>
               </View>
             )
           }}

@@ -37,19 +37,6 @@ const ViewBody = ({ navigation, selectedDate }) => {
   }, [])
 
   useEffect(() => {
-    // dummy
-    let daybeforeYesterday = new Date()
-    daybeforeYesterday.setDate(daybeforeYesterday.getDate() - 2)
-
-    if (
-      selectedDate.getDate() === new Date().getDate() ||
-      selectedDate.getDate() === daybeforeYesterday.getDate()
-    ) {
-      setLessonsInfo([])
-    } else {
-      setLessonsInfo([])
-    }
-
     GetMonthTrainerSchedule(userState.jwtToken)
   }, [selectedDate])
 

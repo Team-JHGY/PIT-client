@@ -49,8 +49,10 @@ export default function Schedule({ navigation, route }) {
   // 트레이너의 스케쥴이 몇일날에 있는지 조회하기
   async function GetTrainerScheduleDates(token) {
     console.log(firstDayOfWeek)
+
+    let userId = routeMsg === null ? userInfo[0].sub : routeMsg.trainerId
     await fetch(
-      `${config.BASE_URL}/schedules/days/trainer/${userInfo[0].sub}?month=${
+      `${config.BASE_URL}/schedules/days/trainer/${userId}?month=${
         Number(new Date(firstDayOfWeek).getMonth()) + 1
       }&year=${new Date(firstDayOfWeek).getFullYear()}`,
       {
@@ -75,7 +77,6 @@ export default function Schedule({ navigation, route }) {
                 day
               )
               newObj['dots'] = [{ color: '#00D98B', selectedColor: '#FFFFFF' }]
-
               return newObj
             })
           )
@@ -94,12 +95,7 @@ export default function Schedule({ navigation, route }) {
   }, [])
 
   React.useEffect(() => {
-    // const unsubscribe = navigation.addListener('focus', () => {
-    //   GetTrainerScheduleDates(userState.jwtToken)
-    // })
-    // return unsubscribe
     GetTrainerScheduleDates(userState.jwtToken)
-    console.log(markedDates)
   }, [firstDayOfWeek, lastDayOfWeek])
   return (
     <>
@@ -112,7 +108,7 @@ export default function Schedule({ navigation, route }) {
             <Image source={arrow_left} style={globalStyle.title} />
           </Pressable>
           <Appbar.Content
-            title={'양치승 T 수업 스케쥴'}
+            title={`${routeMsg.trainerName} T 수업 스케쥴`}
             titleStyle={[globalStyle.header, globalStyle.center]}
           />
         </Appbar.Header>
@@ -149,15 +145,10 @@ export default function Schedule({ navigation, route }) {
         </View>
         <Seperator height={'2%'} />
         {routeMsg !== null && routeMsg.type === 'member' ? (
-          <ViewBodyForMember selectedDate={date} />
+          <ViewBodyForMember selectedDate={date} trainerId={routeMsg.trainerId} />
         ) : (
           <ViewBody navigation={navigation} selectedDate={date} />
         )}
-
-        {/* <Text style={styles.disableText}>스케줄</Text>
-        <Pressable onPress={() => navigation.navigate('NewMembers')}>
-          <Text>스케줄</Text>
-        </Pressable> */}
       </SafeAreaView>
     </>
   )

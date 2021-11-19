@@ -31,6 +31,7 @@ export default function MainView({ navigation, route }) {
   const { userState, userDispatch } = React.useContext(UserContext)
   const [trainerProfile, setTrainerProfile] = useState(emptyProfile)
   const [trainerName, setTrainerName] = useState('')
+  const [trainerId, setTrainerId] = useState(null)
   const [partnershipId, setPartnershipId] = useState(null)
   const [nextLessonInfo, setNextLessonInfo] = useState('')
   const [nextLessonSequence, setNextLessonSequence] = useState(null)
@@ -61,6 +62,8 @@ export default function MainView({ navigation, route }) {
           let activatedTrainerInfo = res.data.trainers.find((v, i) => {
             if (v.isEnabled === true) return true
           })
+
+          setTrainerId(activatedTrainerInfo.trainer.user.id)
           setTrainerProfile(activatedTrainerInfo.trainer.user.profileImage.path)
           setTrainerName(activatedTrainerInfo.trainer.user.name)
           setPartnershipId(activatedTrainerInfo.partnershipId)
@@ -169,7 +172,15 @@ export default function MainView({ navigation, route }) {
             image={calendar}
             text={'수업 스케쥴'}
             clickEvent={() => {
-              navigation.navigate('Schedule', { type: 'member' })
+              if (userState.role === 'member') {
+                navigation.navigate('Schedule', {
+                  type: userState.role,
+                  trainerName: trainerName,
+                  trainerId: trainerId,
+                })
+              } else if (userState.role === ' trainer') {
+                navigation.navigate('Schedule', { type: userState.role })
+              }
             }}
           />
           <ScheduleActionItem
