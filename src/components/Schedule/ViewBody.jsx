@@ -80,6 +80,7 @@ const ViewBody = ({ navigation, selectedDate }) => {
 
   //TODO : 비수업시간에 대한 코드가 나오면 item.sequence -1 에대한 값을 수정해야한다.
   //TODO : sequence 에 대한 데이터를 마지막에 넣어달라고 요청해야 한다.
+  //TODO : 스케쥴 상세보기 후, 뒤로가기시 조회가 되지 않는 현상 파악필요.
   return (
     <View style={{ marginBottom: 20, alignSelf: 'stretch', flex: 1, flexGrow: 1 }}>
       <Text style={styles.date}>{strToday}</Text>
@@ -94,7 +95,7 @@ const ViewBody = ({ navigation, selectedDate }) => {
               <View>
                 <Pressable
                   onPress={() => {
-                    if (item.numOfLesson !== null) {
+                    if (item.sequence !== -1) {
                       navigation.navigate('ScheduleDetailInfo', { type: 'reserved', id: item.id })
                     } else {
                       navigation.navigate('ScheduleDetailInfo', {
@@ -137,36 +138,14 @@ const ViewBody = ({ navigation, selectedDate }) => {
                       style={[globalStyle.row, styles.scheduleInfo, { backgroundColor: '#F5F5F5' }]}
                     >
                       <View style={[globalStyle.col_2]}>
-                        <Text>{'비수업 시간'}</Text>
-                        {/* <Text
+                        <Text
                           style={[globalStyle.body2, globalStyle.textDartGery, styles.textmargin]}
                         >
-                          {new Date(item.startAt).getHours > 12
-                            ? '오전' +
-                              new Date(item.startAt).getHours() +
-                              ':' +
-                              new Date(item.startAt).getMinutes()
-                            : '오후' +
-                              new Date(item.startAt)
-                                .setHours(new Date(item.startAt).getHours() - 12)
-                                .getHours() +
-                              ':' +
-                              new Date(item.startAt).getMinutes()}
-                          ~
-                          {new Date(item.endAt).getHours > 12
-                            ? '오전' +
-                              new Date(item.endAt).getHours() +
-                              ':' +
-                              new Date(item.endAt).getMinutes()
-                            : '오후' +
-                              new Date(item.endAt)
-                                .setHours(new Date(item.endAt).getHours() - 12)
-                                .getHours() +
-                              ':' +
-                              new Date(item.endAt).getMinutes()}
-                        </Text> */}
+                          {getTimeOfDate(new Date(item.startAt))}~
+                          {getTimeOfDate(new Date(item.endAt))}
+                        </Text>
 
-                        <Text style={[globalStyle.body2, styles.textmargin]}>{`${item.name}`}</Text>
+                        <Text style={[globalStyle.body2, styles.textmargin]}>{`비수업 시간`}</Text>
                       </View>
                     </View>
                   )}
