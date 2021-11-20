@@ -28,9 +28,11 @@ const ScheduleDetailInfo = ({ navigation, route }) => {
   const [name, setname]  = React.useState()
   const [brith,setBrith]  = React.useState()
   const [profile, setProfile] = React.useState(undefined)
-  const [end, setEnd] = React.useState()
-  const [start, setStart] = React.useState()
+  const [end, setEnd] = React.useState(new Date())
+  const [start, setStart] = React.useState(new Date())
   const [schedual, setSchedual] = React.useState(0)
+  const [sequence, setSequence] = React.useState(0)
+  
   //name, brith, end, start
 
   //수정
@@ -51,14 +53,15 @@ const ScheduleDetailInfo = ({ navigation, route }) => {
     })
       .then((res) => res.json())
       .then((res) => {
-        console.log("정보라고",res.data)
-        setScheduleId(res.data.scheduleRepeat.id)
+        console.log("진심이야?",res.data.startAt)
+        setScheduleId(res.data.id)
         setname(res.data.partnership.member.user.name)
         setBrith(res.data.partnership.member.birthday)
-        setProfile(res.data.partnership.member.user.profileImage.path)
-        setEnd(res.data.endAt)
-        setStart(res.data.startAt)
-        setSchedual(res.data.sequence)
+        setProfile(res.data.partnership.member.user.profileImage === null? undefined:res.data.partnership.member.user.profileImage.path )
+        setEnd(res.data.endAt === undefined? new Date() : new Date(res.data.endAt))
+        setStart(res.data.startAt === undefined? new Date() : new Date(res.data.startAt))
+        setSchedual(res.data.scheduleRepeat.count)
+        setSequence(res.data.sequence === undefined? 0 :res.data.sequence)
       })
       .catch((e) => console.log(e))
 
@@ -163,15 +166,17 @@ const ScheduleDetailInfo = ({ navigation, route }) => {
         <Text style={[globalStyle.heading2, { marginLeft: '5.55%' }]}>{'수업 회차'}</Text>
       )}
       {type !== 'notAvailable' && (
-        <Text style={styles.subText}>{`1번째 수업 (등록된 수업 총 ${schedual}회)`}</Text>
+        <Text style={styles.subText}>{`${sequence}번째 수업 (등록된 수업 총 ${schedual}회)`}</Text>
       )}
 
       <Text style={[globalStyle.heading2, { marginLeft: '5.55%', marginTop: 20 }]}>{'날짜'}</Text>
-      <Text style={styles.subText}>{new Date(start).getFullYear()}-{new Date(start).getMonth()}-{new Date(start).getDate()}</Text>
       <Text style={styles.subText}>
-          {getTimeOfDate(new Date(start))}
+        {start.getFullYear()+"-"+(start.getMonth()+1)+"-"+(start.getDate())}
+      </Text>
+      <Text style={styles.subText}>
+          {getTimeOfDate(start)}
           ~
-          {getTimeOfDate(new Date(end))}
+          {getTimeOfDate(end)}
       </Text>
       {type === 'reserved' && (
         <Pressable>
@@ -196,7 +201,7 @@ const ScheduleDetailInfo = ({ navigation, route }) => {
           {/*스케줄  수정 버튼 */}
           <UpdateButton
             clickEvent={() => {
-              navigation.navigate('AddSchedule', { mode: 'update', value:{name: name === ""?`${name} (${new Date().getFullYear() - new Date(brith).getFullYear()}세) 회원님`:"비 수업시간", end, start,scheduleId}})
+              navigation.navigate('AddSchedule', { mode: 'update', value:{name: name !== ""?`${name} (${new Date().getFullYear() - new Date(brith).getFullYear()}세) 회원님`:"비 수업시간", end, start,scheduleId}})
             }}
           />
         </View>
