@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { View, StyleSheet, SafeAreaView, Text, Pressable, Image } from 'react-native'
+import { View, ScrollView, SafeAreaView, Text, Pressable, Image } from 'react-native'
 import { WithLocalSvg } from 'react-native-svg'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import { Appbar } from 'react-native-paper'
@@ -45,7 +45,7 @@ const AddSchedule = ({ navigation, route }) => {
   const [isUpdateConfirmModal, setIsUpdateConfirmModal] = useState(false)
   const [isScheduleChooseModal, setIsScheduleChooseModal] = useState(false)
   const [isRepeatModal, setIsRepeatModal] = useState(false)
-  const [clickButton, setClickButton] = useState(2)
+  const [clickButton, setClickButton] = useState(1)
   const [member, setMember] = useState(mode !== "update"? '수업 또는 비수업을 선택해주세요.' : value.name)
   const [memberIdx, setMemberIdx] = useState(1)
   const [repeatOptionIdx, setRepeatOptionIdx] = useState(1)
@@ -198,198 +198,200 @@ const AddSchedule = ({ navigation, route }) => {
         />
       )}
       {isScheduleChooseModal && (
-        <ScheduleChooseModal
-          closeModal={() => {
-            setIsScheduleChooseModal(false)
-          }}
-          setMember={setMember}
-          memberIdx={memberIdx}
-          setMemberIdx={setMemberIdx}
-        />
+          <ScheduleChooseModal
+            closeModal={() => {
+              setIsScheduleChooseModal(false)
+            }}
+            setMember={setMember}
+            memberIdx={memberIdx}
+            setMemberIdx={setMemberIdx}
+          />
       )}
       {isRepeatModal && (
-        <RepeatChooseModal
-          closeModal={() => {
-            setIsRepeatModal(false)
-          }}
-          setRepeatOptionIdx={(option) => setRepeatOptionIdx(option)}
-          repeatOptionIdx={repeatOptionIdx}
-        />
+          <RepeatChooseModal
+            closeModal={() => {
+              setIsRepeatModal(false)
+            }}
+            setRepeatOptionIdx={(option) => setRepeatOptionIdx(option)}
+            repeatOptionIdx={repeatOptionIdx}
+          />
       )}
       {isUpdateConfirmModal && (
-        <ModalDialog
-          closeModal={() => {
-            setIsUpdateConfirmModal(false)
-          }}
-          clickEvent={() => {
-            // 수정 api 호출
+          <ModalDialog
+            closeModal={() => {
+              setIsUpdateConfirmModal(false)
+            }}
+            clickEvent={() => {
+              // 수정 api 호출
 
-            // 성공이면
-            setIsUpdateConfirmModal(false)
-            navigation.goBack()
-          }}
-          title={'스케쥴 수정'}
-          body={'반복 일정이 포함되어 있어,\n이후 일정을 모두 변경하게 됩니다.'}
-          buttonTitle={'수정하기'}
-        />
+              // 성공이면
+              setIsUpdateConfirmModal(false)
+              navigation.goBack()
+            }}
+            title={'스케쥴 수정'}
+            body={'반복 일정이 포함되어 있어,\n이후 일정을 모두 변경하게 됩니다.'}
+            buttonTitle={'수정하기'}
+          />
       )}
       {show && (
-        <DateTimePicker
-          testID="dateTimePicker"
-          value={mode !== "update"? date: value.start}
-          mode={'date'}
-          is24Hour={false}
-          display="spinner"
-          onChange={onDateChange}
-        />
+          <DateTimePicker
+            testID="dateTimePicker"
+            value={mode !== "update"? date: value.start}
+            mode={'date'}
+            is24Hour={false}
+            display="spinner"
+            onChange={onDateChange}
+          />
       )}
       {showFromTime && (
-        <DateTimePicker
-          testID="fromTimepicker"
-          value={mode !== "update"? fromTime: value.start}
-          mode={'time'}
-          is24Hour={false}
-          display="spinner"
-          onChange={onFromTimeChange}
-        />
+          <DateTimePicker
+            testID="fromTimepicker"
+            value={mode !== "update"? fromTime: value.start}
+            mode={'time'}
+            is24Hour={false}
+            display="spinner"
+            onChange={onFromTimeChange}
+          />
       )}
       {showToTime && (
-        <DateTimePicker
-          testID="toTimepicker"
-          value={toTime}
-          mode={'time'}
-          is24Hour={false}
-          display="spinner"
-          onChange={onToTimeChange}
-        />
+          <DateTimePicker
+            testID="toTimepicker"
+            value={toTime}
+            mode={'time'}
+            is24Hour={false}
+            display="spinner"
+            onChange={onToTimeChange}
+          />
       )}
-      <Appbar.Header style={globalStyle.titleAppbar}>
-        {mode === 'create' ? (
-          <Appbar.Content
-            title={'스케쥴 등록'}
-            titleStyle={[globalStyle.heading1, globalStyle.center]}
-          />
-        ) : (
-          <Appbar.Content
-            title={'스케쥴 수정'}
-            titleStyle={[globalStyle.heading1, globalStyle.center]}
-          />
-        )}
+      <ScrollView>
+        <Appbar.Header style={globalStyle.titleAppbar}>
+          {mode === 'create' ? (
+            <Appbar.Content
+              title={'스케쥴 등록'}
+              titleStyle={[globalStyle.heading1, globalStyle.center]}
+            />
+          ) : (
+            <Appbar.Content
+              title={'스케쥴 수정'}
+              titleStyle={[globalStyle.heading1, globalStyle.center]}
+            />
+          )}
 
-        <Pressable
-          style={[globalStyle.header, globalStyle.absoluteRight]}
-          onPress={() => setIsModal(true)}
-        >
-          <Image source={cross} style={globalStyle.title} />
-        </Pressable>
-      </Appbar.Header>
-      <View style={{ alignItems: 'center', flex: 1 }}>
-        <View style={{ width: '88.8%' }}>
-          <SelectBoxField
-            title={'스케쥴 선택'}
-            input={member}
-            clickEvent={() => {
-              setIsScheduleChooseModal(true)
-            }}
-            mode={mode}
-          />
-          <SelectBoxField
-            title={'날짜'}
-            input={
-              date.getFullYear() +
-              '.' +
-              getMonthOfDate(date) +
-              '.' +
-              getDayOfDate(date) +
-              ' (' +
-              getDayOfWeek(date) +
-              ')'
-            }
-            clickEvent={showDatepicker}
-            mode={mode}
-          />
-          <View style={{ flexDirection: 'row' }}>
-            <View style={{ flex: 1, marginRight: 5 }}>
-              <SelectBoxField
-                title={'시작 시간'}
-                input={getTimeOfDate(fromTime)}
-                clickEvent={showFromTimepicker}
-                mode={mode}
-              />
-            </View>
-            <View style={{ flex: 1, marginLeft: 5 }}>
-              <SelectBoxField
-                title={'끝 시간'}
-                input={getTimeOfDate(toTime)}
-                clickEvent={showToTimepicker}
-                mode={mode}
-              />
-            </View>
-          </View>
-          <View style={{ flexDirection: 'row', marginTop: 10 }}>
-            <Text style={{ ...globalStyle.heading2 }}>{'반복 선택'}</Text>
-            <View style={{ justifyContent: 'center', marginLeft: 5 }}>
-              <WithLocalSvg asset={Asterisk}></WithLocalSvg>
-            </View>
-          </View>
-          <View style={{ flexDirection: 'row' }}>
-            <Chip
-              title={'없음'}
-              isFirst={true}
-              isFocus={clickButton === 1 ? true : false}
-              clickEvent={() => setClickButton(1)}
+          <Pressable
+            style={[globalStyle.header, globalStyle.absoluteRight]}
+            onPress={() => setIsModal(true)}
+          >
+            <Image source={cross} style={globalStyle.title} />
+          </Pressable>
+        </Appbar.Header>
+        <View style={{ alignItems: 'center', flex: 1 }}>
+          <View style={{ width: '88.8%', marginBottom: 20 }}>
+            <SelectBoxField
+              title={'스케쥴 선택'}
+              input={member}
+              clickEvent={() => {
+                setIsScheduleChooseModal(true)
+              }}
               mode={mode}
             />
-            <Chip
-              title={'매일'}
-              isFirst={false}
-              isFocus={clickButton === 2 ? true : false}
-              clickEvent={() => setClickButton(2)}
+            <SelectBoxField
+              title={'날짜'}
+              input={
+                date.getFullYear() +
+                '.' +
+                getMonthOfDate(date) +
+                '.' +
+                getDayOfDate(date) +
+                ' (' +
+                getDayOfWeek(date) +
+                ')'
+              }
+              clickEvent={showDatepicker}
               mode={mode}
             />
-            <Chip
-              title={'매주'}
-              isFirst={false}
-              isFocus={clickButton === 3 ? true : false}
-              clickEvent={() => setClickButton(3)}
-              mode={mode}
-            />
-          </View>
-          {clickButton !== 1 && (
             <View style={{ flexDirection: 'row' }}>
+              <View style={{ flex: 1, marginRight: 5 }}>
+                <SelectBoxField
+                  title={'시작 시간'}
+                  input={getTimeOfDate(fromTime)}
+                  clickEvent={showFromTimepicker}
+                  mode={mode}
+                />
+              </View>
               <View style={{ flex: 1, marginLeft: 5 }}>
                 <SelectBoxField
-                  title={'반복 횟수 선택'}
-                  isTextAdded={true}
-                  input={repeatOptionIdx}
-                  clickEvent={() => {
-                    setIsRepeatModal(true)
-                  }}
+                  title={'끝 시간'}
+                  input={getTimeOfDate(toTime)}
+                  clickEvent={showToTimepicker}
                   mode={mode}
                 />
               </View>
             </View>
+            <View style={{ flexDirection: 'row', marginTop: 10 }}>
+              <Text style={{ ...globalStyle.heading2 }}>{'반복 선택'}</Text>
+              <View style={{ justifyContent: 'center', marginLeft: 5 }}>
+                <WithLocalSvg asset={Asterisk}></WithLocalSvg>
+              </View>
+            </View>
+            <View style={{ flexDirection: 'row' }}>
+              <Chip
+                title={'없음'}
+                isFirst={true}
+                isFocus={clickButton === 1 ? true : false}
+                clickEvent={() => setClickButton(1)}
+                mode={mode}
+              />
+              <Chip
+                title={'매일'}
+                isFirst={false}
+                isFocus={clickButton === 2 ? true : false}
+                clickEvent={() => setClickButton(2)}
+                mode={mode}
+              />
+              <Chip
+                title={'매주'}
+                isFirst={false}
+                isFocus={clickButton === 3 ? true : false}
+                clickEvent={() => setClickButton(3)}
+                mode={mode}
+              />
+            </View>
+            {clickButton !== 1 && (
+              <View style={{ flexDirection: 'row' }}>
+                <View style={{ flex: 1, marginLeft: 5 }}>
+                  <SelectBoxField
+                    title={'반복 횟수 선택'}
+                    isTextAdded={true}
+                    input={repeatOptionIdx}
+                    clickEvent={() => {
+                      setIsRepeatModal(true)
+                    }}
+                    mode={mode}
+                  />
+                </View>
+              </View>
+            )}
+          </View>
+          {mode === 'create' ? (
+            <ButtonLarge name={'등록'} isEnable={buttonEnable} onPress={AddSchedulesFuc}/>
+          ) : (
+            <ButtonLarge
+              name={'수정'}
+              isEnable={true}
+              onPress={() => {
+                EditSchedulesFuc()
+                //if (clickButton === 0) {
+                  // 스케쥴 수정 api
+                //  EditSchedulesFuc()
+                  // 성공이면
+                //} else {
+                //  setIsUpdateConfirmModal(true)
+                //}
+              }}
+            />
           )}
         </View>
-        {mode === 'create' ? (
-          <ButtonLarge name={'등록'} isEnable={buttonEnable} onPress={AddSchedulesFuc}/>
-        ) : (
-          <ButtonLarge
-            name={'수정'}
-            isEnable={true}
-            onPress={() => {
-              EditSchedulesFuc()
-              //if (clickButton === 0) {
-                // 스케쥴 수정 api
-              //  EditSchedulesFuc()
-                // 성공이면
-              //} else {
-              //  setIsUpdateConfirmModal(true)
-              //}
-            }}
-          />
-        )}
-      </View>
+      </ScrollView>
     </SafeAreaView>
   )
 }

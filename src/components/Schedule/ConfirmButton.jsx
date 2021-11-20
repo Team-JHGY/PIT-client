@@ -1,13 +1,14 @@
 import React from 'react'
 import { View, Text, StyleSheet, Pressable } from 'react-native'
 import globalStyle from '../../utils/globalStyle'
-const ConfirmButton = ({ closeModal, setMemberIdx, setRepeatOptionIdx, item, id }) => {
+const ConfirmButton = ({ closeModal, setMemberIdx, setMember, setRepeatOptionIdx, item, id, member }) => {
   return (
     <View style={styles.button}>
       <Pressable
         onPress={() => {
           if (setMemberIdx !== undefined) {
             setMemberIdx(id)
+            setMember(member)
           } else if (setRepeatOptionIdx !== undefined) {
             setRepeatOptionIdx(id)
           }

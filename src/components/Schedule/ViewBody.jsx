@@ -135,36 +135,14 @@ const ViewBody = ({ navigation, selectedDate }) => {
                       style={[globalStyle.row, styles.scheduleInfo, { backgroundColor: '#F5F5F5' }]}
                     >
                       <View style={[globalStyle.col_2]}>
-                        <Text>{'비수업 시간'}</Text>
-                        {/* <Text
+                      <Text
                           style={[globalStyle.body2, globalStyle.textDartGery, styles.textmargin]}
                         >
-                          {new Date(item.startAt).getHours > 12
-                            ? '오전' +
-                              new Date(item.startAt).getHours() +
-                              ':' +
-                              new Date(item.startAt).getMinutes()
-                            : '오후' +
-                              new Date(item.startAt)
-                                .setHours(new Date(item.startAt).getHours() - 12)
-                                .getHours() +
-                              ':' +
-                              new Date(item.startAt).getMinutes()}
-                          ~
-                          {new Date(item.endAt).getHours > 12
-                            ? '오전' +
-                              new Date(item.endAt).getHours() +
-                              ':' +
-                              new Date(item.endAt).getMinutes()
-                            : '오후' +
-                              new Date(item.endAt)
-                                .setHours(new Date(item.endAt).getHours() - 12)
-                                .getHours() +
-                              ':' +
-                              new Date(item.endAt).getMinutes()}
-                        </Text> */}
+                          {getTimeOfDate(new Date(item.startAt))} ~ 
+                          {getTimeOfDate(new Date(item.endAt))}
+                        </Text>
 
-                        <Text style={[globalStyle.body2, styles.textmargin]}>{`${item.name}`}</Text>
+                        <Text style={[globalStyle.body2, styles.textmargin]}>{`비수업 시간`}</Text>
                       </View>
                     </View>
                   )}

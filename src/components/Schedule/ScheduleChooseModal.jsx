@@ -18,6 +18,7 @@ import config from "../../utils/config"
 const ScheduleChooseModal = ({ closeModal, setMember, memberIdx, setMemberIdx }) => {
   const [schedules, setSchedules]     = React.useState([])
   const [tempIdx, setTempIdx]         = React.useState(memberIdx)
+  const [tempMember, setTempMember]   = React.useState(null)
   const [choosName, setChooseName]    = React.useState()
   const { userState, userDispatch }   = React.useContext(UserContext)
   const splitJwt                      = userState.jwtToken.split(".")
@@ -86,6 +87,7 @@ const ScheduleChooseModal = ({ closeModal, setMember, memberIdx, setMemberIdx })
                     <Pressable
                       onPress={() => {
                         setTempIdx(tempIdx === item.partnershipId? null : item.partnershipId)
+                        setTempMember('수업 또는 비수업을 선택해주세요.')
                       }}
                     >
                       <View style={styles.selectedMemberBox}>
@@ -98,7 +100,7 @@ const ScheduleChooseModal = ({ closeModal, setMember, memberIdx, setMemberIdx })
                     <Pressable
                       onPress={() => {
                         setTempIdx(item.partnershipId)
-                        setMember(item.name !== undefined? item.name :`${item.member.user.name}(${item.member.gender === "MAN"? "남":"여"},${new Date().getFullYear() - new Date(item.member.birthday).getFullYear()}세)`)
+                        setTempMember(item.name !== undefined? item.name :`${item.member.user.name}(${item.member.gender === "MAN"? "남":"여"},${new Date().getFullYear() - new Date(item.member.birthday).getFullYear()}세)`)
                       }}
                     >
                       <View style={styles.unSelectedMemberBox}></View>
@@ -140,8 +142,10 @@ const ScheduleChooseModal = ({ closeModal, setMember, memberIdx, setMemberIdx })
           <ConfirmButton
             closeModal={closeModal}
             setMemberIdx={setMemberIdx}
+            setMember={setMember}
             item={choosName}
             id={tempIdx}
+            member={tempMember}
           />
         </View>
       </View>
