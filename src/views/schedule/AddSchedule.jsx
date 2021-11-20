@@ -148,6 +148,7 @@ const AddSchedule = ({ navigation, route }) => {
     })
     .then((res) => res.json())
     .then((res) => {
+      console.log("res", res.code)
       if(res.code === 0){
         alert("스케줄 등록이 완료되었습니다.")
         navigation.goBack()
@@ -261,7 +262,7 @@ const AddSchedule = ({ navigation, route }) => {
             testID="dateTimePicker"
             value={mode !== "update"? date: value.start}
             mode={'date'}
-            is24Hour={false}
+            is24Hour={true}
             display="spinner"
             onChange={onDateChange}
           />
@@ -271,7 +272,7 @@ const AddSchedule = ({ navigation, route }) => {
             testID="fromTimepicker"
             value={mode !== "update"? fromTime: value.start}
             mode={'time'}
-            is24Hour={false}
+            is24Hour={true}
             display="spinner"
             onChange={onFromTimeChange}
           />
@@ -281,7 +282,7 @@ const AddSchedule = ({ navigation, route }) => {
             testID="toTimepicker"
             value={toTime}
             mode={'time'}
-            is24Hour={false}
+            is24Hour={true}
             display="spinner"
             onChange={onToTimeChange}
           />

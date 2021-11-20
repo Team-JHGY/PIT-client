@@ -58,7 +58,7 @@ const ViewBody = ({ navigation, selectedDate }) => {
     )
       .then((res) => res.json())
       .then((res) => {
-        console.log(res)
+        //console.log(res)
         if (res.code === 0) {
           setLessonsInfo(res.data)
 
@@ -92,12 +92,16 @@ const ViewBody = ({ navigation, selectedDate }) => {
               <View>
                 <Pressable
                   onPress={() => {
-                    if (item.numOfLesson !== null) {
+                    
+                    if (item.sequence !== -1) {
                       navigation.navigate('ScheduleDetailInfo', { type: 'reserved', id: item.id })
                     } else {
                       navigation.navigate('ScheduleDetailInfo', {
                         type: 'notAvailable',
                         id: item.id,
+                        date:item.startAt,
+                        startAt:getTimeOfDate(item.startAt),
+                        endAt:getTimeOfDate(item.endAt)
                       })
                     }
                   }}

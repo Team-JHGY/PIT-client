@@ -177,7 +177,7 @@ export default function AddMealPlan ({ navigation, route }) {
           testID="dateTimePicker"
           value={date}
           mode={'date'}
-          is24Hour={false}
+          is24Hour={true}
           display="spinner"
           onChange={onDateChange}
         />

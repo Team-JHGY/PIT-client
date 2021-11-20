@@ -28,7 +28,7 @@ const ScheduleDetailInfo = ({ navigation, route }) => {
   const { userState, userDispatch } = React.useContext(UserContext)
   const splitJwt = userState.jwtToken.split('.')
   const userInfo = React.useState(JSON.parse(decode(splitJwt[1])))
-  const { type, id } = route.params
+  const { type, id ,startAt, endAt, date} = route.params
   const [name, setname] = React.useState()
   const [brith, setBrith] = React.useState()
   const [profile, setProfile] = React.useState(undefined)
@@ -167,13 +167,24 @@ const ScheduleDetailInfo = ({ navigation, route }) => {
       {type !== 'notAvailable' && (
         <Text style={styles.subText}>{`${sequence}번째 수업 (등록된 수업 총 ${schedual}회)`}</Text>
       )}
-
+      
       <Text style={[globalStyle.heading2, { marginLeft: '5.55%', marginTop: 20 }]}>{'날짜'}</Text>
       <Text style={styles.subText}>
-        {start.getFullYear() + '-' + (start.getMonth() + 1) + '-' + start.getDate()}
+        
+        {type !== 'notAvailable'?
+
+          start.getFullYear() + '-' + (start.getMonth() + 1) + '-' + start.getDate()
+          :
+          date.split("T")[0]
+        }
+
       </Text>
       <Text style={styles.subText}>
-        {getTimeOfDate(start)}~{getTimeOfDate(end)}
+        {type !== 'notAvailable'?
+          `${getTimeOfDate(start)} ~ ${getTimeOfDate(end)}`
+          :
+          `${startAt} ~ ${endAt}`
+        }
       </Text>
       {type === 'reserved' && (
         <Pressable>
@@ -202,7 +213,7 @@ const ScheduleDetailInfo = ({ navigation, route }) => {
                 mode: 'update',
                 value: {
                   name:
-                    name !== ''
+                    name !== undefined
                       ? `${name} (${
                           new Date().getFullYear() - new Date(brith).getFullYear()
                         }세) 회원님`
