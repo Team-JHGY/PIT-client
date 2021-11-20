@@ -175,7 +175,7 @@ const AddSchedule = ({ navigation, route }) => {
     })
     .then((res) => res.json())
     .then((res) => {
-      alert(res.data)
+      console.log(res)
       navigation.goBack()
       navigation.goBack()
     })
