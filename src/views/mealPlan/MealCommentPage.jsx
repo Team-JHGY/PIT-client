@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { View, StyleSheet, SafeAreaView, Text, Pressable, Image, ScrollView,TextInput } from 'react-native'
 import { WithLocalSvg } from 'react-native-svg'
 import DateTimePicker from '@react-native-community/datetimepicker'
+import DatePicker from 'react-native-date-picker'
 import { Appbar } from 'react-native-paper'
 
 // components
@@ -61,6 +62,7 @@ export default function MealCommentPage ({ navigation }) {
   const [show, setShow] = useState(false)
 
   const onDateChange = (event, selectedDate) => {
+    selectedDate.setHours(selectedDate.getHours() - 15)
     const currentDate = selectedDate || date
     setShow(Platform.OS === 'ios')
     setDate(currentDate)
@@ -75,6 +77,7 @@ export default function MealCommentPage ({ navigation }) {
   const [showFromTime, setShowFromTime] = useState(false)
 
   const onFromTimeChange = (event, selectedDate) => {
+
     const currentDate = selectedDate || date
     setShowFromTime(Platform.OS === 'ios')
     if (event.type === 'set') {

@@ -81,7 +81,7 @@ export default function MainView({ navigation, route }) {
     } else if (userState.role === 'trainer') {
       url = `${config.BASE_URL}/schedules/next/member/${routeMsg.memberInfo.member.id}`
     }
-    console.log(userState.role)
+    
     await fetch(url, {
       method: 'GET', // *GET, POST, PUT, DELETE, etc.
       cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -93,6 +93,7 @@ export default function MainView({ navigation, route }) {
     })
       .then((res) => res.json())
       .then((res) => {
+        console.log(res)
         if (res.code === 0) {
           let startAtDate = new Date(res.data.startAt)
           let endAtDate = new Date(res.data.endAt)

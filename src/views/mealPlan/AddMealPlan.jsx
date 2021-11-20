@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { View, StyleSheet, SafeAreaView, Text, Pressable, Image, ScrollView } from 'react-native'
 import { WithLocalSvg } from 'react-native-svg'
 import DateTimePicker from '@react-native-community/datetimepicker'
+
 import { Appbar } from 'react-native-paper'
 
 // components
@@ -60,6 +61,7 @@ export default function AddMealPlan ({ navigation, route }) {
   const [show, setShow] = useState(false)
 
   const onDateChange = (event, selectedDate) => {
+    
     const currentDate = selectedDate || date
     setShow(Platform.OS === 'ios')
     setDate(currentDate)
@@ -70,7 +72,7 @@ export default function AddMealPlan ({ navigation, route }) {
   }
 
   // datetimepicker - 시작시간
-  const [fromTime, setFromTime] = useState(new Date(2021, 9, 4, 9, 0, 0))
+  const [fromTime, setFromTime]         = useState(new Date())
   const [showFromTime, setShowFromTime] = useState(false)
 
   const onFromTimeChange = (event, selectedDate) => {
