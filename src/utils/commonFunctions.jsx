@@ -25,12 +25,20 @@ const getDayOfDate = (date) => {
 }
 
 const getTimeOfDate = (date) => {
-  var hour = date.getHours()
-  var min = date.getMinutes()
+  console.log(date)
+  const dateForm = JSON.stringify(date).split("T")[1].split(":")
+
+  console.log(dateForm)
+
+  let hour = Number(dateForm[0])
+  let min = Number(dateForm[1])
   var strMin = ''
   if (min < 10) strMin = '0' + min
-  else strMin = min + ''
+  else strMin = min
+  
+  
   if (hour >= 0 && hour < 12) return '오전 ' + hour + ':' + strMin
   else return '오후 ' + (hour - 12) + ':' + strMin
+  
 }
 export { getDayOfWeek, getMonthOfDate, getDayOfDate, getTimeOfDate }

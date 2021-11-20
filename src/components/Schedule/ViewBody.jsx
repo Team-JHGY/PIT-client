@@ -42,18 +42,16 @@ const ViewBody = ({ navigation, selectedDate }) => {
 
   //해당 날짜 데이터 가져오기
   async function GetMonthTrainerSchedule(token) {
+    const dayPicker = JSON.stringify(selectedDate).split("T")[0].replace(/"/, "").split("-")
+    
     await fetch(
-      `${config.BASE_URL}/schedules/trainer/${userInfo[0].sub}?day=${new Date(
-        selectedDate
-      ).getDate()}&month=${Number(new Date(selectedDate).getMonth()) + 1}&year=${new Date(
-        selectedDate
-      ).getFullYear()}`,
+      `${config.BASE_URL}/schedules/trainer/${userInfo[0].sub}?day=${dayPicker[0]}&month=${dayPicker[1]}&year=${dayPicker[2]}`,
       {
         method: 'GET', // *GET, POST, PUT, DELETE, etc.
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
         credentials: 'include', // include, *same-origin, omit
         headers: {
-          Authorization: token,
+          'Authorization': token,
           'Content-Type': 'application/json',
         },
       }
@@ -62,8 +60,7 @@ const ViewBody = ({ navigation, selectedDate }) => {
       .then((res) => {
         if (res.code === 0) {
           setLessonsInfo(res.data)
-          console.log('스케줄 : ', res)
-          console.log('스케줄 : ', res.data)
+
         } else {
           console.log(res)
         }
