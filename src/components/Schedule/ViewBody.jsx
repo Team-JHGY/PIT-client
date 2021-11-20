@@ -43,7 +43,7 @@ const ViewBody = ({ navigation, selectedDate }) => {
   //해당 날짜 데이터 가져오기
   async function GetMonthTrainerSchedule(token) {
     const dayPicker = JSON.stringify(selectedDate).split("T")[0].replace(/"/, "").split("-")
-   
+    
     await fetch(
       `${config.BASE_URL}/schedules/trainer/${userInfo[0].sub}?day=${dayPicker[2]}&month=${dayPicker[1]}&year=${dayPicker[0]}`,
       {
@@ -121,8 +121,9 @@ const ViewBody = ({ navigation, selectedDate }) => {
                         <Text
                           style={[globalStyle.body2, globalStyle.textDartGery, styles.textmargin]}
                         >
-                          {getTimeOfDate(new Date(item.startAt))}~
-                          {getTimeOfDate(new Date(item.endAt))}
+                          {getTimeOfDate(item.startAt)}
+                          ~
+                          {getTimeOfDate(item.endAt)}
                         </Text>
 
                         <Text

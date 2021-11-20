@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { View, ScrollView, SafeAreaView, Text, Pressable, Image } from 'react-native'
 import { WithLocalSvg } from 'react-native-svg'
 import DateTimePicker from '@react-native-community/datetimepicker'
+
 import { Appbar } from 'react-native-paper'
 
 // components
@@ -70,6 +71,8 @@ const AddSchedule = ({ navigation, route }) => {
   const [showFromTime, setShowFromTime] = useState(false)
 
   const onFromTimeChange = (event, selectedDate) => {
+    selectedDate.setHours(selectedDate.getHours() - 15)
+
     const currentDate = selectedDate || date
     setShowFromTime(Platform.OS === 'ios')
     if (event.type === 'set') {
@@ -86,9 +89,13 @@ const AddSchedule = ({ navigation, route }) => {
   const [showToTime, setShowToTime] = useState(false)
 
   const onToTimeChange = (event, selectedDate) => {
+    
+    selectedDate.setHours(selectedDate.getHours() - 15)
+
     const currentDate = selectedDate || date
     setShowToTime(Platform.OS === 'ios')
     if (event.type === 'set') {
+
       setToTime(currentDate)
     }
   }
@@ -141,8 +148,17 @@ const AddSchedule = ({ navigation, route }) => {
     })
     .then((res) => res.json())
     .then((res) => {
-      alert(res.data)
-      navigation.goBack()
+      if(res.code === 0){
+        alert("스케줄 등록이 완료되었습니다.")
+        navigation.goBack()
+      }else if(res.code === -13){
+        alert("회원과 파트너쉽을 찾을 수 없습니다.")
+      }else if(res.code === -14){
+        alert("추가할 스케줄 시간이 기존 스케줄과 중복되었습니다.")
+      }else if(res.code === -15){
+        alert("스케줄 시작 시간과 끝 시간이 올바르지 않습니다.")
+      }
+      
     })
     .catch((e) => console.log(e))
   }
@@ -160,7 +176,7 @@ const AddSchedule = ({ navigation, route }) => {
       "scheduleId"    : Number(value.scheduleId),
     }
 
-    console.log("수정 테스으",updateScheduleRequest)
+  
     await fetch(`${config.BASE_URL}/schedules `,
     {
       method  : 'PUT', // *GET, POST, PUT, DELETE, etc.
@@ -175,9 +191,15 @@ const AddSchedule = ({ navigation, route }) => {
     })
     .then((res) => res.json())
     .then((res) => {
-      console.log(res)
-      navigation.goBack()
-      navigation.goBack()
+      if(res.code === 0){
+        navigation.goBack()
+        navigation.goBack()
+      }else if(res.code === -13){
+        alert("스케줄을 찾을 수 없습니다.")
+      }else if(res.code === -14){
+        alert("수정한 스케줄 시간이 다른 스케줄과 중복됩니다.")
+      }
+
     })
     .catch((e) => console.log(e))
   }
@@ -217,6 +239,7 @@ const AddSchedule = ({ navigation, route }) => {
           />
       )}
       {isUpdateConfirmModal && (
+
           <ModalDialog
             closeModal={() => {
               setIsUpdateConfirmModal(false)
