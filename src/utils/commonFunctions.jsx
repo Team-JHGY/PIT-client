@@ -26,7 +26,6 @@ const getDayOfDate = (date) => {
 
 const getTimeOfDate = (date) => {
   const dateForm = JSON.stringify(date).split("T")[1].split(":")
-
   let hour = Number(dateForm[0])
   let min = Number(dateForm[1])
   var strMin = ''
