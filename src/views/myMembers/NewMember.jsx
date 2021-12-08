@@ -41,7 +41,6 @@ export default function NewMembers({navigation}) {
     React.useEffect(()=>{
         AddtoLocalUserAuth()
     },[])
-    console.log(userInfo[0].sub)
 
     function copyToClipboard() {
         Clipboard.setString(String(userData.user.code))
@@ -51,7 +50,6 @@ export default function NewMembers({navigation}) {
 
 
     function AddtoLocalUserAuth(){
-        console.log(userInfo[0].type)
         if(userInfo[0].type === "MEMBER"){
             
             fetch(`${config.BASE_URL}/members/${userInfo[0].sub}`,{

@@ -59,7 +59,6 @@ const AddSchedule = ({ navigation, route }) => {
     const currentDate = selectedDate || date
     setShow(Platform.OS === 'ios')
     setDate(currentDate)
-    console.log(selectedDate)
   }
 
   const showDatepicker = () => {
@@ -132,8 +131,6 @@ const AddSchedule = ({ navigation, route }) => {
         "count"   : Number(repeatOptionIdx)
       }
     }
-
-    console.log(addScheduleRequest)
     await fetch(`${config.BASE_URL}/schedules `,
     {
       method  : 'POST', // *GET, POST, PUT, DELETE, etc.

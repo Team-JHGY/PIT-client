@@ -25,10 +25,7 @@ const getDayOfDate = (date) => {
 }
 
 const getTimeOfDate = (date) => {
-  console.log(date)
   const dateForm = JSON.stringify(date).split("T")[1].split(":")
-
-  console.log(dateForm)
 
   let hour = Number(dateForm[0])
   let min = Number(dateForm[1])

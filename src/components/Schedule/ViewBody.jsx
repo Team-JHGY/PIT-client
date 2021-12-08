@@ -32,18 +32,22 @@ const ViewBody = ({ navigation, selectedDate }) => {
     ' (' +
     getDayOfWeek(selectedDate) +
     ')'
-  React.useEffect(() => {
-    GetMonthTrainerSchedule(userState.jwtToken)
-  }, [])
 
   useEffect(() => {
     GetMonthTrainerSchedule(userState.jwtToken)
   }, [selectedDate])
 
+  React.useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      GetMonthTrainerSchedule(userState.jwtToken)
+    })
+    return unsubscribe
+  }, [navigation,selectedDate])
+  
   //해당 날짜 데이터 가져오기
   async function GetMonthTrainerSchedule(token) {
-    const dayPicker = JSON.stringify(selectedDate).split("T")[0].replace(/"/, "").split("-")
-    
+    const dayPicker = JSON.stringify(new Date(selectedDate)).split("T")[0].replace(/"/, "").split("-")
+
     await fetch(
       `${config.BASE_URL}/schedules/trainer/${userInfo[0].sub}?day=${dayPicker[2]}&month=${dayPicker[1]}&year=${dayPicker[0]}`,
       {
@@ -58,23 +62,14 @@ const ViewBody = ({ navigation, selectedDate }) => {
     )
       .then((res) => res.json())
       .then((res) => {
-        console.log(res)
         if (res.code === 0) {
           setLessonsInfo(res.data)
-
         } else {
           console.log(res)
         }
       })
       .catch((e) => console.log(e))
   }
-
-  React.useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      GetMonthTrainerSchedule(userState.jwtToken)
-    })
-    return unsubscribe
-  }, [navigation])
 
   //TODO : 비수업시간에 대한 코드가 나오면 item.sequence -1 에대한 값을 수정해야한다.
   //TODO : sequence 에 대한 데이터를 마지막에 넣어달라고 요청해야 한다.

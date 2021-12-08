@@ -52,7 +52,6 @@ export default function Members({navigation}) {
                 
                 if(res.code ===  0){
                     setUserData(res.data.members)
-                    console.log(res.data.members)
                 }else if(res.code === -13){
                     setUserData([])
                 }

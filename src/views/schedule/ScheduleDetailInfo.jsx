@@ -57,7 +57,6 @@ const ScheduleDetailInfo = ({ navigation, route }) => {
     })
       .then((res) => res.json())
       .then((res) => {
-        console.log('진심이야?', res.data.startAt)
         setScheduleId(res.data.id)
         setname(res.data.partnership.member.user.name)
         setBrith(res.data.partnership.member.birthday)
@@ -75,7 +74,7 @@ const ScheduleDetailInfo = ({ navigation, route }) => {
   }, [])
 
   async function DeleteSh() {
-    fetch(`${config.BASE_URL}/schedules/${id}`, {
+    await fetch(`${config.BASE_URL}/schedules/${id}`, {
       method: 'DELETE', // *GET, POST, PUT, DELETE, etc.
       cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
       credentials: 'include', // include, *same-origin, omit
@@ -87,7 +86,6 @@ const ScheduleDetailInfo = ({ navigation, route }) => {
       .then((res) => res.json())
       .then((res) => {
         navigation.goBack()
-        console.log(res)
       })
       .catch((e) => console.log(e))
   }

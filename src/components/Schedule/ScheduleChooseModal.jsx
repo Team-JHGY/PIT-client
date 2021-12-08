@@ -46,7 +46,6 @@ const ScheduleChooseModal = ({ closeModal, setMember, memberIdx, setMemberIdx })
         if(res.code ===  0){
           const list = res.data.members
           list.push({name:"비수업 시간", member:{id:"none"}, isLast:true})
-          console.log(list)
           setSchedules(list)
           
         }else if(res.code === -13){

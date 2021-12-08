@@ -5,8 +5,8 @@ const PTGoalConfirmButton = ({ closeModal, callBackFunction }) => {
   return (
     <View style={styles.button}>
       <Pressable
-        onPress={() => {
-          callBackFunction()
+        onPress={async () => {
+          await callBackFunction()
           closeModal()
         }}
       >
