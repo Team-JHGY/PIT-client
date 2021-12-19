@@ -179,7 +179,7 @@ export default function MainView({ navigation, route }) {
                   trainerName: trainerName,
                   trainerId: trainerId,
                 })
-              } else if (userState.role === ' trainer') {
+              } else if (userState.role === 'trainer') {
                 navigation.navigate('Schedule', { type: userState.role })
               }
             }}
