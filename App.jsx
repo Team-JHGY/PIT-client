@@ -37,6 +37,10 @@ import my_on from './assets/my_on.png'
 import my_off from './assets/my_off.png'
 import trainees_off from './assets/trainees_off.png'
 import trainees_on from './assets/trainees_on.png'
+import member_room_calendar_on from './assets/member_room_calendar_on.png'
+import member_room_calendar_off from './assets/member_room_calendar_off.png'
+import member_room_home_off from './assets/member_room_home_off.png'
+import member_room_home_on from './assets/member_room_home_on.png'
 
 //Context
 import UserStore from './src/store/user'
@@ -97,24 +101,26 @@ export function memberRoomNav({ navigation, route }) {
   const { userState, userDispatch } = useContext(UserContext)
 
   const { role } = userState
-
   return (
     <Tab.Navigator
-      style={styles.bottomNavMain}
+      style={styles.bottomMemberRoomNav}
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           let iconName
           if (route.name === '운동/식단') {
-            iconName = focused ? calendar_on : calendar_off
+            iconName = focused ? member_room_calendar_on : member_room_calendar_off
           } else if (route.name === '홈') {
-            iconName = focused ? home_on : home_off
+            iconName = focused ? member_room_home_on : member_room_home_off
           }
-          return <Image style={styles.icons} source={iconName} color={color} />
+          return <Image style={styles.bigIcons} source={iconName} color={color} />
         },
       })}
       tabBarOptions={{
-        activeTintColor: 'black',
-        inactiveTintColor: 'gray',
+        activeTintColor: '#11F37E',
+        inactiveTintColor: '#fff',
+        style: {
+          backgroundColor: '#0F1528',
+        },
       }}
     >
       <Tab.Screen name={'홈'} children={() => <MainView navigation={navigation} route={route} />} />
@@ -227,10 +233,33 @@ const styles = StyleSheet.create({
     borderBottomColor: '#5A5757',
     //justifyContent:"flex-start"
   },
+  bottomMemberRoomNav: {
+    flexDirection: 'row',
+    alignContent: 'space-between',
+    backgroundColor: '#0F1528',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 12,
+    },
+    shadowOpacity: 0.4,
+    shadowRadius: 16.0,
+    elevation: 24,
+    height: 80,
+    textAlign: 'left',
+    borderBottomWidth: 0.2,
+    borderBottomColor: '#5A5757',
+  },
   icons: {
     marginLeft: 'auto',
     marginRight: 'auto',
     width: 24,
     height: 24,
+  },
+  bigIcons: {
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    width: 30,
+    height: 26,
   },
 })

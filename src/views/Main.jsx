@@ -82,7 +82,7 @@ export default function MainView({ navigation, route }) {
     } else if (userState.role === 'trainer') {
       url = `${config.BASE_URL}/schedules/next/member/${routeMsg.memberInfo.member.id}`
     }
-    
+
     await fetch(url, {
       method: 'GET', // *GET, POST, PUT, DELETE, etc.
       cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -181,7 +181,7 @@ export default function MainView({ navigation, route }) {
                   trainerName: trainerName,
                   trainerId: trainerId,
                 })
-              } else if (userState.role === ' trainer') {
+              } else if (userState.role === 'trainer') {
                 navigation.navigate('Schedule', { type: userState.role })
               }
             }}
@@ -281,7 +281,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   lessonTime: {
-    ...globalStyle.bodt2,
+    ...globalStyle.body2,
     lineHeight: 20,
     marginTop: 5,
   },

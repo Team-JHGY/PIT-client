@@ -36,7 +36,9 @@ export default function Schedule({ navigation, route }) {
     routeMsg = route.params
   }
 
+  //TODO: firstDayOfWeek, lastDayOfWeek 기본 값 수정
   // states
+<<<<<<< HEAD
   const [firstDayOfWeek, setFirstDayOfWeek] = useState('')
   const [lastDayOfWeek, setLastDayOfWeek] = useState('')
   const [date, setDate] = useState(new Date())
@@ -45,6 +47,15 @@ export default function Schedule({ navigation, route }) {
   async function GetTrainerScheduleDates(token) {
     console.log("firstDayOfWeek",firstDayOfWeek)
 
+=======
+  const [appBarArray, setAppBarArray] = React.useState([])
+  const [firstDayOfWeek, setFirstDayOfWeek] = useState(new Date())
+  const [lastDayOfWeek, setLastDayOfWeek] = useState(new Date())
+  const [calendarDate, setCalendarDate] = useState(new Date())
+  const [markedDates, setMarkedDates] = useState([])
+  // 트레이너의 스케쥴이 몇일날에 있는지 조회하기
+  async function GetTrainerScheduleDates(token) {
+>>>>>>> refs/remotes/origin/main
     let userId = routeMsg === null ? userInfo[0].sub : routeMsg.trainerId
     await fetch(
       `${config.BASE_URL}/schedules/days/trainer/${userId}?month=${
@@ -89,10 +100,22 @@ export default function Schedule({ navigation, route }) {
     })
   }, [])
 
+  //TODO: 10~11월 이렇게 걸친 경우에도 10월 11월 두 번 조회해서 가져올 수 있도록 하기
+  // React.useEffect(() => {
+  //   GetTrainerScheduleDates(userState.jwtToken)
+  // }, [firstDayOfWeek])
   React.useEffect(() => {
+<<<<<<< HEAD
     GetTrainerScheduleDates(userState.jwtToken)
   }, [firstDayOfWeek, lastDayOfWeek])
   
+=======
+    const unsubscribe = navigation.addListener('focus', () => {
+      GetTrainerScheduleDates(userState.jwtToken)
+    })
+    return unsubscribe
+  }, [navigation])
+>>>>>>> refs/remotes/origin/main
   return (
     <>
       {routeMsg !== null && routeMsg.type === 'member' && (
@@ -120,9 +143,13 @@ export default function Schedule({ navigation, route }) {
 
         <View style={styles.calendarContainer}>
           <CalendarStrip
+<<<<<<< HEAD
             selectedDate={date}
+=======
+            selectedDate={calendarDate}
+>>>>>>> refs/remotes/origin/main
             onDateSelected={(date) => {
-              setDate(new Date(date))
+              setCalendarDate(new Date(date))
             }}
             scrollable={true}
             style={{ height: 80, paddingTop: 5, paddingBottom: 10 }}
@@ -136,14 +163,14 @@ export default function Schedule({ navigation, route }) {
             dayComponentHeight={60}
             setFirstDayOfWeek={setFirstDayOfWeek}
             setLastDayOfWeek={setLastDayOfWeek}
-            markedDates={markedDates}
+            //markedDates={markedDates}
           />
         </View>
         <Seperator height={'2%'} />
         {routeMsg !== null && routeMsg.type === 'member' ? (
-          <ViewBodyForMember selectedDate={date} trainerId={routeMsg.trainerId} />
+          <ViewBodyForMember selectedDate={calendarDate} trainerId={routeMsg.trainerId} />
         ) : (
-          <ViewBody navigation={navigation} selectedDate={date} />
+          <ViewBody navigation={navigation} selectedDate={calendarDate} />
         )}
       </SafeAreaView>
     </>

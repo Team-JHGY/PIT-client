@@ -1,16 +1,16 @@
 import React from 'react'
 import { View, Text, StyleSheet, Pressable } from 'react-native'
 import globalStyle from '../../utils/globalStyle'
-const PTGoalConfirmButton = ({ closeModal, callBackFunction }) => {
+const ConfirmButton = ({ closeModal, buttonTitle, clickEvent }) => {
   return (
     <View style={styles.button}>
       <Pressable
         onPress={async () => {
-          await callBackFunction()
+          await clickEvent()
           closeModal()
         }}
       >
-        <Text style={styles.text}>{'확인'}</Text>
+        <Text style={styles.text}>{buttonTitle}</Text>
       </Pressable>
     </View>
   )
@@ -37,4 +37,4 @@ const styles = StyleSheet.create({
     color: '#000000',
   },
 })
-export default PTGoalConfirmButton
+export default ConfirmButton
