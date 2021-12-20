@@ -247,7 +247,7 @@ export default function AddMealPlan ({ navigation, route }) {
 
           <Text style={{ ...globalStyle.body2 }}>{'사진 등록'}</Text>
             <View style={{flexDirection: 'row'}}>
-                    {image !== null ? 
+                    {image !== null? 
                     
                     <Pressable onPress={()=>setImage(null)}>
                         <Image source={{ uri: image }} style={styles.profile} />

@@ -57,14 +57,15 @@ const ScheduleDetailInfo = ({ navigation, route }) => {
     })
       .then((res) => res.json())
       .then((res) => {
-        console.log('진심이야?', res.data.startAt)
+        //console.log('진심이야?', res.data.startAt)
         setScheduleId(res.data.id)
         setname(res.data.partnership.member.user.name)
         setBrith(res.data.partnership.member.birthday)
         setProfile(
-          res.data.partnership.member.user.profileImage === null
-            ? undefined
-            : res.data.partnership.member.user.profileImage.path
+          res.data.partnership.member.user.profileImage === null? 
+            undefined
+            : 
+            res.data.partnership.member.user.profileImage.path
         )
         setEnd(res.data.endAt === undefined ? new Date() : new Date(res.data.endAt))
         setStart(res.data.startAt === undefined ? new Date() : new Date(res.data.startAt))
@@ -86,8 +87,13 @@ const ScheduleDetailInfo = ({ navigation, route }) => {
     })
       .then((res) => res.json())
       .then((res) => {
-        navigation.goBack()
-        console.log(res)
+        if(res.code === 0){
+          alert("스케쥴 삭제가 완료되었습니다.")
+          navigation.goBack()
+        }else{
+          alert("스케쥴 삭제를 실패했습니다.")
+        }
+
       })
       .catch((e) => console.log(e))
   }
@@ -103,7 +109,7 @@ const ScheduleDetailInfo = ({ navigation, route }) => {
             // 삭제 api로 변경되어야 함
             DeleteSh()
           }}
-          title={'스케줄 삭제'}
+          title={'스케쥴 삭제'}
           body={'해당 스케쥴을 삭제합니다.\n회원의 수업 횟수에\n영향을 미칠 수 있으니 유의하세요.'}
           buttonTitle={'삭제하기'}
         />
@@ -117,7 +123,7 @@ const ScheduleDetailInfo = ({ navigation, route }) => {
             // 삭제 api로 변경되어야 함
             DeleteSh()
           }}
-          title={'스케줄 삭제'}
+          title={'스케쥴 삭제'}
           body={'해당 스케쥴을 삭제합니다.'}
           buttonTitle={'삭제하기'}
         />
@@ -165,17 +171,17 @@ const ScheduleDetailInfo = ({ navigation, route }) => {
         <Text style={[globalStyle.heading2, { marginLeft: '5.55%' }]}>{'수업 회차'}</Text>
       )}
       {type !== 'notAvailable' && (
-        <Text style={styles.subText}>{`${sequence}번째 수업 (등록된 수업 총 ${schedual}회)`}</Text>
+        <Text style={styles.subText}>{`${sequence}번째 수업 (등록된 수업 총 ${schedual === null? 0 : schedual}회)`}</Text>
       )}
       
       <Text style={[globalStyle.heading2, { marginLeft: '5.55%', marginTop: 20 }]}>{'날짜'}</Text>
       <Text style={styles.subText}>
         
         {type !== 'notAvailable'?
-
+  
           start.getFullYear() + '-' + (start.getMonth() + 1) + '-' + start.getDate()
           :
-          date.split("T")[0]
+          date.split("T")[0]+"asdf"
         }
 
       </Text>
@@ -206,7 +212,7 @@ const ScheduleDetailInfo = ({ navigation, route }) => {
               }
             }}
           />
-          {/*스케줄  수정 버튼 */}
+          {/*스케쥴  수정 버튼 */}
           <UpdateButton
             clickEvent={() => {
               navigation.navigate('AddSchedule', {

@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { View, StyleSheet, Text, SafeAreaView, Image, ScrollView, Pressable } from 'react-native'
+import { View, StyleSheet, Text, SafeAreaView, Image, Pressable } from 'react-native'
 import * as SplashScreen from 'expo-splash-screen'
-import { Appbar } from 'react-native-paper'
+import InnerNav from "../components/Common/InnerNav"
+
 import { WithLocalSvg } from 'react-native-svg'
 
 // utils
@@ -14,7 +15,7 @@ import { getDayOfWeek, getMonthOfDate, getDayOfDate, getTimeOfDate } from '../ut
 import trainer from '../../assets/img/SignUp/trainer.svg'
 import calendar from '../../assets/img/Schedule/calendar.png'
 import goal from '../../assets/img/Schedule/goal.png'
-import report from '../../assets/img/Schedule/report.png'
+
 import emptyProfile from '../../assets/img/SignUp/emptyProfile.png'
 
 // components
@@ -128,6 +129,7 @@ export default function MainView({ navigation, route }) {
     <SafeAreaView style={styles.body} onLayout={onLayoutRootView}>
       <View style={{ width: '88.8%', marginTop: 30, flex: 1 }}>
         <View style={[globalStyle.row, styles.appBar]}>
+
           {userState.role === 'member' ? (
             <Image
               style={[styles.userImg]}
@@ -207,7 +209,7 @@ export default function MainView({ navigation, route }) {
               }
             }}
           />
-          <ScheduleActionItem image={report} text={'레포트'} />
+          
         </View>
         <Text style={[globalStyle.heading2, { marginTop: 20 }]}>{'다음 수업'}</Text>
         <View style={styles.lesson}>
@@ -225,6 +227,7 @@ export default function MainView({ navigation, route }) {
           </Pressable>
         </View>
       </View>
+      <InnerNav navigation={navigation} type="main"/>
     </SafeAreaView>
   )
 }
@@ -233,6 +236,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F9F9F9',
     alignItems: 'center',
+  },
+  icons: {
+    marginTop:10,
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    width: 24,
+    height: 24,
   },
   appBar: {
     justifyContent: 'center',
@@ -261,7 +271,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: '#FFFFFF',
     width: '100%',
-    height: '11.8%',
+    height: '15%',
     paddingLeft: '6.25%',
   },
   numOfLesson: {

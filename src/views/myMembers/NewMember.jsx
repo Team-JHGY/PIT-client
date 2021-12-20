@@ -136,7 +136,7 @@ export default function NewMembers({navigation}) {
                 }}
             >
                 <Toast ref={toastRef}
-                    positionValue={50}
+                    positionValue={100}
                     fadeInDuration={200}
                     fadeOutDuration={1000}
                     style={{backgroundColor:'rgba(0,0,0, 0.5)', width:'90%'}}

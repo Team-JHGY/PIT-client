@@ -201,6 +201,7 @@ export default function App() {
           <Stack.Screen name="MealPlan" component={MealPlan} />
           <Stack.Screen name="AddMealPlan" component={AddMealPlan} />
           <Stack.Screen name="MealCommentPage" component={MealCommentPage} />
+         
         </Stack.Navigator>
       </NavigationContainer>
     </UserStore>

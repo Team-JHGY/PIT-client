@@ -23,7 +23,7 @@ const ScheduleActionItem = ({ image, text, clickEvent }) => {
 }
 const styles = StyleSheet.create({
   body: {
-    width: '31.25%',
+    width: '48%',
     borderRadius: 10,
     backgroundColor: '#FFFFFF',
     alignItems: 'center',

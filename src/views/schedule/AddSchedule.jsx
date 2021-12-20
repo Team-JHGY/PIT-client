@@ -150,14 +150,14 @@ const AddSchedule = ({ navigation, route }) => {
     .then((res) => {
       console.log("res", res.code)
       if(res.code === 0){
-        alert("스케줄 등록이 완료되었습니다.")
+        alert("스케쥴 등록이 완료되었습니다.")
         navigation.goBack()
       }else if(res.code === -13){
         alert("회원과 파트너쉽을 찾을 수 없습니다.")
       }else if(res.code === -14){
-        alert("추가할 스케줄 시간이 기존 스케줄과 중복되었습니다.")
+        alert("추가할 스케쥴 시간이 기존 스케쥴과 중복되었습니다.")
       }else if(res.code === -15){
-        alert("스케줄 시작 시간과 끝 시간이 올바르지 않습니다.")
+        alert("스케쥴 시작 시간과 끝 시간이 올바르지 않습니다.")
       }
       
     })
@@ -196,9 +196,9 @@ const AddSchedule = ({ navigation, route }) => {
         navigation.goBack()
         navigation.goBack()
       }else if(res.code === -13){
-        alert("스케줄을 찾을 수 없습니다.")
+        alert("스케쥴을 찾을 수 없습니다.")
       }else if(res.code === -14){
-        alert("수정한 스케줄 시간이 다른 스케줄과 중복됩니다.")
+        alert("수정한 스케쥴 시간이 다른 스케쥴과 중복됩니다.")
       }
 
     })

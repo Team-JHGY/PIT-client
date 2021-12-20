@@ -15,6 +15,7 @@ import * as SplashScreen from 'expo-splash-screen'
 import CalendarStrip from '../../utils/CalendarStrip/CalendarStrip'
 import { Appbar } from 'react-native-paper'
 import { WithLocalSvg } from 'react-native-svg'
+import InnerNav from "../../components/Common/InnerNav"
 
 //components
 import Seperator from '../../components/Schedule/Seperator'
@@ -74,6 +75,7 @@ export default function MealPlan({ navigation, route }) {
     { time: '오전 11:30', type: happy },
     { time: '오후 1:30', type: happy },
     { time: '오후 8:30', type: Sad },
+    { time: '오후 1:30', type: Sad },
     { time: '오후 1:30', type: Sad },
   ])
 
@@ -138,27 +140,10 @@ export default function MealPlan({ navigation, route }) {
               markedDates={markedDateArray}
             />
           </View>
-
-          <View style={[styles.selectBtnList]}>
-            <View style={[globalStyle.row, styles.selectBtnList, styles.allBtnList]}>
-              <Pressable
-                style={seleted === 'class' ? styles.selectedBtn : styles.selectBtn}
-                onPress={() => setSeleted('class')}
-              >
-                <Text style={{ textAlign: 'center' }}>수업</Text>
-              </Pressable>
-              <Pressable style={seleted === 'train' ? styles.selectedBtn : styles.selectBtn}>
-                <Text style={{ textAlign: 'center' }} onPress={() => setSeleted('train')}>
-                  개인 운동
-                </Text>
-              </Pressable>
-              <Pressable style={seleted === 'meal' ? styles.selectedBtn : styles.selectBtn}>
-                <Text style={{ textAlign: 'center' }} onPress={() => setSeleted('meal')}>
-                  식단
-                </Text>
-              </Pressable>
+            <View style={{ margin: 20 }}>
+              <Text style={[styles.subTitle]}>수업</Text>
+              <Text style={[styles.noMealPlan]}>수업 기록이 없습니다.</Text>
             </View>
-          </View>
 
           {/*식단 부분 뷰 */}
           {seleted === 'meal' ? (
@@ -183,7 +168,7 @@ export default function MealPlan({ navigation, route }) {
               {mealPanList.length === 0 ? (
                 <Text style={[styles.noMealPlan]}>식단 기록이 없습니다.</Text>
               ) : (
-                <ScrollView horizontal={true} style={[styles.MealPlan, globalStyle.row]}>
+                <ScrollView horizontal={true} style={[styles.MealPlan, globalStyle.row,{paddingRight:10}]}>
                   {mealPanList.map((item, index) => {
                     return (
                       <View key={item.time} style={{ marginRight: 10 }}>
@@ -208,75 +193,21 @@ export default function MealPlan({ navigation, route }) {
               )}
             </View>
           ) : null}
-
-          {/*개인 운동 관련 뷰 */}
-          {seleted === 'train' ? (
-            <View style={{ margin: 20 }}>
-              <Text style={[styles.subTitle]}>개인 운동</Text>
-              <Text style={[styles.noMealPlan]}>개인 운동 기록이 없습니다.</Text>
-            </View>
-          ) : null}
           {/*수업 관련 뷰 */}
-          {seleted === 'class' ? (
-            <View style={{ margin: 20 }}>
-              <Text style={[styles.subTitle]}>수업</Text>
-              <Text style={[styles.noMealPlan]}>수업 기록이 없습니다.</Text>
-            </View>
-          ) : null}
+
         </ScrollView>
+       
 
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => {
-            setModalVisible(!modalVisible)
-          }}
-        >
-          <View style={[styles.centeredView]}>
-            <Pressable style={styles.bottomoList}></Pressable>
-            <Pressable
-              style={[globalStyle.row, styles.selectBtnList]}
-              onPress={() => {
-                setModalVisible(!modalVisible)
-                navigation.navigate('AddMealPlan', { mode: 'create' })
-              }}
-            >
-              <Text style={[styles.whiteBtn, { marginBottom: 18, marginRight: 10 }]}>
-                식단 기록
-              </Text>
-              <WithLocalSvg style={{ marginRight: 15, marginBottom: 18 }} asset={whiteBtn2} />
-            </Pressable>
-            <Pressable
-              style={[globalStyle.row, styles.selectBtnList]}
-              onPress={() => {
-                setModalVisible(!modalVisible)
-              }}
-            >
-              <Text style={styles.whiteBtn}>나의 수업 운동 기록</Text>
-              <WithLocalSvg style={{ marginRight: 5 }} asset={whiteBtn1} />
-            </Pressable>
-
-            <Pressable
-              style={styles.floatingButton}
-              onPress={() => {
-                //navigation.navigate('AddSchedule', { mode: 'create' })
-                setModalVisible(!modalVisible)
-              }}
-            >
-              <WithLocalSvg asset={addFloating} />
-            </Pressable>
-          </View>
-        </Modal>
         <Pressable
-          style={[styles.floatingButton, styles.paddingRight]}
+          style={[styles.floatingButton, styles.paddingRight,{elevation: 999}]}
           onPress={() => {
-            //navigation.navigate('AddSchedule', { mode: 'create' })
             setModalVisible(!modalVisible)
+            navigation.navigate('AddMealPlan', { mode: 'create' })
           }}
         >
           <WithLocalSvg asset={addFloating} />
         </Pressable>
+        <InnerNav navigation={navigation} type="meal"/>
       </SafeAreaView>
     </>
   )
@@ -399,7 +330,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   noMealPlan: {
-    margin: 35,
+    margin: 20,
     textAlign: 'center',
     ...globalStyle.textDimmedGrey,
   },
@@ -408,7 +339,7 @@ const styles = StyleSheet.create({
     paddingRight: 40,
     borderRadius: 10,
     backgroundColor: '#fff',
-    marginTop: 22,
+    marginTop: 10,
   },
   centeredView: {
     paddingBottom: 50,

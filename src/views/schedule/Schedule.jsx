@@ -19,10 +19,6 @@ import { UserContext } from '../../store/user'
 import config from '../../utils/config'
 import { decode } from 'js-base64'
 
-let date1 = new Date()
-let date2 = new Date()
-date2.setDate(date2.getDate() - 2)
-let todayDate = new Date()
 
 export default function Schedule({ navigation, route }) {
   const onLayoutRootView = useCallback(async () => {
@@ -41,14 +37,13 @@ export default function Schedule({ navigation, route }) {
   }
 
   // states
-  const [appBarArray, setAppBarArray] = React.useState([])
   const [firstDayOfWeek, setFirstDayOfWeek] = useState('')
   const [lastDayOfWeek, setLastDayOfWeek] = useState('')
   const [date, setDate] = useState(new Date())
   const [markedDates, setMarkedDates] = useState([])
   // 트레이너의 스케쥴이 몇일날에 있는지 조회하기
   async function GetTrainerScheduleDates(token) {
-    console.log(firstDayOfWeek)
+    console.log("firstDayOfWeek",firstDayOfWeek)
 
     let userId = routeMsg === null ? userInfo[0].sub : routeMsg.trainerId
     await fetch(
@@ -97,6 +92,7 @@ export default function Schedule({ navigation, route }) {
   React.useEffect(() => {
     GetTrainerScheduleDates(userState.jwtToken)
   }, [firstDayOfWeek, lastDayOfWeek])
+  
   return (
     <>
       {routeMsg !== null && routeMsg.type === 'member' && (
@@ -124,7 +120,7 @@ export default function Schedule({ navigation, route }) {
 
         <View style={styles.calendarContainer}>
           <CalendarStrip
-            selectedDate={todayDate}
+            selectedDate={date}
             onDateSelected={(date) => {
               setDate(new Date(date))
             }}

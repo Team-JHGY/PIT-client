@@ -37,12 +37,14 @@ const ViewBody = ({ navigation, selectedDate }) => {
   }, [])
 
   useEffect(() => {
+    //console.log("sel",selectedDate)
     GetMonthTrainerSchedule(userState.jwtToken)
   }, [selectedDate])
 
   //해당 날짜 데이터 가져오기
   async function GetMonthTrainerSchedule(token) {
-    const dayPicker = JSON.stringify(selectedDate).split("T")[0].replace(/"/, "").split("-")
+    
+    const dayPicker = JSON.stringify(new Date(selectedDate)).split("T")[0].replace(/"/, "").split("-")
     
     await fetch(
       `${config.BASE_URL}/schedules/trainer/${userInfo[0].sub}?day=${dayPicker[2]}&month=${dayPicker[1]}&year=${dayPicker[0]}`,
@@ -97,11 +99,11 @@ const ViewBody = ({ navigation, selectedDate }) => {
                       navigation.navigate('ScheduleDetailInfo', { type: 'reserved', id: item.id })
                     } else {
                       navigation.navigate('ScheduleDetailInfo', {
-                        type: 'notAvailable',
-                        id: item.id,
-                        date:item.startAt,
-                        startAt:getTimeOfDate(item.startAt),
-                        endAt:getTimeOfDate(item.endAt)
+                        type    : 'notAvailable',
+                        id      : item.id,
+                        date    : item.startAt,
+                        startAt : getTimeOfDate(item.startAt),
+                        endAt   : getTimeOfDate(item.endAt)
                       })
                     }
                   }}
