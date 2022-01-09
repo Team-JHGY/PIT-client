@@ -24,12 +24,12 @@ export default NaverLogin = ({ navigation }) => {
           match
         while ((match = regex.exec(navState.url))) {
           params[match[1]] = match[2]
-          console.log(match[1], match[2])
+          //console.log(match[1], match[2])
         }
         const { code } = params
         if (code !== null && code !== undefined) {
           // 토큰 받기
-          console.log('code is ' + code)
+          //console.log('code is ' + code)
           const qs = require('query-string')
           var data = {
             grant_type: 'authorization_code',
@@ -45,7 +45,7 @@ export default NaverLogin = ({ navigation }) => {
             config: { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
           })
             .then((res) => {
-              console.log(res.data)
+              //console.log(res.data)
               userDispatch({
                 type: 'SET_MEMBER_TOKEN',
                 payload: {

@@ -38,16 +38,6 @@ export default function Schedule({ navigation, route }) {
 
   //TODO: firstDayOfWeek, lastDayOfWeek 기본 값 수정
   // states
-<<<<<<< HEAD
-  const [firstDayOfWeek, setFirstDayOfWeek] = useState('')
-  const [lastDayOfWeek, setLastDayOfWeek] = useState('')
-  const [date, setDate] = useState(new Date())
-  const [markedDates, setMarkedDates] = useState([])
-  // 트레이너의 스케쥴이 몇일날에 있는지 조회하기
-  async function GetTrainerScheduleDates(token) {
-    console.log("firstDayOfWeek",firstDayOfWeek)
-
-=======
   const [appBarArray, setAppBarArray] = React.useState([])
   const [firstDayOfWeek, setFirstDayOfWeek] = useState(new Date())
   const [lastDayOfWeek, setLastDayOfWeek] = useState(new Date())
@@ -55,7 +45,7 @@ export default function Schedule({ navigation, route }) {
   const [markedDates, setMarkedDates] = useState([])
   // 트레이너의 스케쥴이 몇일날에 있는지 조회하기
   async function GetTrainerScheduleDates(token) {
->>>>>>> refs/remotes/origin/main
+
     let userId = routeMsg === null ? userInfo[0].sub : routeMsg.trainerId
     await fetch(
       `${config.BASE_URL}/schedules/days/trainer/${userId}?month=${
@@ -93,29 +83,19 @@ export default function Schedule({ navigation, route }) {
       .catch((e) => console.log(e))
   }
 
-  React.useEffect(() => {
-    AsyncStorage.getItem('userAuth', (err, result) => {
-      //user_id에 담긴 아이디 불러오기
-      //   console.log(result) // result에 담김 //불러온거 출력
-    })
-  }, [])
 
   //TODO: 10~11월 이렇게 걸친 경우에도 10월 11월 두 번 조회해서 가져올 수 있도록 하기
   // React.useEffect(() => {
   //   GetTrainerScheduleDates(userState.jwtToken)
   // }, [firstDayOfWeek])
   React.useEffect(() => {
-<<<<<<< HEAD
-    GetTrainerScheduleDates(userState.jwtToken)
-  }, [firstDayOfWeek, lastDayOfWeek])
-  
-=======
+
     const unsubscribe = navigation.addListener('focus', () => {
       GetTrainerScheduleDates(userState.jwtToken)
     })
     return unsubscribe
   }, [navigation])
->>>>>>> refs/remotes/origin/main
+
   return (
     <>
       {routeMsg !== null && routeMsg.type === 'member' && (
@@ -143,11 +123,9 @@ export default function Schedule({ navigation, route }) {
 
         <View style={styles.calendarContainer}>
           <CalendarStrip
-<<<<<<< HEAD
-            selectedDate={date}
-=======
+
             selectedDate={calendarDate}
->>>>>>> refs/remotes/origin/main
+
             onDateSelected={(date) => {
               setCalendarDate(new Date(date))
             }}

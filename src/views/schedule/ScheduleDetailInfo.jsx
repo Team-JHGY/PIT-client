@@ -57,10 +57,6 @@ const ScheduleDetailInfo = ({ navigation, route }) => {
     })
       .then((res) => res.json())
       .then((res) => {
-<<<<<<< HEAD
-        //console.log('진심이야?', res.data.startAt)
-=======
->>>>>>> refs/remotes/origin/main
         setScheduleId(res.data.id)
         setname(res.data.partnership.member.user.name)
         setBrith(res.data.partnership.member.birthday)
@@ -90,17 +86,12 @@ const ScheduleDetailInfo = ({ navigation, route }) => {
     })
       .then((res) => res.json())
       .then((res) => {
-<<<<<<< HEAD
         if(res.code === 0){
           alert("스케쥴 삭제가 완료되었습니다.")
           navigation.goBack()
         }else{
           alert("스케쥴 삭제를 실패했습니다.")
         }
-
-=======
-        navigation.goBack()
->>>>>>> refs/remotes/origin/main
       })
       .catch((e) => console.log(e))
   }

@@ -38,7 +38,7 @@ const PTGoalUpdateModal = ({ closeModal, partnershipId, goalText }) => {
       .then((res) => res.json())
       .then((res) => {
         if (res.code !== 0) {
-          console.log('update fail')
+          //console.log('update fail')
         }
       })
       .catch((e) => console.log(e))
@@ -61,7 +61,7 @@ const PTGoalUpdateModal = ({ closeModal, partnershipId, goalText }) => {
     })
       .then((res) => res.json())
       .then((res) => {
-        console.log(res)
+        //console.log(res)
       })
       .catch((e) => console.log(e))
   }

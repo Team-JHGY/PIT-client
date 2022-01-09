@@ -6,16 +6,17 @@ import {
   SafeAreaView,
   Pressable,
   Image,
-  AsyncStorage,
   ScrollView,
-  Modal,
 } from 'react-native'
 import globalStyle from '../../utils/globalStyle'
 import * as SplashScreen from 'expo-splash-screen'
 import CalendarStrip from '../../utils/CalendarStrip/CalendarStrip'
 import { Appbar } from 'react-native-paper'
 import { WithLocalSvg } from 'react-native-svg'
-import InnerNav from "../../components/Common/InnerNav"
+// context
+import { UserContext } from '../../store/user'
+import { decode } from 'js-base64'
+import config from '../../utils/config'
 
 //components
 import Seperator from '../../components/Schedule/Seperator'
@@ -23,37 +24,17 @@ import Seperator from '../../components/Schedule/Seperator'
 // assets
 import arrow_left from '../../../assets/arrow_left.png'
 import addFloating from '../../../assets/img/Schedule/addFloating.svg'
-import whiteBtn1 from '../../../assets/img/mealPlan/whiteBtn1.svg'
-import whiteBtn2 from '../../../assets/img/mealPlan/whiteBtn2.svg'
 import AddMealPhoto from '../../../assets/img/mealPlan/AddMealPhoto.svg'
-import happy from '../../../assets/img/mealPlan/happy.svg'
-import Sad from '../../../assets/img/mealPlan/Sad.svg'
+import happy from '../../../assets/img/mealPlan/happy.png'
+import Netural from '../../../assets/img/mealPlan/Netural.png'
+import Sad from '../../../assets/img/mealPlan/Sad.png'
 import Chat from '../../../assets/img/mealPlan/Chat.svg'
+import emptyProfile from '../../../assets/img/SignUp/emptyProfile.png'
 
-let date1 = new Date()
-let date2 = new Date()
-date2.setDate(date2.getDate() - 2)
-let todayDate = new Date()
-let markedDateArray = [
-  {
-    date: date1,
-    dots: [
-      {
-        color: '#00D98B',
-        selectedColor: '#FFFFFF',
-      },
-    ],
-  },
-  {
-    date: date2,
-    dots: [
-      {
-        color: '#00D98B',
-        selectedColor: '#FFFFFF',
-      },
-    ],
-  },
-]
+import {
+  getTimeOfDate,
+} from '../../utils/commonFunctions'
+
 export default function MealPlan({ navigation, route }) {
   const onLayoutRootView = useCallback(async () => {
     await SplashScreen.hideAsync()
@@ -61,30 +42,102 @@ export default function MealPlan({ navigation, route }) {
 
   // route
   let routeMsg = null
+  let memberProfile = emptyProfile
   if (route.params !== undefined) {
     routeMsg = route.params
+    if (routeMsg.memberInfo.member.user.profileImage !== null)
+    memberProfile = routeMsg.memberInfo.member.user.profileImage.path
   }
 
+  console.log("route",route)
+
+
   // states
+  const { userState, userDispatch } = React.useContext(UserContext)
+  const splitJwt = userState.jwtToken.split('.')
+  const userInfo = JSON.parse(decode(splitJwt[1]))
+  const [partnershipId, setPartnershipId] = useState(null)
+  const [trainerProfile, setTrainerProfile] = useState(emptyProfile)
+  const [trainerName, setTrainerName] = useState('')
+
   const [firstDayOfWeek, setFirstDayOfWeek] = useState('')
   const [lastDayOfWeek, setLastDayOfWeek] = useState('')
   const [date, setDate] = useState(new Date())
   const [seleted, setSeleted] = React.useState('meal')
   const [modalVisible, setModalVisible] = useState(false)
-  const [mealPanList, setMealPlanList] = React.useState([
-    { time: '오전 11:30', type: happy },
-    { time: '오후 1:30', type: happy },
-    { time: '오후 8:30', type: Sad },
-    { time: '오후 1:30', type: Sad },
-    { time: '오후 1:30', type: Sad },
-  ])
+  const [mealPanList, setMealPlanList] = React.useState([])
+
+  async function getActivatedTrainerInfo() {
+
+    await fetch(`${config.BASE_URL}/partnerships/${userInfo.sub}/trainers`, {
+      method: 'GET', // *GET, POST, PUT, DELETE, etc.
+      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: 'include', // include, *same-origin, omit
+      headers: {
+        Authorization: userState.jwtToken,
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        
+        if (res.code === 0) {
+          let activatedTrainerInfo = res.data.trainers.find((v, i) => {
+            if (v.isEnabled === true) return true
+          })
+
+          setTrainerProfile(activatedTrainerInfo.trainer.user.profileImage.path)
+          setTrainerName(activatedTrainerInfo.trainer.user.name)
+          setPartnershipId(activatedTrainerInfo.partnershipId)
+          GetMealList(activatedTrainerInfo.partnershipId)
+         
+          
+        } 
+      })
+      .catch((e) => console.log(e))
+  }
+
+  async function GetMealList(id) {
+    console.log(id)
+
+    await fetch(`${config.BASE_URL}/diet/partnership/${id}?day=${date.getDate()}&month=${date.getMonth()+1}&year=${date.getFullYear()}`, {
+      method: 'GET', // *GET, POST, PUT, DELETE, etc.
+      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: 'include', // include, *same-origin, omit
+      headers: {
+        'Authorization': userState.jwtToken,
+        'Content-Type' : 'application/json',
+      },
+
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.code === 0) {
+          setMealPlanList(res.data)
+          //console.log("식단 조회",res.data[0])
+        } else {
+          alert("식단 조회를 실패했습니다.")
+        }
+      })
+      .catch((e) => { alert("식단 조회를 실패했습니다.");console.log(e)})
+  }
+
+  React.useEffect(()=>{
+    if(userState.role === 'member'){
+    getActivatedTrainerInfo()
+    }else{
+      GetMealList(route.params.memberInfo.partnershipId)
+    }
+    console.log(date)
+  },[date])
 
   React.useEffect(() => {
-    AsyncStorage.getItem('userAuth', (err, result) => {
-      //user_id에 담긴 아이디 불러오기
-      //   console.log(result) // result에 담김 //불러온거 출력
+    const unsubscribe = navigation.addListener('focus', () => {
+      getActivatedTrainerInfo()
     })
-  }, [])
+    return unsubscribe
+  }, [navigation])
+
   return (
     <>
       <SafeAreaView
@@ -109,20 +162,43 @@ export default function MealPlan({ navigation, route }) {
                     styles.flexBasis,
                   ]}
                 >
-                  <Image
-                    style={styles.userImg}
-                    source={{
-                      uri: 'https://img.sbs.co.kr/newsnet/etv/upload/2021/04/23/30000684130_500.jpg',
-                    }}
-                  />
-                  <Text>양치승 T</Text>
+                  {userState.role === 'member' ? (
+                    <Image
+                      style={[styles.userImg]}
+                      source={
+                        trainerProfile !== emptyProfile
+                          ? {
+                              uri: trainerProfile,
+                            }
+                          : trainerProfile
+                      }
+                    />
+                  ) : (
+                    <Image
+                      style={[styles.userImg, { borderColor: '#11F37E' }]}
+                      source={
+                        routeMsg.memberInfo.member.user.profileImage !== null
+                          ? {
+                              uri: memberProfile,
+                            }
+                          : memberProfile
+                      }
+                    />
+                  )}
+                  {userState.role === 'member' ? (
+                    <Text>{trainerName}</Text>
+                  ) : (
+                    <Text>{routeMsg.memberInfo.member.user.name}</Text>
+                  )}
+                 
                 </View>
               </View>
             </Appbar.Header>
 
             <CalendarStrip
-              selectedDate={todayDate}
+              selectedDate={date}
               onDateSelected={(date) => {
+                //console.log("onDateSelected",date)
                 setDate(new Date(date))
               }}
               scrollable={true}
@@ -137,7 +213,7 @@ export default function MealPlan({ navigation, route }) {
               dayComponentHeight={60}
               setFirstDayOfWeek={setFirstDayOfWeek}
               setLastDayOfWeek={setLastDayOfWeek}
-              markedDates={markedDateArray}
+              //markedDates={markedDateArray}
             />
           </View>
             <View style={{ margin: 20 }}>
@@ -150,36 +226,31 @@ export default function MealPlan({ navigation, route }) {
             <View style={{ margin: 20 }}>
               <View style={[globalStyle.row, { alignItems: 'stretch' }]}>
                 <Text style={[styles.subTitle, { flexGrow: 4 }]}>식단 기록</Text>
-                {mealPanList.length === 0 ? null : (
-                  <Pressable
-                    style={[
-                      globalStyle.appbarBtn,
-                      globalStyle.buttonGrey,
-                      globalStyle.center,
-                      styles.editWidth,
-                      styles.margin_right,
-                    ]}
-                    onPress={(userData) => navigation.navigate('AddMealPlan', { mode: 'edit' })}
-                  >
-                    <Text style={globalStyle.appbarBtnText}>수정</Text>
-                  </Pressable>
-                )}
               </View>
               {mealPanList.length === 0 ? (
                 <Text style={[styles.noMealPlan]}>식단 기록이 없습니다.</Text>
               ) : (
-                <ScrollView horizontal={true} style={[styles.MealPlan, globalStyle.row,{paddingRight:10}]}>
+                <ScrollView horizontal={true} style={[styles.MealPlan, globalStyle.row,{paddingRight:20,paddingLeft:20}]}>
                   {mealPanList.map((item, index) => {
                     return (
                       <View key={item.time} style={{ marginRight: 10 }}>
-                        <Pressable onPress={() => navigation.navigate('MealCommentPage')}>
-                          <WithLocalSvg asset={AddMealPhoto} />
+                        
+                        <Pressable onPress={() => navigation.navigate('MealCommentPage',{mealId: item.id, dateValue: new Date(date)})}>
+                       
+                          {
+                            (item.images).length === 0?
+                            <WithLocalSvg asset={AddMealPhoto} />
+                            :
+                            <Image source={item.images[0]}/>
+                          }
+                         
                         </Pressable>
 
-                        <Text key={item.time + index}>{item.time}</Text>
+                        <Text key={item.time + index}>{getTimeOfDate(item.timestamp)}</Text>
                         <View style={[globalStyle.row, { alignItems: 'stretch' }]}>
                           <View style={[globalStyle.row, { flexGrow: 20, alignItems: 'center' }]}>
-                            <WithLocalSvg asset={item.type} />
+                            
+                            <Image source={item.score === "SOSO"? Netural:item.score === "BAD"? Sad:happy} />
                           </View>
                           <View style={[globalStyle.row, { alignItems: 'center' }]}>
                             <WithLocalSvg asset={Chat} />
@@ -189,6 +260,7 @@ export default function MealPlan({ navigation, route }) {
                       </View>
                     )
                   })}
+                  <View style={[{width:30}]}></View>
                 </ScrollView>
               )}
             </View>
@@ -196,18 +268,24 @@ export default function MealPlan({ navigation, route }) {
           {/*수업 관련 뷰 */}
 
         </ScrollView>
-       
+       {
+         userState.role === 'member'?
+          <Pressable
+            style={[styles.floatingButton, styles.paddingRight,{elevation: 999}]}
+            onPress={() => {
+              setModalVisible(!modalVisible)
+              navigation.navigate('AddMealPlan', { mode: 'create', dateValue: new Date(date)})
+            }}
+          >
+            <WithLocalSvg asset={addFloating} />
+          </Pressable>
+          :
+          null
 
-        <Pressable
-          style={[styles.floatingButton, styles.paddingRight,{elevation: 999}]}
-          onPress={() => {
-            setModalVisible(!modalVisible)
-            navigation.navigate('AddMealPlan', { mode: 'create' })
-          }}
-        >
-          <WithLocalSvg asset={addFloating} />
-        </Pressable>
-        <InnerNav navigation={navigation} type="meal"/>
+       }
+
+        
+       
       </SafeAreaView>
     </>
   )

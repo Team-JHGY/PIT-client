@@ -145,7 +145,7 @@ const AddSchedule = ({ navigation, route }) => {
     })
     .then((res) => res.json())
     .then((res) => {
-      console.log("res", res.code)
+      //console.log("res", res.code)
       if(res.code === 0){
         alert("스케쥴 등록이 완료되었습니다.")
         navigation.goBack()

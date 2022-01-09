@@ -47,8 +47,8 @@ export const TrainerChooseModal = ({ trainers, trainerIdx, prevPartnerId, closeM
     })
       .then((res) => res.json())
       .then((res) => {
-        console.log('first')
-        console.log(res)
+        //console.log('first')
+        //console.log(res)
         return new Promise((resolve, reject) => {
           if (res.code === 0) resolve()
           else reject(res.status)

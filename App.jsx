@@ -124,7 +124,7 @@ export function memberRoomNav({ navigation, route }) {
       }}
     >
       <Tab.Screen name={'홈'} children={() => <MainView navigation={navigation} route={route} />} />
-      <Tab.Screen name={'운동/식단'} component={MealPlan} />
+      <Tab.Screen name={'운동/식단'} children={() => <MealPlan navigation={navigation} route={route}/>} />
     </Tab.Navigator>
   )
 }
