@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { View, StyleSheet, Text, SafeAreaView, Image, Pressable } from 'react-native'
 import * as SplashScreen from 'expo-splash-screen'
-import InnerNav from "../components/Common/InnerNav"
+import InnerNav from '../components/Common/InnerNav'
 
 import { WithLocalSvg } from 'react-native-svg'
 
@@ -94,7 +94,6 @@ export default function MainView({ navigation, route }) {
     })
       .then((res) => res.json())
       .then((res) => {
-        console.log(res)
         if (res.code === 0) {
           let startAtDate = new Date(res.data.startAt)
           let endAtDate = new Date(res.data.endAt)
@@ -129,7 +128,6 @@ export default function MainView({ navigation, route }) {
     <SafeAreaView style={styles.body} onLayout={onLayoutRootView}>
       <View style={{ width: '88.8%', marginTop: 30, flex: 1 }}>
         <View style={[globalStyle.row, styles.appBar]}>
-
           {userState.role === 'member' ? (
             <Image
               style={[styles.userImg]}
@@ -209,7 +207,6 @@ export default function MainView({ navigation, route }) {
               }
             }}
           />
-          
         </View>
         <Text style={[globalStyle.heading2, { marginTop: 20 }]}>{'다음 수업'}</Text>
         <View style={styles.lesson}>
@@ -227,7 +224,7 @@ export default function MainView({ navigation, route }) {
           </Pressable>
         </View>
       </View>
-      <InnerNav navigation={navigation} type="main"/>
+      <InnerNav navigation={navigation} type="main" />
     </SafeAreaView>
   )
 }
@@ -238,7 +235,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   icons: {
-    marginTop:10,
+    marginTop: 10,
     marginLeft: 'auto',
     marginRight: 'auto',
     width: 24,

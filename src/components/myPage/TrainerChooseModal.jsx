@@ -23,20 +23,9 @@ export const TrainerChooseModal = ({ trainers, trainerIdx, prevPartnerId, closeM
 
   const [tempIdx, setTempIdx] = useState(trainerIdx)
   const [newPartnershipId, setNewPartnershipId] = useState(prevPartnerId)
-  // useEffect(() => {}, [])
-
-  // fetch(`${config.BASE_URL}/partnerships/${4}/enable`, {
-  //   method: 'PATCH', // *GET, POST, PUT, DELETE, etc.
-  //   cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-  //   credentials: 'include', // include, *same-origin, omit
-  //   headers: {
-  //     Authorization: userState.jwtToken,
-  //     'Content-Type': 'application/json',
-  //   },
-  // })
 
   async function ChangeTrainer(partnershipId) {
-    await fetch(`${config.BASE_URL}/partnerships/${prevPartnerId}/disable`, {
+    await fetch(`${config.BASE_URL}/partnerships/control/${prevPartnerId}`, {
       method: 'PATCH', // *GET, POST, PUT, DELETE, etc.
       cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
       credentials: 'include', // include, *same-origin, omit
@@ -44,11 +33,12 @@ export const TrainerChooseModal = ({ trainers, trainerIdx, prevPartnerId, closeM
         Authorization: userState.jwtToken,
         'Content-Type': 'application/json',
       },
+      body: JSON.stringify({
+        isEnabled: false,
+      }),
     })
       .then((res) => res.json())
       .then((res) => {
-        console.log('first')
-        console.log(res)
         return new Promise((resolve, reject) => {
           if (res.code === 0) resolve()
           else reject(res.status)
@@ -58,7 +48,7 @@ export const TrainerChooseModal = ({ trainers, trainerIdx, prevPartnerId, closeM
         console.log(err)
       })
       .then(async () => {
-        return await fetch(`${config.BASE_URL}/partnerships/${partnershipId}/enable`, {
+        return await fetch(`${config.BASE_URL}/partnerships/control/${partnershipId}`, {
           method: 'PATCH', // *GET, POST, PUT, DELETE, etc.
           cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
           credentials: 'include', // include, *same-origin, omit
@@ -66,6 +56,9 @@ export const TrainerChooseModal = ({ trainers, trainerIdx, prevPartnerId, closeM
             Authorization: userState.jwtToken,
             'Content-Type': 'application/json',
           },
+          body: JSON.stringify({
+            isEnabled: true,
+          }),
         })
       })
       .then((res) => res.json())

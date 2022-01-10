@@ -28,7 +28,7 @@ const ScheduleDetailInfo = ({ navigation, route }) => {
   const { userState, userDispatch } = React.useContext(UserContext)
   const splitJwt = userState.jwtToken.split('.')
   const userInfo = React.useState(JSON.parse(decode(splitJwt[1])))
-  const { type, id ,startAt, endAt, date} = route.params
+  const { type, id, startAt, endAt, date } = route.params
   const [name, setname] = React.useState()
   const [brith, setBrith] = React.useState()
   const [profile, setProfile] = React.useState(undefined)
@@ -57,18 +57,13 @@ const ScheduleDetailInfo = ({ navigation, route }) => {
     })
       .then((res) => res.json())
       .then((res) => {
-<<<<<<< HEAD
-        //console.log('진심이야?', res.data.startAt)
-=======
->>>>>>> refs/remotes/origin/main
         setScheduleId(res.data.id)
         setname(res.data.partnership.member.user.name)
         setBrith(res.data.partnership.member.birthday)
         setProfile(
-          res.data.partnership.member.user.profileImage === null? 
-            undefined
-            : 
-            res.data.partnership.member.user.profileImage.path
+          res.data.partnership.member.user.profileImage === null
+            ? undefined
+            : res.data.partnership.member.user.profileImage.path
         )
         setEnd(res.data.endAt === undefined ? new Date() : new Date(res.data.endAt))
         setStart(res.data.startAt === undefined ? new Date() : new Date(res.data.startAt))
@@ -90,17 +85,7 @@ const ScheduleDetailInfo = ({ navigation, route }) => {
     })
       .then((res) => res.json())
       .then((res) => {
-<<<<<<< HEAD
-        if(res.code === 0){
-          alert("스케쥴 삭제가 완료되었습니다.")
-          navigation.goBack()
-        }else{
-          alert("스케쥴 삭제를 실패했습니다.")
-        }
-
-=======
         navigation.goBack()
->>>>>>> refs/remotes/origin/main
       })
       .catch((e) => console.log(e))
   }
@@ -178,26 +163,21 @@ const ScheduleDetailInfo = ({ navigation, route }) => {
         <Text style={[globalStyle.heading2, { marginLeft: '5.55%' }]}>{'수업 회차'}</Text>
       )}
       {type !== 'notAvailable' && (
-        <Text style={styles.subText}>{`${sequence}번째 수업 (등록된 수업 총 ${schedual === null? 0 : schedual}회)`}</Text>
+        <Text style={styles.subText}>{`${sequence}번째 수업 (등록된 수업 총 ${
+          schedual === null ? 0 : schedual
+        }회)`}</Text>
       )}
-      
+
       <Text style={[globalStyle.heading2, { marginLeft: '5.55%', marginTop: 20 }]}>{'날짜'}</Text>
       <Text style={styles.subText}>
-        
-        {type !== 'notAvailable'?
-  
-          start.getFullYear() + '-' + (start.getMonth() + 1) + '-' + start.getDate()
-          :
-          date.split("T")[0]+"asdf"
-        }
-
+        {type !== 'notAvailable'
+          ? start.getFullYear() + '-' + (start.getMonth() + 1) + '-' + start.getDate()
+          : date.split('T')[0] + 'asdf'}
       </Text>
       <Text style={styles.subText}>
-        {type !== 'notAvailable'?
-          `${getTimeOfDate(start)} ~ ${getTimeOfDate(end)}`
-          :
-          `${startAt} ~ ${endAt}`
-        }
+        {type !== 'notAvailable'
+          ? `${getTimeOfDate(start)} ~ ${getTimeOfDate(end)}`
+          : `${startAt} ~ ${endAt}`}
       </Text>
       {type === 'reserved' && (
         <Pressable>
