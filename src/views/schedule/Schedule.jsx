@@ -123,6 +123,7 @@ export default function Schedule({ navigation, route }) {
       })
       .catch((e) => console.log(e))
   }
+
   React.useEffect(() => {
     AsyncStorage.getItem('userAuth', (err, result) => {
       //user_id에 담긴 아이디 불러오기

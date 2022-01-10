@@ -45,7 +45,7 @@ export default function EditMyPage ({navigation,userData}) {
         })
         .then((res) => res.json())
         .then((res) => {
-            console.log(res.data)
+            //console.log(res.data)
             if(res.code ===  0){
               setName(res.data.user.name)
               setBirthday(res.data.birthday)
@@ -72,7 +72,7 @@ export default function EditMyPage ({navigation,userData}) {
         })
         .then((res) => res.json())
         .then((res) => {
-            console.log(res.data)
+            //console.log(res.data)
             if(res.code ===  0){
               setName(res.data.user.name)
               setGender(res.data.gender)
@@ -94,7 +94,7 @@ export default function EditMyPage ({navigation,userData}) {
 
   //사용자 이미지 저장
   React.useEffect(() => {
-    console.log(userData)
+    //console.log(userData)
     ;(async () => {
       if (Platform.OS !== 'web') {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
@@ -184,7 +184,7 @@ export default function EditMyPage ({navigation,userData}) {
       })
       .then((res) => res.json())
       .then((res) => {
-          console.log(res.data)
+          //console.log(res.data)
           if(res.code ===  0){
             alert("편집 완료했습니다.")
             //AsyncStorage.setItem('reload', "true")
@@ -217,7 +217,7 @@ export default function EditMyPage ({navigation,userData}) {
       })
       .then((res) => res.json())
       .then((res) => {
-          console.log(res.data)
+          //console.log(res.data)
           if(res.code ===  0){
             alert("편집 완료했습니다.")
             //AsyncStorage.setItem('reload', "true")

@@ -32,7 +32,7 @@ export let getNextLessonInfo = async (props) => {
         //setNextLessonInfo('다음 수업 정보가 없습니다.')
         return res.code.data
       } else {
-        console.log(res)
+        //console.log(res)
       }
     })
     .catch((e) => console.log(e))

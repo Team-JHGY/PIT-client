@@ -279,11 +279,11 @@ export default function SignUpStep2(props) {
                 refreshToken: refreshToken,
                 expiresIn: expiresIn,
               }
-              console.log(payload)
+              
               _axios
                 .post('/auth/signup/trainer', JSON.stringify(payload))
                 .then((res) => {
-                  console.log('?')
+                  
                   if (res.status === 200) {
                     var payload = {
                       accessToken: accessToken,

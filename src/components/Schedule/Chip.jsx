@@ -45,7 +45,7 @@ const Chip = ({ title, isFirst, isFocus, clickEvent, mode }) => {
     <View style={[styles.body, getChipStyle(isFirst, isFocus), getUpdateChipStyle(mode, isFocus )]}>
       <Pressable
         onPress={() => {
-          if (mode === 'create') clickEvent()
+          if (mode === 'create'|| mode === "edit") clickEvent()
         }}
       >
         <Text style={styles.text}>{title}</Text>

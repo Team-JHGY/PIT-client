@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { View, StyleSheet, Text, SafeAreaView, Image, Pressable } from 'react-native'
+import { View, StyleSheet, Text, SafeAreaView, Image, Pressable, AsyncStorage } from 'react-native'
 import * as SplashScreen from 'expo-splash-screen'
 import InnerNav from '../components/Common/InnerNav'
 
@@ -47,6 +47,12 @@ export default function MainView({ navigation, route }) {
       memberProfile = routeMsg.memberInfo.member.user.profileImage.path
   }
 
+  React.useEffect(() => {
+    if (userState.role === 'member') {
+      getActivatedTrainerInfo()
+    }
+  }, [])
+
   let getActivatedTrainerInfo = async () => {
     await fetch(`${config.BASE_URL}/partnerships/${userInfo.sub}/trainers`, {
       method: 'GET', // *GET, POST, PUT, DELETE, etc.
@@ -68,8 +74,6 @@ export default function MainView({ navigation, route }) {
           setTrainerProfile(activatedTrainerInfo.trainer.user.profileImage.path)
           setTrainerName(activatedTrainerInfo.trainer.user.name)
           setPartnershipId(activatedTrainerInfo.partnershipId)
-        } else {
-          console.log(res)
         }
       })
       .catch((e) => console.log(e))
@@ -106,8 +110,6 @@ export default function MainView({ navigation, route }) {
           setNextLessonSequence(res.data.sequence)
         } else if (res.code === -13) {
           setNextLessonInfo('다음 수업 정보가 없습니다.')
-        } else {
-          console.log(res)
         }
       })
       .catch((e) => console.log(e))

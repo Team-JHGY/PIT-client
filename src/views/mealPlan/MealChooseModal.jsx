@@ -17,49 +17,18 @@ import config from "../../utils/config"
 
 const MealChooseModal = ({ closeModal, setMember, memberIdx, setMemberIdx }) => {
   const [schedules, setSchedules]     = React.useState([
-      {id:1,title:"아침"},
-      {id:2,title:"점심"},
-      {id:3,title:"저녘"},
-      {id:4,title:"간식"},
-      {id:5,title:"야식"},
+      {id:"BREAKFAST",title:"아침"},
+      {id:"LUNCH",title:"점심"},
+      {id:"DINNER",title:"저녁"},
+      {id:"SNACK",title:"간식"},
+      {id:"LATE_SNACK",title:"야식"},
   ])
-  const [tempIdx, setTempIdx]         = React.useState(memberIdx)
-  const [choosName, setChooseName]    = React.useState()
+
   const { userState, userDispatch }   = React.useContext(UserContext)
   const splitJwt                      = userState.jwtToken.split(".")
   const userInfo                      = React.useState(JSON.parse(decode(splitJwt[1])))
 
-  React.useEffect(()=>{
-    MemberList(userState.jwtToken)
-  },[])
 
-  async function MemberList(token) {
-    
-    await fetch(`${config.BASE_URL}/partnerships/${userInfo[0].sub}/members`,{
-        method: 'GET', // *GET, POST, PUT, DELETE, etc.
-        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: 'include', // include, *same-origin, omit
-        headers: {
-            'Authorization' : token,
-            'Content-Type'  : 'application/json',
-            
-        },
-    })
-    .then((res) => res.json())
-    .then((res) => {
-        
-        if(res.code ===  0){
-          setSchedules(res.data.members)
-          
-        }else if(res.code === -13){
-            setUserData([])
-        }
-        
-        
-    })
-    .catch((e) => console.log(e))  
-    
-  }
 
 
 
@@ -94,11 +63,12 @@ const MealChooseModal = ({ closeModal, setMember, memberIdx, setMemberIdx }) => 
             }
             return (
               <View style={[styles.memberItem]}>
-                {tempIdx === item.id ? 
+                {memberIdx === item.id ? 
                   (
                     <Pressable
                       onPress={() => {
-                        setTempIdx(tempIdx===item.id? null : item.id)
+                        setMemberIdx(memberIdx===item.id? null : item.id);
+                        setMember(item.title)
                       }}
                     >
                       <View style={styles.selectedMemberBox}>
@@ -110,7 +80,8 @@ const MealChooseModal = ({ closeModal, setMember, memberIdx, setMemberIdx }) => 
                   (
                     <Pressable
                       onPress={() => {
-                        setTempIdx(item.id)
+                        setMemberIdx(item.id)
+                        setMember(item.title)
                       }}
                     >
                       <View style={styles.unSelectedMemberBox}></View>
@@ -142,12 +113,15 @@ const MealChooseModal = ({ closeModal, setMember, memberIdx, setMemberIdx }) => 
           }}
         >
           <CancelButton clickEvent={closeModal} buttonTitle={'취소'} />
-          <ConfirmButton
-            closeModal={closeModal}
-            setMemberIdx={setMemberIdx}
-            item={choosName}
-            id={tempIdx}
-          />
+          <View style={styles.button}>
+            <Pressable
+              onPress={() => {
+                closeModal()
+              }}
+            >
+              <Text style={styles.text}>{'확인'}</Text>
+            </Pressable>
+          </View>
         </View>
       </View>
     </View>
@@ -167,7 +141,7 @@ const styles = StyleSheet.create({
   modalDialog: {
     backgroundColor: '#FFFFFF',
     position: 'absolute',
-    height: '66.6%',
+    height: '50%',
     width: '88.8%',
     alignItems: 'center',
     borderRadius: 10,
@@ -221,6 +195,25 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     fontStyle: 'normal',
     fontWeight: 'normal',
+  },
+  button: {
+    borderStyle: 'solid',
+    borderRadius: 10,
+    backgroundColor: '#2AFF91',
+    height: '100%',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: '4.68%',
+    marginBottom: '4.54%',
+    marginLeft: '1.56%',
+  },
+  text: {
+    ...globalStyle.button,
+    lineHeight: 25,
+    fontStyle: 'normal',
+    fontWeight: 'normal',
+    color: '#000000',
   },
 })
 

@@ -51,7 +51,7 @@ const ViewBody = ({ navigation, selectedDate }) => {
       .split('T')[0]
       .replace(/"/, '')
       .split('-')
-    console.log(dayPicker)
+
     await fetch(
       `${config.BASE_URL}/schedules/trainer/${userInfo[0].sub}?day=${dayPicker[2]}&month=${dayPicker[1]}&year=${dayPicker[0]}`,
       {
@@ -69,7 +69,7 @@ const ViewBody = ({ navigation, selectedDate }) => {
         if (res.code === 0) {
           setLessonsInfo(res.data)
         } else {
-          console.log(res)
+          //console.log(res)
         }
       })
       .catch((e) => console.log(e))

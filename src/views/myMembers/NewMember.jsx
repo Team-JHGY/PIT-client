@@ -64,7 +64,7 @@ export default function NewMembers({navigation}) {
             })
             .then((res) => res.json())
             .then((res) => {
-                console.log(res.data)
+                //console.log(res.data)
                 if(res.code ===  0){
                     setUserData(res.data)
                     

@@ -47,7 +47,7 @@ export default function MyTrainers({ navigation }) {
       if (item.isEnabled === true) {
         setEnableTrainerIdx(index)
         setPrevPartnerId(item.partnershipId)
-        console.log(prevPartnerId)
+        //console.log(prevPartnerId)
       }
     })
   }, [userData])

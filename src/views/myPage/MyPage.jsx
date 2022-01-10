@@ -6,7 +6,7 @@ import { Appbar } from 'react-native-paper'
 import arrow_right from '../../../assets/arrow_right.png'
 import Toast from 'react-native-easy-toast';
 import { decode } from 'js-base64';
-
+import emptyProfile from '../../../assets/img/SignUp/emptyProfile.png'
 
 // context
 import { UserContext } from '../../store/user'
@@ -14,6 +14,7 @@ import config from "../../utils/config"
 
 export default function MyPage({navigation}) {
     
+    const [trainer, setTrainer]                 = React.useState("")
     const [count, setCount]                     = React.useState(0)
     const [userData, setUserData]               = React.useState({
         "createdAt": "",
@@ -27,7 +28,7 @@ export default function MyPage({navigation}) {
             "id": "",
             "name": "",
             "oauthId": "",
-            "profileImage": "",
+            "profileImage": [],
             "provider": "",
             "refreshToken": "",
             "type": "",
@@ -73,8 +74,12 @@ export default function MyPage({navigation}) {
             })
             .then((res) => res.json())
             .then((res) => {
-                
+           
                 if(res.code ===  0){
+                    let activatedTrainerInfo = res.data.trainers.find((v, i) => {
+                        if (v.isEnabled === true) return true
+                    })
+                    setTrainer(activatedTrainerInfo.trainer.user.name)
                     setCount(res.data.trainers.length)
                 }else{
                     alert("fail")
@@ -107,7 +112,7 @@ export default function MyPage({navigation}) {
                 
                 if(res.code ===  0){
                     setUserData(res.data)
-                    console.log("res.data", res.data)
+                    //console.log("res.data", res.data)
                 }else if(res.code === -13){
                     setUserData([])
                 }
@@ -131,7 +136,7 @@ export default function MyPage({navigation}) {
                 
                 if(res.code ===  0){
                     setUserData(res.data)
-                    console.log("res.data", res.data)
+                    //console.log("res.data", res.data)
                 }else if(res.code === -13){
                     setUserData([])
                 }
@@ -170,9 +175,9 @@ export default function MyPage({navigation}) {
             
             <ScrollView>
                 <View style={styles.myPageInfoImg}>
-                    {userData.user.profileImage === null?
+                    {(userData.user.profileImage).length === 0?
                         <Image
-                            style={styles.profile}
+                            style={styles.userImg}
                             source={require('../../../assets/img/SignUp/emptyProfile.png')}
                         />
                     :
@@ -188,7 +193,7 @@ export default function MyPage({navigation}) {
                     >
                         <View style={[globalStyle.col_1, styles.alignCenter, styles.padding_Left]}>
                             <Text style={globalStyle.body2, globalStyle.textDartGery}>현재 트레이너</Text>
-                            <Text style={globalStyle.heading2}>양치승 T</Text>
+                            <Text style={globalStyle.heading2}>{trainer}</Text>
                         </View>
                         <View style={[globalStyle.col_2, styles.alignCenter, styles.padding_Left]}>
                             <Text style={globalStyle.body2, globalStyle.textDartGery}>함께 운동했던 선생님들</Text>

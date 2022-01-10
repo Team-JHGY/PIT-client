@@ -83,7 +83,7 @@ export default function AddMembersCode({ navigation }) {
     })
     .then((res) => res.json())
     .then((res) => {
-        console.log("test",res)
+        //console.log("test",res)
         if(res.code ===  0){
           setModalVisible(true)
           setModalUserData(res.data)
@@ -102,7 +102,7 @@ export default function AddMembersCode({ navigation }) {
   }
 
   async function SearchMemberInfo(id){
-    console.log(id)
+    //console.log(id)
     await fetch(`${config.BASE_URL}/members/${id}`,{
       method: 'GET', // *GET, POST, PUT, DELETE, etc.
       cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -115,7 +115,7 @@ export default function AddMembersCode({ navigation }) {
     })
     .then((res) => res.json())
     .then((res) => {
-        console.log("test",res)
+        //console.log("test",res)
         if(res.code ===  0){
           setBrith(res.data.birthday)
             //완료
@@ -158,7 +158,7 @@ export default function AddMembersCode({ navigation }) {
     })
     .then((res) => res.json())
     .then((res) => {
-        console.log("test",res)
+        //console.log("test",res)
         if(res.code ===  0){
           alert("완료 되었습니다.")
           //완료

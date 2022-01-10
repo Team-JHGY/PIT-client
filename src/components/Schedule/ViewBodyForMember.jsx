@@ -70,7 +70,7 @@ const ViewBodyForMember = ({ selectedDate, trainerId }) => {
             setMyLessonInfo([])
           }
         } else {
-          console.log(res)
+          //console.log(res)
         }
       })
       .catch((e) => console.log(e))
