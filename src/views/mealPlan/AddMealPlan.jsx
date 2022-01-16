@@ -38,6 +38,7 @@ export default function AddMealPlan ({ navigation, route }) {
   // mode
   const { mode, dateValue, mealId } = route.params
   
+  const dateValueDate = new Date(dateValue)
   //console.log("dateValue", dateValue)
 
   // datetimepicker - 날짜
@@ -63,7 +64,7 @@ export default function AddMealPlan ({ navigation, route }) {
 
   
   const [intro, setIntro]                               = React.useState('')
-  const titleDate                                       = `${dateValue.getMonth()+1}/${dateValue.getDate()}(${getDayOfWeek(dateValue)})`
+  const titleDate                                       = `${dateValueDate.getMonth()+1}/${dateValueDate.getDate()}(${getDayOfWeek(dateValueDate)})`
 
 
   const onDateChange = (event, selectedDate) => {
@@ -100,20 +101,17 @@ export default function AddMealPlan ({ navigation, route }) {
       name  : result.uri,
       type  : "multipart/form-data"
     }
-   
-    const formData = new FormData()
-          formData.append("dietImage", imageValue)
     
     //dietImage
     if(title === "image"){
       setImage(result.uri)
-      setdeit1(formData)
+      setdeit1(imageValue)
     }else if( title === "secon"){
       setSeconImage(result.uri)
-      setdeit2(formData)
+      setdeit2(imageValue)
     }else{
       setThridImage(result.uri)
-      setdeit3(formData)
+      setdeit3(imageValue)
     }
 
     //console.log(dietImage)
@@ -129,6 +127,7 @@ export default function AddMealPlan ({ navigation, route }) {
     //등록 이미지 관련
 
     //등록할 게시물 내용
+
     const addDietRequest = {
       "timestamp"     : addDate,
       "type"          : memberIdx,
@@ -136,7 +135,7 @@ export default function AddMealPlan ({ navigation, route }) {
       "score"         : clickButton === 1? "GOOD" : clickButton === 2? "SOSO": "BAD",
       "partnershipId" : partnershipId
     }
-
+    
     await fetch(`${config.BASE_URL}/diet `, //식단 추가
     {
       method  : 'POST', // *GET, POST, PUT, DELETE, etc.
@@ -151,44 +150,44 @@ export default function AddMealPlan ({ navigation, route }) {
     })
     .then((res) => res.json())
     .then((res) => {
-      
-      if(res.code === 0){
-        
+      console.log(res)
         //이미지가 없으면 call이 안간다.
-        if(image !== null){
+        if(res.code === 0){
+
+          const formdata = new FormData();
+                formdata.append("dietImage", deit1.uri, deit1.name);
+
+                deit2 === null? null : formdata.append("dietImage", deit2.uri, deit2.name);
+                deit3 === null? null : formdata.append("dietImage", deit3.uri, deit3.name);
+  
           
-
-          const dataForm = [ 
-                            {dietImage: deit1},
-                            deit2 === null? null:{dietImage: deit2},
-                            deit3 === null? null:{dietImage: deit3},
-                         
-                            ]
-
-          axios.post(`${config.BASE_URL}/diet/${res.data.id}/image?`,{
+          axios.post(`${config.BASE_URL}/diet/${res.data.id}/image`,formdata,{
             //method  : 'POST', // *GET, POST, PUT, DELETE, etc.
             cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
             credentials: 'include', // include, *same-origin, omit
             headers: {
               'Authorization' : userState.jwtToken,
-              'Content-Type'  : 'application/json',  
-            },
-            body: dataForm
+              'Content-Type'  : `multipart/form-data; boundary=--------WebKitFormBoundary${addDate}`,
+            }
           })
           .then((res) => res.json())
           .then((res) =>{
+            console.log(res)
+            console.log("이미지",res.code)
             if(res.code === 0){
              alert("식단 등록을 완료했습니다.") 
-             
             }else{
               alert("식단 이미지 등록을 실패했습니다.")
             }
-           
+            navigation.goBack()
           })
           .catch((e)=>{alert("식단 이미지 등록을 실패했습니다.");console.log(e)})
+          
+        }else{
+          navigation.goBack()
         }
-      }
-      navigation.goBack()
+
+      
     })
     .catch((e) => {alert("식단 등록을 실패했습니다.");console.log(e)})
 

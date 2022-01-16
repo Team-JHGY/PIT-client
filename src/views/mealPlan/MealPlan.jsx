@@ -128,7 +128,7 @@ export default function MealPlan({ navigation, route }) {
     }else{
       GetMealList(route.params.memberInfo.partnershipId)
     }
-    console.log(date)
+    //console.log(date)
   },[date])
 
   React.useEffect(() => {

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { View, StyleSheet, Text, SafeAreaView, Image, Pressable,AsyncStorage } from 'react-native'
+import { View, StyleSheet, Text, SafeAreaView, Image, Pressable } from 'react-native'
 import * as SplashScreen from 'expo-splash-screen'
 
 
