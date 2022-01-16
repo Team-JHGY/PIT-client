@@ -84,7 +84,7 @@ const ViewBody = ({ navigation, selectedDate }) => {
         <Text style={styles.placeholder}>등록된 스케쥴이 없습니다.</Text>
       ) : (
         <FlatList
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => String(item.id)}
           data={lessonsInfo}
           renderItem={({ item }) => {
             return (

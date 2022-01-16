@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { StyleSheet, Text, View, SafeAreaView, Pressable, Image } from 'react-native'
+import { StyleSheet, Text, View, SafeAreaView, Pressable, Image, AsyncStorage } from 'react-native'
 import globalStyle from '../../utils/globalStyle'
 import * as SplashScreen from 'expo-splash-screen'
 import CalendarStrip from '../../utils/CalendarStrip/CalendarStrip'
@@ -47,7 +47,6 @@ let whitelistDates = [
     end: maxDate,
   },
 ]
-//let maxDate3 = new Date(today.getFullYear(), today.getMonth(), 31)
 
 export default function Schedule({ navigation, route }) {
   const onLayoutRootView = useCallback(async () => {
@@ -75,8 +74,8 @@ export default function Schedule({ navigation, route }) {
     let userId = routeMsg === null ? userInfo[0].sub : routeMsg.trainerId
     await fetch(
       `${config.BASE_URL}/schedules/days/trainer/${userId}?month=${
-        Number(new Date(firstDayOfWeek).getMonth()) + 1
-      }&year=${new Date(firstDayOfWeek).getFullYear()}`,
+        Number(today.getMonth()) + 1
+      }&year=${today.getFullYear()}`,
       {
         method: 'GET', // *GET, POST, PUT, DELETE, etc.
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -94,7 +93,7 @@ export default function Schedule({ navigation, route }) {
             let newObj = {}
             newObj['date'] = new Date(
               res.data.previousMonthDays.year,
-              res.data.previousMonthDays.month,
+              res.data.previousMonthDays.month - 1,
               day
             )
             newObj['dots'] = [{ color: '#00D98B', selectedColor: '#FFFFFF' }]
@@ -102,7 +101,7 @@ export default function Schedule({ navigation, route }) {
           })
           let currMonthDays = res.data.days.days.map((day) => {
             let newObj = {}
-            newObj['date'] = new Date(res.data.days.year, res.data.days.month, day)
+            newObj['date'] = new Date(res.data.days.year, res.data.days.month - 1, day)
             newObj['dots'] = [{ color: '#00D98B', selectedColor: '#FFFFFF' }]
             return newObj
           })
@@ -110,7 +109,7 @@ export default function Schedule({ navigation, route }) {
             let newObj = {}
             newObj['date'] = new Date(
               res.data.nextMonthDays.year,
-              res.data.nextMonthDays.month,
+              res.data.nextMonthDays.month - 1,
               day
             )
             newObj['dots'] = [{ color: '#00D98B', selectedColor: '#FFFFFF' }]
