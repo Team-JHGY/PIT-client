@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { StyleSheet, Text, View, SafeAreaView, Pressable, Image, AsyncStorage } from 'react-native'
+import { StyleSheet, Text, View, SafeAreaView, Pressable, Image } from 'react-native'
 import globalStyle from '../../utils/globalStyle'
 import * as SplashScreen from 'expo-splash-screen'
 import CalendarStrip from '../../utils/CalendarStrip/CalendarStrip'
