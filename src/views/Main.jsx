@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { View, StyleSheet, Text, SafeAreaView, Image, Pressable, AsyncStorage } from 'react-native'
 import * as SplashScreen from 'expo-splash-screen'
-import InnerNav from '../components/Common/InnerNav'
 
 import { WithLocalSvg } from 'react-native-svg'
 
@@ -226,7 +225,6 @@ export default function MainView({ navigation, route }) {
           </Pressable>
         </View>
       </View>
-      <InnerNav navigation={navigation} type="main" />
     </SafeAreaView>
   )
 }
