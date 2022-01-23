@@ -33,7 +33,8 @@ export default function MealCommentPage ({ navigation , route}) {
   const splitJwt                                = userState.jwtToken.split(".")
   const userInfo                                = React.useState(JSON.parse(decode(splitJwt[1])))
 
-  const [infoData, setInfoData]                 = React.useState({type:"",description:"",images:[],score:"",timestamp:new Date()})
+  const [infoData, setInfoData]                 = React.useState({type:"",description:"",score:"",timestamp:new Date()})
+  const [images, setImages]                     = React.useState([])
   const [delStatus, setDelStatus]               = React.useState(false)
   const [input, setInput]                       = React.useState('')
   const [comment, setComment]                   = React.useState([])
@@ -54,13 +55,18 @@ export default function MealCommentPage ({ navigation , route}) {
     })
       .then((res) => res.json())
       .then((res) => {
-        
+        console.log("젠장",res)
         if (res.code === 0) {
           setInfoData(res.data)
+          if((res.data.images).length !== 0){
+            let list = []
+            res.data.images.forEach((element) =>{
+              list.push(element.path)
+            })
+            setImages(list)
+          }
           
-        } else {
-          alert("식단 조회를 실패했습니다.")
-        }
+        } 
       })
       .catch((e) => { alert("식단 조회를 실패했습니다.");console.log(e)})
   }
@@ -100,23 +106,24 @@ export default function MealCommentPage ({ navigation , route}) {
       "comment" : input,
       "userId"  : Number(userInfo[0].sub)
     }
-
-    await fetch(`${config.BASE_URL}/diet/${mealId}/comment`, {
-      method: 'POST', // *GET, POST, PUT, DELETE, etc.
-      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-      credentials: 'include', // include, *same-origin, omit
-      headers: {
-        'Authorization': userState.jwtToken,
-        'Content-Type' : 'application/json',
-      },
-      body: JSON.stringify(addDietCommentRequestForm)
-    })
-      .then(res => res.json())
-      .then(res => {
-        GetMealComment()
-        setInput("")
+    if(input.length !== 0){
+      await fetch(`${config.BASE_URL}/diet/${mealId}/comment`, {
+        method: 'POST', // *GET, POST, PUT, DELETE, etc.
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'include', // include, *same-origin, omit
+        headers: {
+          'Authorization': userState.jwtToken,
+          'Content-Type' : 'application/json',
+        },
+        body: JSON.stringify(addDietCommentRequestForm)
       })
-      .catch((e) => { alert("코멘트 생성을 실패했습니다.");console.log(e)})
+        .then(res => res.json())
+        .then(res => {
+          GetMealComment()
+          setInput("")
+        })
+        .catch((e) => { alert("코멘트 생성을 실패했습니다.");console.log(e)})
+    }
   }
 
   async function GetMealComment() {
@@ -196,13 +203,14 @@ export default function MealCommentPage ({ navigation , route}) {
 
       <View style={{flex: 1, backgroundColor:"#eee"}}>
           <View style={{height:360,backgroundColor:"#eee"}}>
-            {(infoData.images).length === 0?
+            {(images).length === 0?
             //이미지가 없을때
             <Text style={[{textAlign:"center", marginTop:150, fontSize:36, color:"rgba(0,0,0,0.3)", fontWeight:"bold"}]}>NO DATA</Text>
             :
             //이미지 갯수에 따라 슬랑이드 만들기
             <SliderBox
-              images={infoData.images}
+              ImageComponentStyle={{ width:'100%', height:360}}
+              images={images}
               circleLoop
             />
             }
@@ -372,11 +380,7 @@ export default function MealCommentPage ({ navigation , route}) {
                 <Text style={[globalStyle.appbarBtnText,{fontWeight:"bold"}]}>입력</Text>
             </Pressable>
           </View>
-          <Pressable onPress={() => {DelMealPlan();}}>
-            <View style={[{padding:20, textAlign:"center", flexGrow:1, backgroundColor:"red"}]}>
-              <Text style={[{textAlign:"center", color:"#fff", fontSize:18, fontWeight:"bold"}]}>식단 삭제</Text>
-            </View>
-          </Pressable>
+       
           
           
           

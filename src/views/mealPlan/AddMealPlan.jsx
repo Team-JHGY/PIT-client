@@ -11,7 +11,7 @@ import ModalDialog from '../../components/Common/ModalDialog'
 import SelectBoxField from '../../components/Schedule/SelectBoxField'
 import Chip from '../../components/Schedule/Chip'
 import MealChooseModal from '../../views/mealPlan/MealChooseModal'
-import * as ImagePicker from 'expo-image-picker'
+import * as DocumentPicker from 'expo-document-picker';
 import TextField from '../../components/Common/TextField'
 
 // utils
@@ -39,7 +39,7 @@ export default function AddMealPlan ({ navigation, route }) {
   const { mode, dateValue, mealId } = route.params
   
   const dateValueDate = new Date(dateValue)
-  //console.log("dateValue", dateValue)
+  //console.log("mealId", mealId)
 
   // datetimepicker - 날짜
   const [date, setDate]                                 = useState(new Date(dateValue))
@@ -49,7 +49,6 @@ export default function AddMealPlan ({ navigation, route }) {
   const userInfo                                        = JSON.parse(decode(splitJwt[1]))
 
   const [partnershipId, setPartnershipId]               = useState(null)
-  const [isUpdateConfirmModal, setIsUpdateConfirmModal] = useState(false)
   const [isScheduleChooseModal, setIsScheduleChooseModal] = useState(false)
   const [clickButton, setClickButton]                   = useState(1)
   const [member, setMember]                             = useState('아침')
@@ -57,10 +56,14 @@ export default function AddMealPlan ({ navigation, route }) {
   const [image, setImage]                               = React.useState(null)
   const [secon, setSeconImage]                          = React.useState(null)
   const [thrid, setThridImage]                          = React.useState(null)
+  const [image4, setImage4]                             = React.useState(null)
+  const [image5, setImage5]                             = React.useState(null)
   
   const [deit1, setdeit1]                               = React.useState(null)
   const [deit2, setdeit2]                               = React.useState(null)
   const [deit3, setdeit3]                               = React.useState(null)
+  const [deit4, setdeit4]                               = React.useState(null)
+  const [deit5, setdeit5]                               = React.useState(null)
 
   
   const [intro, setIntro]                               = React.useState('')
@@ -85,22 +88,14 @@ export default function AddMealPlan ({ navigation, route }) {
 
   const pickImage = async (title) => {
     
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes    : ImagePicker.MediaTypeOptions.All,
-      allowsEditing : true,
-      maxWidth      : 64, 
-      maxHeight     : 64,
-      aspect        : [4, 3],
-      quality       : 1,
-    })
+    let result = await DocumentPicker.getDocumentAsync({type: "image/*"})
 
-
-    
     const imageValue = {
       uri   : result.uri,
-      name  : result.uri,
-      type  : "multipart/form-data"
+      name  : result.name,
+      type  : `image/${((result.name).slice(-5)).split(".")[1]}`
     }
+
     
     //dietImage
     if(title === "image"){
@@ -109,9 +104,15 @@ export default function AddMealPlan ({ navigation, route }) {
     }else if( title === "secon"){
       setSeconImage(result.uri)
       setdeit2(imageValue)
-    }else{
+    }else if(title === "thrid"){
       setThridImage(result.uri)
       setdeit3(imageValue)
+    }else if(title === "image4"){
+      setImage4(result.uri)
+      setdeit4(imageValue)
+    }else{
+      setImage5(result.uri)
+      setdeit5(imageValue)
     }
 
     //console.log(dietImage)
@@ -135,6 +136,7 @@ export default function AddMealPlan ({ navigation, route }) {
       "score"         : clickButton === 1? "GOOD" : clickButton === 2? "SOSO": "BAD",
       "partnershipId" : partnershipId
     }
+    console.log(addDietRequest)
     
     await fetch(`${config.BASE_URL}/diet `, //식단 추가
     {
@@ -150,32 +152,35 @@ export default function AddMealPlan ({ navigation, route }) {
     })
     .then((res) => res.json())
     .then((res) => {
-      console.log(res)
+      
         //이미지가 없으면 call이 안간다.
-        if(res.code === 0){
+        if(res.code === 0 && image !== null){
 
           const formdata = new FormData();
-                formdata.append("dietImage", deit1.uri, deit1.name);
+                formdata.append("dietImage", {uri: deit1.uri, name: deit1.name,  type: deit1.type} );
 
-                deit2 === null? null : formdata.append("dietImage", deit2.uri, deit2.name);
-                deit3 === null? null : formdata.append("dietImage", deit3.uri, deit3.name);
-  
+                
+                deit2 === null? null : formdata.append("dietImage", {uri: deit2.uri, name: deit2.name, type: deit2.type});
+                deit3 === null? null : formdata.append("dietImage", {uri: deit3.uri, name: deit3.name, type: deit3.type});
+                deit4 === null? null : formdata.append("dietImage", {uri: deit4.uri, name: deit4.name, type: deit4.type});
+                deit5 === null? null : formdata.append("dietImage", {uri: deit5.uri, name: deit5.name, type: deit5.type});
+                
+          let headerValue = new Headers()
+                headerValue.append("Authorization", userState.jwtToken)
+                headerValue.append("Content-Type", 'multipart/form-data')
           
-          axios.post(`${config.BASE_URL}/diet/${res.data.id}/image`,formdata,{
-            //method  : 'POST', // *GET, POST, PUT, DELETE, etc.
+          fetch(`${config.BASE_URL}/diet/${res.data.id}/image`,{
+            method  : 'POST', // *GET, POST, PUT, DELETE, etc.
             cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
             credentials: 'include', // include, *same-origin, omit
-            headers: {
-              'Authorization' : userState.jwtToken,
-              'Content-Type'  : `multipart/form-data; boundary=--------WebKitFormBoundary${addDate}`,
-            }
+            body: formdata,
+            headers: headerValue
           })
-          .then((res) => res.json())
+          .then((res) =>res.json())
           .then((res) =>{
-            console.log(res)
-            console.log("이미지",res.code)
+
             if(res.code === 0){
-             alert("식단 등록을 완료했습니다.") 
+              alert("식단 등록을 완료했습니다.") 
             }else{
               alert("식단 이미지 등록을 실패했습니다.")
             }
@@ -252,7 +257,7 @@ export default function AddMealPlan ({ navigation, route }) {
       })
         .then((res) => res.json())
         .then((res) => {
-          
+          //sconsole.log("데이타", res)
           if (res.code === 0) {
             
             setDate(new Date(res.data.timestamp))
@@ -264,12 +269,40 @@ export default function AddMealPlan ({ navigation, route }) {
                   res.data.type === "SNACK"? "간식":"야식"
             )
             setMemberIdx(res.data.type)
+            
+
+            setdeit1(res.data.images[0] === undefined? null :{
+              uri   : res.data.images[0].path,
+              name  : res.data.images[0].path,
+              type  : `image/${((res.data.images[0].path).slice(-35)).split("_")[0].split(".")[1]}`
+            })
+            setdeit2(res.data.images[1] === undefined? null :{
+              uri   : res.data.images[1].path,
+              name  : res.data.images[1].path,
+              type  : `image/${((res.data.images[1].path).slice(-35)).split("_")[0].split(".")[1]}`
+            })
+            setdeit3(res.data.images[2] === undefined? null :{
+              uri   : res.data.images[2].path,
+              name  : res.data.images[2].path,
+              type  : `image/${((res.data.images[2].path).slice(-35)).split("_")[0].split(".")[1]}`
+            })
+            setdeit4(res.data.images[3] === undefined? null :{
+              uri   : res.data.images[3].path,
+              name  : res.data.images[3].path,
+              type  : `image/${((res.data.images[3].path).slice(-35)).split("_")[0].split(".")[1]}`
+            })
+            setdeit5(res.data.images[4] === undefined? null :{
+              uri   : res.data.images[4].path,
+              name  : res.data.images[4].path,
+              type  : `image/${((res.data.images[4].path).slice(-35)).split("_")[0].split(".")[1]}`
+            })
 
             //이미지
-            setImage(res.data.images[0] === undefined? null : res.data.images[0])
-            setSeconImage(res.data.images[1] === undefined? null : res.data.images[1])
-            setThridImage(res.data.images[2] === undefined? null : res.data.images[2])
-
+            setImage(res.data.images[0] === undefined? null : res.data.images[0].path)
+            setSeconImage(res.data.images[1] === undefined? null : res.data.images[1].path)
+            setThridImage(res.data.images[2] === undefined? null : res.data.images[2].path)
+            setImage4(res.data.images[3] === undefined? null : res.data.images[3].path)
+            setImage5(res.data.images[4] === undefined? null : res.data.images[4].path)
             
           } else {
             //console.log(res)
@@ -280,15 +313,14 @@ export default function AddMealPlan ({ navigation, route }) {
   }
 
   async function DelMealImage(){
-    axios(`${config.BASE_URL}/diet/${mealId}/images?`,{
+    axios(`${config.BASE_URL}/diet/${mealId}/images`,{
       method  : 'DELETE', // *GET, POST, PUT, DELETE, etc.
       cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
       credentials: 'include', // include, *same-origin, omit
       headers: {
         'Authorization' : userState.jwtToken,
         'Content-Type'  : 'application/json',  
-      },
-      body: dataForm
+      }
     })
     .catch((e)=>{alert("식단 이미지 삭제를 실패했습니다.");console.log(e)})
   }
@@ -327,50 +359,83 @@ export default function AddMealPlan ({ navigation, route }) {
     .then((res) => {
       
       if(res.code === 0){
-        //console.log("updateDietRequest",res.data)
         //이미지가 없으면 call이 안간다.
         if(image !== null){
           //이미지 전체 삭제
           DelMealImage()
 
-          const dataForm = [ 
-                            {dietImage: deit1},
-                            deit2 === null? null:{dietImage: deit2},
-                            deit3 === null? null:{dietImage: deit3},
-                         
-                            ]
+          const formdata = new FormData();
+                formdata.append("dietImage", {uri: deit1.uri, name: deit1.name,  type: deit1.type} );
+
+                
+                deit2 === null? null : formdata.append("dietImage", {uri: deit2.uri, name: deit2.name, type: deit2.type});
+                deit3 === null? null : formdata.append("dietImage", {uri: deit3.uri, name: deit3.name, type: deit3.type});
+                deit4 === null? null : formdata.append("dietImage", {uri: deit4.uri, name: deit4.name, type: deit4.type});
+                deit5 === null? null : formdata.append("dietImage", {uri: deit5.uri, name: deit5.name, type: deit5.type});
+                
+          console.log(formdata)
+
+
+          let headerValue = new Headers()
+                headerValue.append("Authorization", userState.jwtToken)
+                headerValue.append("Content-Type", 'multipart/form-data')
 
           //이미지 다시 넣기
-          axios.post(`${config.BASE_URL}/diet/${res.data.id}/image?`,{
-            //method  : 'POST', // *GET, POST, PUT, DELETE, etc.
+          fetch(`${config.BASE_URL}/diet/${res.data.id}/image`,{
+            method  : 'POST', // *GET, POST, PUT, DELETE, etc.
             cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
             credentials: 'include', // include, *same-origin, omit
-            headers: {
-              'Authorization' : userState.jwtToken,
-              'Content-Type'  : 'application/json',  
-            },
-            body: dataForm
+            body:formdata,
+            headers: headerValue
           })
           .then((res) => res.json())
           .then((res) =>{
+            console.log("이미지 수정",res)
             if(res.code === 0){
-             alert("식단 등록을 완료했습니다.") 
-            }else{
-              alert("식단 이미지 등록을 실패했습니다.")
+             alert("식단 수정을 완료했습니다.") 
             }
             navigation.goBack()
           })
-          .catch((e)=>{alert("식단 이미지 등록을 실패했습니다.");console.log(e)})
+          .catch((e)=>{
+            console.log("식단",e.config)
+            alert("식단 이미지 수정을 실패했습니다.");
+            
+          })
         }else{
           navigation.goBack()
         }
       }
       
     })
-    .catch((e) => {alert("식단 등록을 실패했습니다.");console.log(e)})
+    .catch((e) => {alert("식단 등록을 실패했습니다.")})
 
 
   }
+
+  async function DelMealPlan() {
+    await fetch(`${config.BASE_URL}/diet/${mealId}`, {
+      method: 'DELETE', // *GET, POST, PUT, DELETE, etc.
+      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: 'include', // include, *same-origin, omit
+      headers: {
+        'Authorization': userState.jwtToken,
+        'Content-Type' : 'application/json',
+      },
+
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        
+        if (res.code === 0) {
+          alert("식단 삭제를 성공했습니다.")
+        }
+        navigation.goBack()
+        navigation.goBack()
+      })
+      .catch((e) => { alert("식단 삭제를 실패했습니다.");console.log(e)})
+  }
+  
+
 
   return (
     <SafeAreaView style={{ backgroundColor: '#FFFFFF', flex: 1 }}>
@@ -451,52 +516,88 @@ export default function AddMealPlan ({ navigation, route }) {
               <WithLocalSvg asset={Asterisk}></WithLocalSvg>
             </View>
           </View>
-
-          <Text style={{ ...globalStyle.body2 }}>{'사진 등록'}</Text>
+          <View style={{flexDirection: 'row'}}>
+            <Text style={{ ...globalStyle.body2 }}>{'사진 등록'}</Text>
+            <Text style={{ ...globalStyle.body2, ...globalStyle.textDartGery }}>{'  (사진 삭제를 위해서는 썸네일을 클릭해주세요)'}</Text>
+          </View>
+          
             <View style={{flexDirection: 'row'}}>
-                    {image !== null? 
+              <ScrollView horizontal={true}>
+
+              
+                {image !== null? 
+                
+                <Pressable onPress={()=>{setImage(null);setdeit1(null)}}>
                     
-                    <Pressable onPress={()=>setImage(null)}>
-                        <Image source={{ uri: image }} style={styles.profile} />
+                    <Image source={{ uri: image }} style={styles.profile} />
+                </Pressable>
+                    
+                : 
+                    <Pressable onPress={()=>pickImage("image")}>
+                        <WithLocalSvg asset={AddMealPhoto}/>
                     </Pressable>
-                        
-                    : 
-                        <Pressable onPress={()=>pickImage("image")}>
-                            <WithLocalSvg asset={AddMealPhoto}/>
-                        </Pressable>
-                    }
-                    {secon !== null ? 
-                        
-                        <Pressable onPress={()=>setSeconImage(null)}>
-                            <Image source={{ uri: secon }} style={styles.profile} />   
-                        </Pressable>
-                        
-                        
-                        
-                    : 
-                    image !== null && secon === null?
-                        <Pressable onPress={()=>pickImage("secon")}>
-                            <WithLocalSvg asset={AddMealPhoto}/>
-                        </Pressable>
-                        :
-                        null
-                    }
-                    {thrid !== null ? 
-                        
-                        <Pressable onPress={()=>setThridImage(null)}>
-                            <Image source={{ uri: thrid }} style={styles.profile} />
-                        </Pressable>
-                        
-                        
-                        
-                    : 
-                    image !== null && secon !== null && thrid === null?
-                        <Pressable onPress={()=>pickImage("thrid")}>
-                            <WithLocalSvg asset={AddMealPhoto}/>
-                        </Pressable>
-                        :null
-                    }
-                </View>
+                }
+                {secon !== null ? 
+                    
+                    <Pressable onPress={()=>{setSeconImage(null);setdeit2(null)}}>
+                        <Image source={{ uri: secon }} style={styles.profile} />  
+                    </Pressable>
+                    
+                    
+                    
+                : 
+                image !== null && secon === null?
+                    <Pressable onPress={()=>pickImage("secon")}>
+                        <WithLocalSvg asset={AddMealPhoto}/>
+                    </Pressable>
+                    :
+                    null
+                }
+                {thrid !== null ? 
+                    
+                    <Pressable onPress={()=>{setThridImage(null);setdeit3(null)}}>
+                        <Image source={{ uri: thrid }} style={styles.profile} />
+                    </Pressable>
+                    
+                    
+                    
+                : 
+                image !== null && secon !== null && thrid === null?
+                    <Pressable onPress={()=>pickImage("thrid")}>
+                        <WithLocalSvg asset={AddMealPhoto}/>
+                    </Pressable>
+                    :null
+                }
+                {image4 !== null ? 
+                    
+                    <Pressable onPress={()=>{setImage4(null);setdeit4(null)}}>
+                        <Image source={{ uri: image4 }} style={styles.profile} />
+                    </Pressable>
+                    
+                    
+                    
+                : 
+                image !== null && secon !== null && thrid !== null && image4 === null ?
+                    <Pressable onPress={()=>pickImage("image4")}>
+                        <WithLocalSvg asset={AddMealPhoto}/>
+                    </Pressable>
+                    :null
+                }
+                {image5 !== null ? 
+                    
+                    <Pressable onPress={()=>{setImage5(null);setdeit5(null)}}>
+                        <Image source={{ uri: image5 }} style={styles.profile} />
+                    </Pressable>
+   
+                : 
+                image !== null && secon !== null && thrid !== null && image4 !== null && image5 === null ?
+                    <Pressable onPress={()=>pickImage("image5")}> 
+                        <WithLocalSvg asset={AddMealPhoto}/>
+                    </Pressable>
+                    :null
+                }
+              </ScrollView>
+            </View>
             
             
           
@@ -545,13 +646,15 @@ export default function AddMealPlan ({ navigation, route }) {
             }}
           />
         ) : (
-          <ButtonLarge
-            name={'수정'}
-            isEnable={true}
-            onPress={() => {
-              EditMealPlan()
-            }}
-          />
+          <View style={{flexDirection: 'row', marginRight:20, marginLeft:20, marginBottom:20}}>
+            <Pressable style={styles.redbutton} onPress={() => DelMealPlan()}>
+              <Text style={styles.redtext}>식단 삭제</Text>
+            </Pressable>
+            <Pressable style={styles.greenenable} onPress={() => EditMealPlan()}>
+              <Text style={styles.greentext}>식단 수정</Text>
+            </Pressable>
+
+          </View>
         )}
       </View>
       </ScrollView>
@@ -571,8 +674,36 @@ const styles = StyleSheet.create({
     introHeader:{
         padding:20,
         backgroundColor:"#F5F5F5"
-    }
-
+    },
+    redbutton: {
+      borderWidth: 2,
+      borderStyle: 'solid',
+      borderRadius: 10,
+      borderColor: '#FF8989',
+      flex: 1,
+      height:60,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    redtext: {
+      ...globalStyle.button,
+      lineHeight: 25,
+      fontStyle: 'normal',
+      fontWeight: 'normal',
+      color: '#DD0101',
+    },
+    greentext: { ...globalStyle.button },
+    greenenable: {
+    backgroundColor: '#2AFF91',
+    height: 60,
+    borderRadius: 10,
+    flex: 1,
+    marginLeft: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'stretch',
+    position: 'relative',
+  },
 })
 
 

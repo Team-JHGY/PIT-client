@@ -1,8 +1,7 @@
 import React from 'react'
-import { View, Text, StyleSheet, Image, Platform, Pressable,SafeAreaView, ScrollView } from 'react-native'
+import { View, Text, StyleSheet, Image, Platform, Pressable,SafeAreaView, ScrollView, Button } from 'react-native'
 import { WithLocalSvg } from 'react-native-svg'
 import { Appbar } from 'react-native-paper'
-import * as ImagePicker from 'expo-image-picker'
 import globalStyle from '../../utils/globalStyle'
 import TextField from '../../components/Common/TextField'
 import ButtonLarge from '../../components/Common/ButtonLarge'
@@ -10,6 +9,7 @@ import ButtonSmall from '../../components/Common/ButtonSmall'
 import ButtonSmallRed from '../../components/Common/ButtonSmallRed'
 import closeIcon from '../../../assets/icon/Common/closeIcon.svg'
 import Asterisk from '../../../assets/icon/asterisk.svg'
+import * as DocumentPicker from 'expo-document-picker';
 
 
 import { decode } from 'js-base64';
@@ -17,7 +17,7 @@ import { decode } from 'js-base64';
 // context
 import { UserContext } from '../../store/user'
 import config from "../../utils/config"
-import axios from 'axios'
+//import axios from 'axios'
 
 export default function EditMyPage ({navigation,userData}) {
 
@@ -92,19 +92,6 @@ export default function EditMyPage ({navigation,userData}) {
     AddtoLocalUserAuth()
   },[])
 
-  //사용자 이미지 저장
-  React.useEffect(() => {
-    //console.log(userData)
-    ;(async () => {
-      if (Platform.OS !== 'web') {
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
-        if (status !== 'granted') {
-          alert('Sorry, we need camera roll permissions to make this work!')
-        }
-      }
-    })
-
-  }, [])
 
   React.useEffect(() => {
     if (name.length > 0) setButtonEnable(true)
@@ -113,39 +100,34 @@ export default function EditMyPage ({navigation,userData}) {
 
   const pickImage = async () => {
     
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes    : ImagePicker.MediaTypeOptions.All,
-      allowsEditing : true,
-      maxWidth      : 64, 
-      maxHeight     : 64,
-      aspect        : [4, 3],
-      quality       : 1,
-    })
+    let result = await DocumentPicker.getDocumentAsync({type: "image/*"})
 
-
-    
     const imageValue = {
       uri   : result.uri,
-      name  : result.uri,
-      type  : "multipart/form-data"
+      name  : result.name,
+      type  : `image/${((result.name).slice(-5)).split(".")[1]}`
     }
+
+    console.log(imageValue)
    
     const formData = new FormData()
           formData.append("profile", imageValue)
     
     setImage(result.uri)
 
-    axios.post(`${config.BASE_URL}/profile-image/${userInfo[0].sub}`,formData,{
-      //method  : 'POST', // *GET, POST, PUT, DELETE, etc.
+    let headerValue = new Headers()
+        headerValue.append("Authorization", userState.jwtToken)
+        headerValue.append("Content-Type", 'multipart/form-data')
+        
+        
+    fetch(`${config.BASE_URL}/profile-image/${userInfo[0].sub}`,{
+      method  : 'POST', // *GET, POST, PUT, DELETE, etc.
       cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
       credentials: 'include', // include, *same-origin, omit
-      headers: {
-        'Authorization' : userState.jwtToken,
-        'Content-Type'  : 'multipart/form-data',
-      }
+      body:formData,
+      headers: headerValue,
     })
-    //.then((res) => res.json())
-    .catch((e) => console.log(e))
+    .catch((e) => {console.log("e.config",e);})
     
   }
 
@@ -255,6 +237,7 @@ export default function EditMyPage ({navigation,userData}) {
             source={require('../../../assets/img/SignUp/emptyProfile.png')}
           ></Image>
         )}
+        
         <View style={styles.buttonWrapper}>
           <ButtonSmall
             name={'사진 업로드'}

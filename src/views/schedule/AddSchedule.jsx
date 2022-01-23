@@ -116,9 +116,9 @@ const AddSchedule = ({ navigation, route }) => {
 
   async function AddSchedulesFuc() {
 
-    const startAt = `${date.getFullYear()}-${Number(date.getMonth())+1<10? "0"+Number(date.getMonth())+1:Number(date.getMonth())+1}-${date.getDate()<10? "0"+date.getDate():date.getDate()}T${JSON.stringify(fromTime).split("T")[1].split("Z")[0]}`
+    const startAt = `${date.getFullYear()}-${Number(date.getMonth())+1<10? ("0"+Number(date.getMonth())+1).slice(-2):Number(date.getMonth())+1}-${date.getDate()<10? "0"+date.getDate():date.getDate()}T${JSON.stringify(fromTime).split("T")[1].split("Z")[0]}`
 
-    const endAt   = `${date.getFullYear()}-${Number(date.getMonth())+1<10? "0"+Number(date.getMonth())+1:Number(date.getMonth())+1}-${date.getDate()<10? "0"+date.getDate():date.getDate()}T${JSON.stringify(toTime).split("T")[1].split("Z")[0]}`        
+    const endAt   = `${date.getFullYear()}-${Number(date.getMonth())+1<10? ("0"+Number(date.getMonth())+1).slice(-2):Number(date.getMonth())+1}-${date.getDate()<10? "0"+date.getDate():date.getDate()}T${JSON.stringify(toTime).split("T")[1].split("Z")[0]}`        
 
 
     const addScheduleRequest = {
@@ -131,6 +131,8 @@ const AddSchedule = ({ navigation, route }) => {
         "count"   : Number(repeatOptionIdx)
       }
     }
+
+    console.log(addScheduleRequest)
     await fetch(`${config.BASE_URL}/schedules `,
     {
       method  : 'POST', // *GET, POST, PUT, DELETE, etc.
@@ -145,7 +147,7 @@ const AddSchedule = ({ navigation, route }) => {
     })
     .then((res) => res.json())
     .then((res) => {
-      //console.log("res", res.code)
+      console.log("res", res)
       if(res.code === 0){
         alert("스케쥴 등록이 완료되었습니다.")
         navigation.goBack()
@@ -348,12 +350,14 @@ const AddSchedule = ({ navigation, route }) => {
                 />
               </View>
             </View>
+            {/*
             <View style={{ flexDirection: 'row', marginTop: 10 }}>
               <Text style={{ ...globalStyle.heading2 }}>{'반복 선택'}</Text>
               <View style={{ justifyContent: 'center', marginLeft: 5 }}>
                 <WithLocalSvg asset={Asterisk}></WithLocalSvg>
               </View>
             </View>
+            
             <View style={{ flexDirection: 'row' }}>
               <Chip
                 title={'없음'}
@@ -376,8 +380,8 @@ const AddSchedule = ({ navigation, route }) => {
                 clickEvent={() => setClickButton(3)}
                 mode={mode}
               />
-            </View>
-            {clickButton !== 1 && (
+            </View>*/}
+            {/*clickButton !== 1 && (
               <View style={{ flexDirection: 'row' }}>
                 <View style={{ flex: 1, marginLeft: 5 }}>
                   <SelectBoxField
@@ -391,7 +395,7 @@ const AddSchedule = ({ navigation, route }) => {
                   />
                 </View>
               </View>
-            )}
+                  )*/}
           </View>
           {mode === 'create' ? (
             <ButtonLarge name={'등록'} isEnable={buttonEnable} onPress={AddSchedulesFuc}/>
