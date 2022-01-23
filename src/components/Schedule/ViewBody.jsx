@@ -43,14 +43,14 @@ const ViewBody = ({ navigation, selectedDate }) => {
       GetMonthTrainerSchedule(userState.jwtToken)
     })
     return unsubscribe
-  }, [navigation,selectedDate])
-  
+  }, [navigation, selectedDate])
+
   //해당 날짜 데이터 가져오기
   async function GetMonthTrainerSchedule(token) {
-    
-    const dayPicker = JSON.stringify(new Date(selectedDate)).split("T")[0].replace(/"/, "").split("-")
-
-
+    const dayPicker = JSON.stringify(new Date(selectedDate))
+      .split('T')[0]
+      .replace(/"/, '')
+      .split('-')
 
     await fetch(
       `${config.BASE_URL}/schedules/trainer/${userInfo[0].sub}?day=${dayPicker[2]}&month=${dayPicker[1]}&year=${dayPicker[0]}`,
@@ -84,23 +84,22 @@ const ViewBody = ({ navigation, selectedDate }) => {
         <Text style={styles.placeholder}>등록된 스케쥴이 없습니다.</Text>
       ) : (
         <FlatList
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => String(item.id)}
           data={lessonsInfo}
           renderItem={({ item }) => {
             return (
               <View>
                 <Pressable
                   onPress={() => {
-                    
                     if (item.sequence !== -1) {
                       navigation.navigate('ScheduleDetailInfo', { type: 'reserved', id: item.id })
                     } else {
                       navigation.navigate('ScheduleDetailInfo', {
-                        type    : 'notAvailable',
-                        id      : item.id,
-                        date    : item.startAt,
-                        startAt : getTimeOfDate(item.startAt),
-                        endAt   : getTimeOfDate(item.endAt)
+                        type: 'notAvailable',
+                        id: item.id,
+                        date: item.startAt,
+                        startAt: getTimeOfDate(item.startAt),
+                        endAt: getTimeOfDate(item.endAt),
                       })
                     }
                   }}
@@ -124,9 +123,7 @@ const ViewBody = ({ navigation, selectedDate }) => {
                         <Text
                           style={[globalStyle.body2, globalStyle.textDartGery, styles.textmargin]}
                         >
-                          {getTimeOfDate(item.startAt)}
-                          ~
-                          {getTimeOfDate(item.endAt)}
+                          {getTimeOfDate(item.startAt)}~{getTimeOfDate(item.endAt)}
                         </Text>
 
                         <Text
@@ -139,10 +136,10 @@ const ViewBody = ({ navigation, selectedDate }) => {
                       style={[globalStyle.row, styles.scheduleInfo, { backgroundColor: '#F5F5F5' }]}
                     >
                       <View style={[globalStyle.col_2]}>
-                      <Text
+                        <Text
                           style={[globalStyle.body2, globalStyle.textDartGery, styles.textmargin]}
                         >
-                          {getTimeOfDate(new Date(item.startAt))} ~ 
+                          {getTimeOfDate(new Date(item.startAt))} ~
                           {getTimeOfDate(new Date(item.endAt))}
                         </Text>
 

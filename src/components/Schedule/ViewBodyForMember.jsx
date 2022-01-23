@@ -85,7 +85,7 @@ const ViewBodyForMember = ({ selectedDate, trainerId }) => {
       ) : (
         <FlatList
           style={{ flexGrow: 0 }}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => String(item.id)}
           data={myLessonInfo}
           renderItem={({ item }) => {
             return (
@@ -117,7 +117,7 @@ const ViewBodyForMember = ({ selectedDate, trainerId }) => {
         <Text style={[styles.placeholder, { marginTop: 30 }]}>등록된 스케쥴이 없습니다.</Text>
       ) : (
         <FlatList
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => String(item.id)}
           data={trainerLessonInfo}
           renderItem={({ item }) => {
             return (

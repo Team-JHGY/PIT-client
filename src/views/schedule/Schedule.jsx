@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { StyleSheet, Text, View, SafeAreaView, Pressable, Image } from 'react-native'
+import { StyleSheet, Text, View, SafeAreaView, Pressable, Image, AsyncStorage } from 'react-native'
 import globalStyle from '../../utils/globalStyle'
 import * as SplashScreen from 'expo-splash-screen'
 import CalendarStrip from '../../utils/CalendarStrip/CalendarStrip'
@@ -19,6 +19,34 @@ import { UserContext } from '../../store/user'
 import config from '../../utils/config'
 import { decode } from 'js-base64'
 
+// global variables
+let today = new Date(2021, 11, 15)
+
+let minDate
+let maxDate
+
+minDate = new Date(today.getFullYear(), today.getMonth() - 1, 1)
+lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 2, 0).getDate()
+
+maxDate = new Date(today.getFullYear(), today.getMonth() + 1, lastDayOfMonth)
+
+let blacklistDates = [
+  {
+    start: new Date(minDate.getFullYear(), minDate.getMonth() - 1, 1),
+    end: new Date(
+      minDate.getFullYear(),
+      minDate.getMonth() - 1,
+      new Date(today.getFullYear(), today.getMonth(), 0).getDate()
+    ),
+  },
+]
+
+let whitelistDates = [
+  {
+    start: minDate,
+    end: maxDate,
+  },
+]
 
 export default function Schedule({ navigation, route }) {
   const onLayoutRootView = useCallback(async () => {
@@ -38,19 +66,16 @@ export default function Schedule({ navigation, route }) {
 
   //TODO: firstDayOfWeek, lastDayOfWeek 기본 값 수정
   // states
-  const [appBarArray, setAppBarArray] = React.useState([])
-  const [firstDayOfWeek, setFirstDayOfWeek] = useState(new Date())
-  const [lastDayOfWeek, setLastDayOfWeek] = useState(new Date())
-  const [calendarDate, setCalendarDate] = useState(new Date())
-  const [markedDates, setMarkedDates] = useState([])
-  // 트레이너의 스케쥴이 몇일날에 있는지 조회하기
+  const [firstDayOfWeek, setFirstDayOfWeek] = useState(today)
+  const [lastDayOfWeek, setLastDayOfWeek] = useState(today)
+  const [calendarDate, setCalendarDate] = useState(today)
+  const [markedDates, setMarkedDates] = useState([]) // 트레이너의 스케쥴이 몇일날에 있는지 조회하기
   async function GetTrainerScheduleDates(token) {
-
     let userId = routeMsg === null ? userInfo[0].sub : routeMsg.trainerId
     await fetch(
       `${config.BASE_URL}/schedules/days/trainer/${userId}?month=${
-        Number(new Date(firstDayOfWeek).getMonth()) + 1
-      }&year=${new Date(firstDayOfWeek).getFullYear()}`,
+        Number(today.getMonth()) + 1
+      }&year=${today.getFullYear()}`,
       {
         method: 'GET', // *GET, POST, PUT, DELETE, etc.
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -64,18 +89,33 @@ export default function Schedule({ navigation, route }) {
       .then((res) => res.json())
       .then((res) => {
         if (res.code === 0) {
-          setMarkedDates(
-            res.data.days.map((day) => {
-              let newObj = {}
-              newObj['date'] = new Date(
-                new Date(firstDayOfWeek).getFullYear(),
-                new Date(firstDayOfWeek).getMonth(),
-                day
-              )
-              newObj['dots'] = [{ color: '#00D98B', selectedColor: '#FFFFFF' }]
-              return newObj
-            })
-          )
+          let prevMonthDays = res.data.previousMonthDays.days.map((day) => {
+            let newObj = {}
+            newObj['date'] = new Date(
+              res.data.previousMonthDays.year,
+              res.data.previousMonthDays.month - 1,
+              day
+            )
+            newObj['dots'] = [{ color: '#00D98B', selectedColor: '#FFFFFF' }]
+            return newObj
+          })
+          let currMonthDays = res.data.days.days.map((day) => {
+            let newObj = {}
+            newObj['date'] = new Date(res.data.days.year, res.data.days.month - 1, day)
+            newObj['dots'] = [{ color: '#00D98B', selectedColor: '#FFFFFF' }]
+            return newObj
+          })
+          let nextMonthDays = res.data.nextMonthDays.days.map((day) => {
+            let newObj = {}
+            newObj['date'] = new Date(
+              res.data.nextMonthDays.year,
+              res.data.nextMonthDays.month - 1,
+              day
+            )
+            newObj['dots'] = [{ color: '#00D98B', selectedColor: '#FFFFFF' }]
+            return newObj
+          })
+          setMarkedDates(prevMonthDays.concat(currMonthDays).concat(nextMonthDays))
         } else {
           console.log(res)
         }
@@ -83,13 +123,18 @@ export default function Schedule({ navigation, route }) {
       .catch((e) => console.log(e))
   }
 
+  React.useEffect(() => {
+    AsyncStorage.getItem('userAuth', (err, result) => {
+      //user_id에 담긴 아이디 불러오기
+      //   console.log(result) // result에 담김 //불러온거 출력
+    })
+  }, [])
 
   //TODO: 10~11월 이렇게 걸친 경우에도 10월 11월 두 번 조회해서 가져올 수 있도록 하기
   // React.useEffect(() => {
   //   GetTrainerScheduleDates(userState.jwtToken)
   // }, [firstDayOfWeek])
   React.useEffect(() => {
-
     const unsubscribe = navigation.addListener('focus', () => {
       GetTrainerScheduleDates(userState.jwtToken)
     })
@@ -123,9 +168,7 @@ export default function Schedule({ navigation, route }) {
 
         <View style={styles.calendarContainer}>
           <CalendarStrip
-
             selectedDate={calendarDate}
-
             onDateSelected={(date) => {
               setCalendarDate(new Date(date))
             }}
@@ -141,7 +184,10 @@ export default function Schedule({ navigation, route }) {
             dayComponentHeight={60}
             setFirstDayOfWeek={setFirstDayOfWeek}
             setLastDayOfWeek={setLastDayOfWeek}
-            //markedDates={markedDates}
+            minDate={minDate}
+            maxDate={maxDate}
+            datesWhitelist={whitelistDates}
+            markedDates={markedDates}
           />
         </View>
         <Seperator height={'2%'} />

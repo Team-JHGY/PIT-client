@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { View, StyleSheet, Text, SafeAreaView, Image, Pressable } from 'react-native'
 import * as SplashScreen from 'expo-splash-screen'
 
-
 import { WithLocalSvg } from 'react-native-svg'
 
 // utils
@@ -47,11 +46,11 @@ export default function MainView({ navigation, route }) {
       memberProfile = routeMsg.memberInfo.member.user.profileImage.path
   }
 
-  React.useEffect(()=>{
-    if (userState.role === 'member'){
+  React.useEffect(() => {
+    if (userState.role === 'member') {
       getActivatedTrainerInfo()
     }
-  },[])
+  }, [])
 
   let getActivatedTrainerInfo = async () => {
     await fetch(`${config.BASE_URL}/partnerships/${userInfo.sub}/trainers`, {
@@ -74,7 +73,6 @@ export default function MainView({ navigation, route }) {
           setTrainerProfile(activatedTrainerInfo.trainer.user.profileImage.path)
           setTrainerName(activatedTrainerInfo.trainer.user.name)
           setPartnershipId(activatedTrainerInfo.partnershipId)
-          
         }
       })
       .catch((e) => console.log(e))
@@ -99,7 +97,6 @@ export default function MainView({ navigation, route }) {
     })
       .then((res) => res.json())
       .then((res) => {
-        //console.log(res)
         if (res.code === 0) {
           let startAtDate = new Date(res.data.startAt)
           let endAtDate = new Date(res.data.endAt)
@@ -132,7 +129,6 @@ export default function MainView({ navigation, route }) {
     <SafeAreaView style={styles.body} onLayout={onLayoutRootView}>
       <View style={{ width: '88.8%', marginTop: 30, flex: 1 }}>
         <View style={[globalStyle.row, styles.appBar]}>
-
           {userState.role === 'member' ? (
             <Image
               style={[styles.userImg]}
@@ -212,7 +208,6 @@ export default function MainView({ navigation, route }) {
               }
             }}
           />
-          
         </View>
         <Text style={[globalStyle.heading2, { marginTop: 20 }]}>{'다음 수업'}</Text>
         <View style={styles.lesson}>
@@ -230,7 +225,6 @@ export default function MainView({ navigation, route }) {
           </Pressable>
         </View>
       </View>
-      
     </SafeAreaView>
   )
 }
@@ -241,7 +235,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   icons: {
-    marginTop:10,
+    marginTop: 10,
     marginLeft: 'auto',
     marginRight: 'auto',
     width: 24,

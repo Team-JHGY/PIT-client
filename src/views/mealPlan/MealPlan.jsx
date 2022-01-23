@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
+
 import {
   StyleSheet,
   Text,
@@ -9,6 +10,7 @@ import {
   ScrollView,
   AsyncStorage
 } from 'react-native'
+
 import globalStyle from '../../utils/globalStyle'
 import * as SplashScreen from 'expo-splash-screen'
 import CalendarStrip from '../../utils/CalendarStrip/CalendarStrip'
@@ -32,9 +34,31 @@ import Sad from '../../../assets/img/mealPlan/Sad.png'
 import Chat from '../../../assets/img/mealPlan/Chat.svg'
 import emptyProfile from '../../../assets/img/SignUp/emptyProfile.png'
 
+// utils
 import {
+  getDayOfWeek,
+  getMonthOfDate,
+  getDayOfDate,
   getTimeOfDate,
 } from '../../utils/commonFunctions'
+
+// global variables
+let today = new Date()
+
+let minDate
+let maxDate
+
+minDate = new Date(today.getFullYear(), today.getMonth() - 1, 1)
+lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 2, 0).getDate()
+
+maxDate = new Date(today.getFullYear(), today.getMonth() + 1, lastDayOfMonth)
+
+let whitelistDates = [
+  {
+    start: minDate,
+    end: maxDate,
+  },
+]
 
 export default function MealPlan({ navigation, route }) {
 
@@ -48,8 +72,9 @@ export default function MealPlan({ navigation, route }) {
   if (route.params !== undefined) {
     routeMsg = route.params
     if (routeMsg.memberInfo.member.user.profileImage !== null)
-    memberProfile = routeMsg.memberInfo.member.user.profileImage.path
+      memberProfile = routeMsg.memberInfo.member.user.profileImage.path
   }
+
 
   //console.log("route",route)
 
@@ -62,6 +87,16 @@ export default function MealPlan({ navigation, route }) {
   const [trainerProfile, setTrainerProfile] = useState(emptyProfile)
   const [trainerName, setTrainerName]       = useState('')
 
+  // states
+  const { userState, userDispatch } = React.useContext(UserContext)
+  const splitJwt = userState.jwtToken.split('.')
+  const userInfo = JSON.parse(decode(splitJwt[1]))
+  const [partnershipId, setPartnershipId] = useState(null)
+  const [lessonInfo, setLessonInfo] = useState('')
+  const [lessionSequence, setLessionSequence] = useState(null)
+  const [markedDates, setMarkedDates] = useState([])
+
+
   const [firstDayOfWeek, setFirstDayOfWeek] = useState('')
   const [lastDayOfWeek, setLastDayOfWeek]   = useState('')
   const [date, setDate]                     = useState(new Date())
@@ -69,35 +104,89 @@ export default function MealPlan({ navigation, route }) {
   const [modalVisible, setModalVisible]     = useState(false)
   const [mealPanList, setMealPlanList]      = React.useState([])
 
-  async function getActivatedTrainerInfo() {
-
-    await fetch(`${config.BASE_URL}/partnerships/${userInfo.sub}/trainers`, {
-      method: 'GET', // *GET, POST, PUT, DELETE, etc.
-      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-      credentials: 'include', // include, *same-origin, omit
-      headers: {
-        Authorization: userState.jwtToken,
-        'Content-Type': 'application/json',
-      },
-    })
+  async function GetMealList(id) {
+    await fetch(
+      `${config.BASE_URL}/diet/partnership/${id}?day=${date.getDate()}&month=${
+        date.getMonth() + 1
+      }&year=${date.getFullYear()}`,
+      {
+        method: 'GET', // *GET, POST, PUT, DELETE, etc.
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'include', // include, *same-origin, omit
+        headers: {
+          Authorization: userState.jwtToken,
+          'Content-Type': 'application/json',
+        },
+      }
+    )
       .then((res) => res.json())
       .then((res) => {
-        console.log(res)
         if (res.code === 0) {
-          let activatedTrainerInfo = res.data.trainers.find((v, i) => {
-            if (v.isEnabled === true) return true
-          })
+          setMealPlanList(res.data)
+        } else {
+          alert('식단 조회를 실패했습니다.')
+        }
+      })
+      .catch((e) => {
+        alert('식단 조회를 실패했습니다.')
+        console.log(e)
+      })
+  }
+  async function GetMemberScheduleDates() {
+    let userId = routeMsg === null ? userInfo.sub : routeMsg.memberInfo.member.id
 
-          setTrainerProfile(activatedTrainerInfo.trainer.user.profileImage.path)
-          setTrainerName(activatedTrainerInfo.trainer.user.name)
-          setPartnershipId(activatedTrainerInfo.partnershipId)
-          GetMealList(activatedTrainerInfo.partnershipId)
-         
-          
-        } 
+    await fetch(
+      `${config.BASE_URL}/schedules/days/member/${userId}?month=${
+        Number(today.getMonth()) + 1
+      }&year=${today.getFullYear()}`,
+      {
+        method: 'GET', // *GET, POST, PUT, DELETE, etc.
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'include', // include, *same-origin, omit
+        headers: {
+          Authorization: userState.jwtToken,
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+      .then((res) => res.json())
+      .then((res) => {
+
+        if (res.code === 0) {
+          let prevMonthDays = res.data.previousMonthDays.days.map((day) => {
+            let newObj = {}
+            newObj['date'] = new Date(
+              res.data.previousMonthDays.year,
+              res.data.previousMonthDays.month - 1,
+              day
+            )
+            newObj['dots'] = [{ color: '#00D98B', selectedColor: '#FFFFFF' }]
+            return newObj
+          })
+          let currMonthDays = res.data.days.days.map((day) => {
+            let newObj = {}
+            newObj['date'] = new Date(res.data.days.year, res.data.days.month - 1, day)
+            newObj['dots'] = [{ color: '#00D98B', selectedColor: '#FFFFFF' }]
+            return newObj
+          })
+          let nextMonthDays = res.data.nextMonthDays.days.map((day) => {
+            let newObj = {}
+            newObj['date'] = new Date(
+              res.data.nextMonthDays.year,
+              res.data.nextMonthDays.month - 1,
+              day
+            )
+            newObj['dots'] = [{ color: '#00D98B', selectedColor: '#FFFFFF' }]
+            return newObj
+          })
+          setMarkedDates(prevMonthDays.concat(currMonthDays).concat(nextMonthDays))
+        } else {
+          console.log(res)
+        }
       })
       .catch((e) => console.log(e))
   }
+
 
   async function GetMealList(id) {
     console.log("지금",date)
@@ -117,10 +206,12 @@ export default function MealPlan({ navigation, route }) {
         if (res.code === 0) {
           setMealPlanList(res.data)
           console.log("식단 조회",res)
+
         }
       })
-      .catch((e) => { alert("식단 조회를 실패했습니다.");console.log(e)})
+      .catch((e) => console.log(e))
   }
+
 
   React.useEffect(()=>{
     console.log(date)
@@ -129,10 +220,12 @@ export default function MealPlan({ navigation, route }) {
       AsyncStorage.setItem('selectedDate', JSON.stringify(date))
       console.log("AsyncStorage",AsyncStorage.getItem('selectedDate'))
     }else{
+
       GetMealList(route.params.memberInfo.partnershipId)
     }
-    //console.log(date)
-  },[date])
+    GetLessonInfo()
+    GetMemberScheduleDates()
+  }, [date])
 
   React.useEffect(() => {
     console.log("AsyncStorage",AsyncStorage.getItem('selectedDate'))
@@ -140,6 +233,7 @@ export default function MealPlan({ navigation, route }) {
     const unsubscribe = navigation.addListener('focus', () => {
       getActivatedTrainerInfo()
     })
+
     return unsubscribe
   }, [navigation])
 
@@ -169,14 +263,10 @@ export default function MealPlan({ navigation, route }) {
                 >
                   {userState.role === 'member' ? (
                     <Image
-                      style={[styles.userImg]}
-                      source={
-                        trainerProfile !== emptyProfile
-                          ? {
-                              uri: trainerProfile,
-                            }
-                          : trainerProfile
-                      }
+                      style={[styles.userImg, { borderColor: '#11F37E' }]}
+                      source={{
+                        uri: userState.profile,
+                      }}
                     />
                   ) : (
                     <Image
@@ -191,11 +281,10 @@ export default function MealPlan({ navigation, route }) {
                     />
                   )}
                   {userState.role === 'member' ? (
-                    <Text>{trainerName}</Text>
+                    <Text>{userState.name}</Text>
                   ) : (
                     <Text>{routeMsg.memberInfo.member.user.name}</Text>
                   )}
-                 
                 </View>
               </View>
             </Appbar.Header>
@@ -203,7 +292,6 @@ export default function MealPlan({ navigation, route }) {
             <CalendarStrip
               selectedDate={date}
               onDateSelected={(date) => {
-                console.log("onDateSelected",date)
                 setDate(new Date(date))
               }}
               scrollable={true}
@@ -218,13 +306,31 @@ export default function MealPlan({ navigation, route }) {
               dayComponentHeight={60}
               setFirstDayOfWeek={setFirstDayOfWeek}
               setLastDayOfWeek={setLastDayOfWeek}
-              //markedDates={markedDateArray}
+              minDate={minDate}
+              maxDate={maxDate}
+              datesWhitelist={whitelistDates}
+              markedDates={markedDates}
             />
           </View>
-            <View style={{ margin: 20 }}>
-              <Text style={[styles.subTitle]}>수업</Text>
-              <Text style={[styles.noMealPlan]}>수업 기록이 없습니다.</Text>
+          <View style={{ margin: 20 }}>
+            <Text style={[styles.subTitle]}>수업</Text>
+            <View style={styles.lesson}>
+              {lessonInfo.length > 0 && (
+                <Text style={styles.numOfLesson}>{`${lessonInfo[0].sequence}회차`}</Text>
+              )}
+              {lessonInfo.length > 0 ? (
+                <Text style={[styles.lessonTime]}>
+                  {`${getMonthOfDate(new Date(lessonInfo[0].startAt))}/${getDayOfDate(
+                    new Date(lessonInfo[0].startAt)
+                  )}(${getDayOfWeek(lessonInfo[0].startAt)}) ${getTimeOfDate(
+                    lessonInfo[0].startAt
+                  )} ~ ${getTimeOfDate(lessonInfo[0].endAt)}`}
+                </Text>
+              ) : (
+                <Text style={[styles.noMealPlan]}>{'수업 기록이 없습니다.'}</Text>
+              )}
             </View>
+          </View>
 
           {/*식단 부분 뷰 */}
           {seleted === 'meal' ? (
@@ -235,7 +341,10 @@ export default function MealPlan({ navigation, route }) {
               {mealPanList.length === 0 ? (
                 <Text style={[styles.noMealPlan]}>식단 기록이 없습니다.</Text>
               ) : (
-                <ScrollView horizontal={true} style={[styles.MealPlan, globalStyle.row,{paddingRight:20,paddingLeft:20}]}>
+                <ScrollView
+                  horizontal={true}
+                  style={[styles.MealPlan, globalStyle.row, { paddingRight: 20, paddingLeft: 20 }]}
+                >
                   {mealPanList.map((item, index) => {
                     return (
                       <View key={item.time} style={{ marginRight: 10 }}>
@@ -259,38 +368,31 @@ export default function MealPlan({ navigation, route }) {
                               <WithLocalSvg asset={Chat} />
                               <Text>{item.commentNumber}</Text>
                             </View>
+                      
                           </View>
                          
                         </Pressable>
                       </View>
                     )
                   })}
-                  <View style={[{width:30}]}></View>
+                  <View style={[{ width: 30 }]}></View>
                 </ScrollView>
               )}
             </View>
           ) : null}
           {/*수업 관련 뷰 */}
-
         </ScrollView>
-       {
-         userState.role === 'member'?
+        {userState.role === 'member' ? (
           <Pressable
-            style={[styles.floatingButton, styles.paddingRight,{elevation: 999}]}
+            style={[styles.floatingButton, styles.paddingRight, { elevation: 999 }]}
             onPress={() => {
               setModalVisible(!modalVisible)
-              navigation.navigate('AddMealPlan', { mode: 'create', dateValue: new Date(date)})
+              navigation.navigate('AddMealPlan', { mode: 'create', dateValue: new Date(date) })
             }}
           >
             <WithLocalSvg asset={addFloating} />
           </Pressable>
-          :
-          null
-
-       }
-
-        
-       
+        ) : null}
       </SafeAreaView>
     </>
   )
@@ -437,5 +539,25 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  numOfLesson: {
+    color: '#00D98B',
+    ...globalStyle.body2,
+    lineHeight: 20,
+    marginTop: 20,
+  },
+  lessonTime: {
+    ...globalStyle.body2,
+    lineHeight: 20,
+    marginTop: 5,
+    color: '#000',
+  },
+  lesson: {
+    borderRadius: 10,
+    backgroundColor: '#FFFFFF',
+    width: '100%',
+    marginTop: 20,
+    height: 90,
+    paddingLeft: '6.25%',
   },
 })
