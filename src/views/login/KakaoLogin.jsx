@@ -77,7 +77,10 @@ export default KakaoLogin = ({ navigation }) => {
                   })
 
                   const userId = JSON.parse(decode(res.data.data.token.split('.')[1])).sub
-                  const userDataRes = await _axios.get(`/members/${userId}`)
+                  const userDataRes = await _axios.get(`/members/${userId}`, headers: {
+                    'Authorization' : userState.jwtToken,
+                    'Content-Type'  : 'application/json',  
+                  })
                   if (userDataRes.data.code === 0) {
                     userDispatch({
                       type: 'SET_ROLE',
