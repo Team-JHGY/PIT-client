@@ -67,7 +67,7 @@ export default KakaoLogin = ({ navigation }) => {
                   provider: PROVIDER,
                 }
 
-                const res = await _axios.post('/auth/signin', (payload))
+                const res = await _axios.post('/auth/signin', payload)
                 if (res.data.code === 0) {
                   console.log('정상 로그인')
                   //TODO 자기소개 부재
@@ -77,9 +77,11 @@ export default KakaoLogin = ({ navigation }) => {
                   })
 
                   const userId = JSON.parse(decode(res.data.data.token.split('.')[1])).sub
-                  const userDataRes = await _axios.get(`/members/${userId}`, headers: {
-                    'Authorization' : userState.jwtToken,
-                    'Content-Type'  : 'application/json',  
+                  const userDataRes = await _axios.get(`/members/${userId}`, {
+                    headers: {
+                      Authorization: userState.jwtToken,
+                      'Content-Type': 'application/json',
+                    },
                   })
                   if (userDataRes.data.code === 0) {
                     userDispatch({
@@ -141,54 +143,57 @@ export async function RefreshToken(token) {
     data: qs.stringify(payload),
     config: { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
   })
-  .then((res) => {
-    return new Promise((resolve, reject) => {
-      if (res.data.access_token !== undefined) {
-        if (res.data.refreshToken !== undefined) {
-          // 엑세스 토큰, 리프레시 토큰 재발급
-          userDispatch({
-            type: 'SET_MEMBER_TOKEN',
-            payload: {
-              accessToken: res.data.access_token,
-              refreshToken: res.data.refresh_token,
-              expiresIn: res.data.expires_in,
-            },
-          })
-        } else if (res.data.refreshToken === undefined) {
-          // 엑세스 토큰 재발급
-          userDispatch({
-            type: 'SET_MEMBER_TOKEN_WITHOUT_REFRESH',
-            payload: {
-              accessToken: res.data.access_token,
-              expiresIn: res.data.expires_in,
-            },
-          })
+    .then((res) => {
+      return new Promise((resolve, reject) => {
+        if (res.data.access_token !== undefined) {
+          if (res.data.refreshToken !== undefined) {
+            // 엑세스 토큰, 리프레시 토큰 재발급
+            userDispatch({
+              type: 'SET_MEMBER_TOKEN',
+              payload: {
+                accessToken: res.data.access_token,
+                refreshToken: res.data.refresh_token,
+                expiresIn: res.data.expires_in,
+              },
+            })
+          } else if (res.data.refreshToken === undefined) {
+            // 엑세스 토큰 재발급
+            userDispatch({
+              type: 'SET_MEMBER_TOKEN_WITHOUT_REFRESH',
+              payload: {
+                accessToken: res.data.access_token,
+                expiresIn: res.data.expires_in,
+              },
+            })
+          }
+        } else if (res.data.error_code === 'KOE322') {
+          // 인가코드 재발급필요
+          reject(res.data.error_code)
         }
-      } else if (res.data.error_code === 'KOE322') {
-        // 인가코드 재발급필요
-        reject(res.data.error_code)
+      })
+    })
+    .then(async () => {
+      let payload = {
+        provider: 'KAKAO',
+        accessToken: userState.accessToken,
+        refreshToken: userState.refreshToken,
       }
+      await _axios
+        .patch(config.BASE_URL + '/auth/oauth-token', payload, {
+          headers: {
+            Authorization: userState.jwtToken,
+            'Content-Type': 'application/json',
+          },
+        })
+        .then((res) => {
+          if (res.data.code !== 0) {
+            console.log('API 서버 유저 토큰 갱신 실패')
+          }
+        })
+      return 'SignIn'
     })
-  })
-  .then(async ()=>{
-    let payload = {
-      provider:'KAKAO',
-      accessToken: userState.accessToken
-      refreshToken: userState.refreshToken
-    }
-    await _axios.patch(config.BASE_URL + '/auth/oauth-token', payload,  headers: {
-      'Authorization' : userState.jwtToken,
-      'Content-Type'  : 'application/json',  
+    .catch((err_code) => {
+      console.log(err_code)
+      return 'Login'
     })
-    .then((res)=>{
-      if(res.data.code !== 0){
-        console.log('API 서버 유저 토큰 갱신 실패')
-      }
-    })
-    return 'SignIn'
-  })
-  .catch(err_code=>{
-    console.log(err_code)
-    return 'Login'
-  })
 }

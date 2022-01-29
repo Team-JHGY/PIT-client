@@ -23,6 +23,7 @@ import config from '../../utils/config'
 
 //components
 import Seperator from '../../components/Schedule/Seperator'
+import MonthHeader from '../../components/mealPlan/MonthHeader'
 
 // assets
 import arrow_left from '../../../assets/arrow_left.png'
@@ -85,12 +86,67 @@ export default function MealPlan({ navigation, route }) {
   const [lessionSequence, setLessionSequence] = useState(null)
   const [markedDates, setMarkedDates] = useState([])
 
-  const [firstDayOfWeek, setFirstDayOfWeek] = useState('')
-  const [lastDayOfWeek, setLastDayOfWeek] = useState('')
+  const [firstDayOfWeek, setFirstDayOfWeek] = useState(new Date())
+  const [lastDayOfWeek, setLastDayOfWeek] = useState(new Date())
   const [date, setDate] = useState(new Date())
   const [seleted, setSeleted] = React.useState('meal')
   const [modalVisible, setModalVisible] = useState(false)
   const [mealPanList, setMealPlanList] = React.useState([])
+
+  async function getActivatedTrainerInfo() {
+    await fetch(`${config.BASE_URL}/partnerships/${userInfo.sub}/trainers`, {
+      method: 'GET', // *GET, POST, PUT, DELETE, etc.
+      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: 'include', // include, *same-origin, omit
+      headers: {
+        Authorization: userState.jwtToken,
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        console.log(res)
+        if (res.code === 0) {
+          let activatedTrainerInfo = res.data.trainers.find((v, i) => {
+            if (v.isEnabled === true) return true
+          })
+
+          setTrainerProfile(activatedTrainerInfo.trainer.user.profileImage.path)
+          setTrainerName(activatedTrainerInfo.trainer.user.name)
+          setPartnershipId(activatedTrainerInfo.partnershipId)
+          GetMealList(activatedTrainerInfo.partnershipId)
+        }
+      })
+      .catch((e) => console.log(e))
+  }
+
+  async function GetLessonInfo() {
+    //TODO 스케줄 아이디를 먼저 구해야한다.
+    let userId = routeMsg === null ? userInfo.sub : routeMsg.memberInfo.member.id
+    await fetch(
+      `${config.BASE_URL}/schedules/member/${userId}?day=${date.getDate()}&month=${
+        date.getMonth() + 1
+      }&year=${date.getFullYear()}`,
+      {
+        method: 'GET', // *GET, POST, PUT, DELETE, etc.
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'include', // include, *same-origin, omit
+        headers: {
+          Authorization: userState.jwtToken,
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.code === 0) {
+          setLessonInfo(res.data)
+        } else {
+          console.log(res)
+        }
+      })
+      .catch((e) => console.log(e))
+  }
 
   async function GetMealList(id) {
     await fetch(
@@ -174,33 +230,6 @@ export default function MealPlan({ navigation, route }) {
       .catch((e) => console.log(e))
   }
 
-  async function GetMealList(id) {
-    console.log('지금', date)
-
-    await fetch(
-      `${config.BASE_URL}/diet/partnership/${id}?day=${date.getDate()}&month=${
-        date.getMonth() + 1
-      }&year=${date.getFullYear()}`,
-      {
-        method: 'GET', // *GET, POST, PUT, DELETE, etc.
-        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: 'include', // include, *same-origin, omit
-        headers: {
-          Authorization: userState.jwtToken,
-          'Content-Type': 'application/json',
-        },
-      }
-    )
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.code === 0) {
-          setMealPlanList(res.data)
-          console.log('식단 조회', res)
-        }
-      })
-      .catch((e) => console.log(e))
-  }
-
   React.useEffect(() => {
     console.log(date)
     if (userState.role === 'member') {
@@ -275,7 +304,9 @@ export default function MealPlan({ navigation, route }) {
                 </View>
               </View>
             </Appbar.Header>
-
+            <View style={{ alignItems: 'center' }}>
+              <MonthHeader firstDayOfWeek={firstDayOfWeek} lastDayOfWeek={lastDayOfWeek} />
+            </View>
             <CalendarStrip
               selectedDate={date}
               onDateSelected={(date) => {
