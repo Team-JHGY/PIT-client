@@ -46,6 +46,10 @@ import member_room_home_on from './assets/member_room_home_on.png'
 import UserStore from './src/store/user'
 import { UserContext } from './src/store/user'
 
+// utils
+import { _axios } from './src/utils/http-utils'
+import { RefreshToken as KakaoRefreshToken } from './src/views/login/KakaoLogin'
+import { RefreshToken as NaverRefreshToken } from './src/views/login/NaverLogin'
 // Bottom Nav 연결 부분
 const Tab = createBottomTabNavigator()
 
@@ -124,7 +128,10 @@ export function memberRoomNav({ navigation, route }) {
       }}
     >
       <Tab.Screen name={'홈'} children={() => <MainView navigation={navigation} route={route} />} />
-      <Tab.Screen name={'운동/식단'} children={() => <MealPlan navigation={navigation} route={route}/>} />
+      <Tab.Screen
+        name={'운동/식단'}
+        children={() => <MealPlan navigation={navigation} route={route} />}
+      />
     </Tab.Navigator>
   )
 }
@@ -137,19 +144,50 @@ export default function App() {
 
   const getJWT = async () => {
     try {
-      await AsyncStorage.getItem('JWT').then((value) => {
-        if (value != null) {
-          // 테스트 환경 셋팅 더미 계정
-          //initialView = 'Home'
-          initialView = 'Login'
-        } else {
-          initialView = 'Login'
+      const PROVIDER = await AsyncStorage.getItem('PROVIDER')
+      const ACCESSTOKEN = await AsyncStorage.getItem('ACCESSTOKEN')
+
+      if (PROVIDER !== undefined && ACCESSTOKEN !== undefined) {
+        let payload = {
+          accessToken: ACCESSTOKEN,
+          provider: PROVIDER,
         }
-      })
+
+        const res = await _axios.post('/auth/signin', JSON.stringify(payload))
+        if (res.data.code === -14) {
+          const refreshToken = res.data.refreshToken
+          let res
+          if (PROVIDER === 'KAKAO') {
+            res = await KakaoRefreshToken(refreshToken)
+          } else {
+            res = await NaverRefreshToken(refreshToken)
+          }
+          if (res === 'SignIn') {
+            // react useReducer 역시 sync이므로
+            const { accessToken } = userState
+            await AsyncStorage.setItem('ACCESSTOKEN', accessToken)
+            await getJWT()
+          } else {
+            console.log('인가 코드 재발급필요')
+            initialView = 'Login'
+          }
+        } else if (res.data.code === 0) {
+          console.log('정상 로그인')
+          userDispatch({
+            type: 'SET_JWT_TOKEN',
+            payload: { jwtToken: res.data.data.token },
+          })
+          initialView = 'Home'
+        }
+      } else {
+        console.log('login process')
+        initialView = 'Login'
+      }
     } catch (err) {
       console.log(err)
     }
   }
+
   useEffect(() => {
     async function prepare() {
       try {
@@ -207,7 +245,6 @@ export default function App() {
           <Stack.Screen name="MealPlan" component={MealPlan} />
           <Stack.Screen name="AddMealPlan" component={AddMealPlan} />
           <Stack.Screen name="MealCommentPage" component={MealCommentPage} />
-         
         </Stack.Navigator>
       </NavigationContainer>
     </UserStore>

@@ -8,7 +8,7 @@ import {
   Pressable,
   Image,
   ScrollView,
-  AsyncStorage
+  AsyncStorage,
 } from 'react-native'
 
 import globalStyle from '../../utils/globalStyle'
@@ -61,7 +61,6 @@ let whitelistDates = [
 ]
 
 export default function MealPlan({ navigation, route }) {
-
   const onLayoutRootView = useCallback(async () => {
     await SplashScreen.hideAsync()
   })
@@ -75,17 +74,7 @@ export default function MealPlan({ navigation, route }) {
       memberProfile = routeMsg.memberInfo.member.user.profileImage.path
   }
 
-
   //console.log("route",route)
-
-
-  // states
-  const { userState, userDispatch }         = React.useContext(UserContext)
-  const splitJwt                            = userState.jwtToken.split('.')
-  const userInfo                            = JSON.parse(decode(splitJwt[1]))
-  const [partnershipId, setPartnershipId]   = useState(null)
-  const [trainerProfile, setTrainerProfile] = useState(emptyProfile)
-  const [trainerName, setTrainerName]       = useState('')
 
   // states
   const { userState, userDispatch } = React.useContext(UserContext)
@@ -96,13 +85,12 @@ export default function MealPlan({ navigation, route }) {
   const [lessionSequence, setLessionSequence] = useState(null)
   const [markedDates, setMarkedDates] = useState([])
 
-
   const [firstDayOfWeek, setFirstDayOfWeek] = useState('')
-  const [lastDayOfWeek, setLastDayOfWeek]   = useState('')
-  const [date, setDate]                     = useState(new Date())
-  const [seleted, setSeleted]               = React.useState('meal')
-  const [modalVisible, setModalVisible]     = useState(false)
-  const [mealPanList, setMealPlanList]      = React.useState([])
+  const [lastDayOfWeek, setLastDayOfWeek] = useState('')
+  const [date, setDate] = useState(new Date())
+  const [seleted, setSeleted] = React.useState('meal')
+  const [modalVisible, setModalVisible] = useState(false)
+  const [mealPanList, setMealPlanList] = React.useState([])
 
   async function GetMealList(id) {
     await fetch(
@@ -151,7 +139,6 @@ export default function MealPlan({ navigation, route }) {
     )
       .then((res) => res.json())
       .then((res) => {
-
         if (res.code === 0) {
           let prevMonthDays = res.data.previousMonthDays.days.map((day) => {
             let newObj = {}
@@ -187,40 +174,40 @@ export default function MealPlan({ navigation, route }) {
       .catch((e) => console.log(e))
   }
 
-
   async function GetMealList(id) {
-    console.log("지금",date)
+    console.log('지금', date)
 
-    await fetch(`${config.BASE_URL}/diet/partnership/${id}?day=${date.getDate()}&month=${date.getMonth()+1}&year=${date.getFullYear()}`, {
-      method: 'GET', // *GET, POST, PUT, DELETE, etc.
-      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-      credentials: 'include', // include, *same-origin, omit
-      headers: {
-        'Authorization': userState.jwtToken,
-        'Content-Type' : 'application/json',
-      },
-
-    })
+    await fetch(
+      `${config.BASE_URL}/diet/partnership/${id}?day=${date.getDate()}&month=${
+        date.getMonth() + 1
+      }&year=${date.getFullYear()}`,
+      {
+        method: 'GET', // *GET, POST, PUT, DELETE, etc.
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'include', // include, *same-origin, omit
+        headers: {
+          Authorization: userState.jwtToken,
+          'Content-Type': 'application/json',
+        },
+      }
+    )
       .then((res) => res.json())
       .then((res) => {
         if (res.code === 0) {
           setMealPlanList(res.data)
-          console.log("식단 조회",res)
-
+          console.log('식단 조회', res)
         }
       })
       .catch((e) => console.log(e))
   }
 
-
-  React.useEffect(()=>{
+  React.useEffect(() => {
     console.log(date)
-    if(userState.role === 'member'){
+    if (userState.role === 'member') {
       getActivatedTrainerInfo()
       AsyncStorage.setItem('selectedDate', JSON.stringify(date))
-      console.log("AsyncStorage",AsyncStorage.getItem('selectedDate'))
-    }else{
-
+      console.log('AsyncStorage', AsyncStorage.getItem('selectedDate'))
+    } else {
       GetMealList(route.params.memberInfo.partnershipId)
     }
     GetLessonInfo()
@@ -228,7 +215,7 @@ export default function MealPlan({ navigation, route }) {
   }, [date])
 
   React.useEffect(() => {
-    console.log("AsyncStorage",AsyncStorage.getItem('selectedDate'))
+    console.log('AsyncStorage', AsyncStorage.getItem('selectedDate'))
     //setDate(AsyncStorage.getItem('selectedDate', date))
     const unsubscribe = navigation.addListener('focus', () => {
       getActivatedTrainerInfo()
@@ -302,7 +289,7 @@ export default function MealPlan({ navigation, route }) {
               highlightDateNameStyle={{ color: '#FFFFFF' }}
               weekendDateNameStyle={{ color: '#DD0101' }}
               styleWeekend={true}
-              highlightDateContainerStyle={{ backgroundColor: '#00D98B'}}
+              highlightDateContainerStyle={{ backgroundColor: '#00D98B' }}
               dayComponentHeight={60}
               setFirstDayOfWeek={setFirstDayOfWeek}
               setLastDayOfWeek={setLastDayOfWeek}
@@ -348,29 +335,41 @@ export default function MealPlan({ navigation, route }) {
                   {mealPanList.map((item, index) => {
                     return (
                       <View key={item.time} style={{ marginRight: 10 }}>
-                        
-                        <Pressable onPress={() => navigation.navigate('MealCommentPage',{mealId: item.id, dateValue: new Date(date)})}>
-                        
-                          {
-                            (item.images).length === 0?
-                            <WithLocalSvg asset={AddMealPhoto} />
-                            :
-                            <Image source={{uri: item.images[0].path }} style={{width:92, height:92}}/>
+                        <Pressable
+                          onPress={() =>
+                            navigation.navigate('MealCommentPage', {
+                              mealId: item.id,
+                              dateValue: new Date(date),
+                            })
                           }
+                        >
+                          {item.images.length === 0 ? (
+                            <WithLocalSvg asset={AddMealPhoto} />
+                          ) : (
+                            <Image
+                              source={{ uri: item.images[0].path }}
+                              style={{ width: 92, height: 92 }}
+                            />
+                          )}
 
                           <Text key={item.time + index}>{getTimeOfDate(item.timestamp)}</Text>
                           <View style={[globalStyle.row, { alignItems: 'stretch' }]}>
                             <View style={[globalStyle.row, { flexGrow: 20, alignItems: 'center' }]}>
-                              
-                              <Image source={item.score === "SOSO"? Netural:item.score === "BAD"? Sad:happy} />
+                              <Image
+                                source={
+                                  item.score === 'SOSO'
+                                    ? Netural
+                                    : item.score === 'BAD'
+                                    ? Sad
+                                    : happy
+                                }
+                              />
                             </View>
                             <View style={[globalStyle.row, { alignItems: 'center' }]}>
                               <WithLocalSvg asset={Chat} />
                               <Text>{item.commentNumber}</Text>
                             </View>
-                      
                           </View>
-                         
                         </Pressable>
                       </View>
                     )

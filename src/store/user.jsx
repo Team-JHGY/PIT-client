@@ -33,6 +33,12 @@ const reducer = (state, { type, payload }) => {
         refreshToken: payload.refreshToken,
         expiresIn: payload.expiresIn,
       }
+    case 'SET_MEMBER_TOKEN_WITHOUT_REFRESH':
+      return {
+        ...state,
+        accessToken: payload.accessToken,
+        expiresIn: payload.expiresIn,
+      }
     case 'SET_ROLE':
       return { ...state, role: payload.role }
     case 'SET_PROFILE':

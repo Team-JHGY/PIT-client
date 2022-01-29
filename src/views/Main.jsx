@@ -210,20 +210,26 @@ export default function MainView({ navigation, route }) {
           />
         </View>
         <Text style={[globalStyle.heading2, { marginTop: 20 }]}>{'다음 수업'}</Text>
-        <View style={styles.lesson}>
-          <Pressable
-            onPress={() => {
-              navigation.navigate('ScheduleDetailInfo', { type: 'noUpdate' })
-            }}
-          >
-            <Text style={styles.numOfLesson}>
-              {nextLessonSequence === null
-                ? '다음 회차 정보가 없습니다. '
-                : `${nextLessonSequence}회차`}
-            </Text>
-            <Text style={styles.lessonTime}>{nextLessonInfo}</Text>
-          </Pressable>
-        </View>
+        {nextLessonSequence === null ? (
+          <View style={{ alignItems: 'center' }}>
+            <Text style={styles.noLessonTxt}>등록된 다음 수업이 없습니다.</Text>
+          </View>
+        ) : (
+          <View style={styles.lesson}>
+            <Pressable
+              onPress={() => {
+                navigation.navigate('ScheduleDetailInfo', { type: 'noUpdate' })
+              }}
+            >
+              <Text style={styles.numOfLesson}>
+                {nextLessonSequence === null
+                  ? '다음 회차 정보가 없습니다. '
+                  : `${nextLessonSequence}회차`}
+              </Text>
+              <Text style={styles.lessonTime}>{nextLessonInfo}</Text>
+            </Pressable>
+          </View>
+        )}
       </View>
     </SafeAreaView>
   )
@@ -270,6 +276,10 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '15%',
     paddingLeft: '6.25%',
+  },
+  noLessonTxt: {
+    marginTop: 20,
+    color: '#A6ACB2',
   },
   numOfLesson: {
     color: '#00D98B',
