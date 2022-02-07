@@ -123,12 +123,6 @@ export default function Schedule({ navigation, route }) {
       .catch((e) => console.log(e))
   }
 
-  React.useEffect(() => {
-    AsyncStorage.getItem('userAuth', (err, result) => {
-      //user_id에 담긴 아이디 불러오기
-      //   console.log(result) // result에 담김 //불러온거 출력
-    })
-  }, [])
 
   //TODO: 10~11월 이렇게 걸친 경우에도 10월 11월 두 번 조회해서 가져올 수 있도록 하기
   // React.useEffect(() => {
