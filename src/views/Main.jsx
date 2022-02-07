@@ -36,6 +36,7 @@ export default function MainView({ navigation, route }) {
   const [nextLessonInfo, setNextLessonInfo] = useState('')
   const [nextLessonSequence, setNextLessonSequence] = useState(null)
   const splitJwt = userState.jwtToken.split('.')
+  const [detailIndfo, setDetailInfo]       = React.useState()
   const userInfo = JSON.parse(decode(splitJwt[1]))
   // route
   let routeMsg = null
@@ -100,7 +101,9 @@ export default function MainView({ navigation, route }) {
         if (res.code === 0) {
           let startAtDate = new Date(res.data.startAt)
           let endAtDate = new Date(res.data.endAt)
-
+          console.log(res.data.id)
+          console.log(res.data.partnership)
+          setDetailInfo({id:res.data.id, trainerId:res.data.partnership.member.id})
           setNextLessonInfo(
             `${getMonthOfDate(startAtDate)}/${getDayOfDate(startAtDate)}(${getDayOfWeek(
               startAtDate
@@ -218,7 +221,7 @@ export default function MainView({ navigation, route }) {
           <View style={styles.lesson}>
             <Pressable
               onPress={() => {
-                navigation.navigate('ScheduleDetailInfo', { type: 'noUpdate' })
+                navigation.navigate('ScheduleDetailInfo', { type: 'noUpdate', id:detailIndfo.id, trainerid:detailIndfo.trainerId})
               }}
             >
               <Text style={styles.numOfLesson}>

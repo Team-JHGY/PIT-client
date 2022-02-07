@@ -52,7 +52,7 @@ const AddSchedule = ({ navigation, route }) => {
   const [repeatOptionIdx, setRepeatOptionIdx] = useState(1)
 
   // datetimepicker - 날짜
-  const [date, setDate] = useState(mode === "update"? new Date(value.start) : new Date())
+  const [date, setDate] = useState(mode === "update"? new Date(value.start) : new Date(value.start))
   const [show, setShow] = useState(false)
 
   const onDateChange = (event, selectedDate) => {
@@ -115,11 +115,13 @@ const AddSchedule = ({ navigation, route }) => {
   }, [member])
 
   async function AddSchedulesFuc() {
+    const dateForm = String(JSON.stringify(date).split("T")[0].replace("/","").replace('"',""))
+    const startAt = `${dateForm}T${JSON.stringify(fromTime).split("T")[1].split("Z")[0]}`
 
-    const startAt = `${date.getFullYear()}-${Number(date.getMonth())+1<10? ("0"+Number(date.getMonth())+1).slice(-2):Number(date.getMonth())+1}-${date.getDate()<10? "0"+date.getDate():date.getDate()}T${JSON.stringify(fromTime).split("T")[1].split("Z")[0]}`
+    const endAt   = `${dateForm}T${JSON.stringify(toTime).split("T")[1].split("Z")[0]}`        
 
-    const endAt   = `${date.getFullYear()}-${Number(date.getMonth())+1<10? ("0"+Number(date.getMonth())+1).slice(-2):Number(date.getMonth())+1}-${date.getDate()<10? "0"+date.getDate():date.getDate()}T${JSON.stringify(toTime).split("T")[1].split("Z")[0]}`        
-
+    console.log(dateForm)
+    console.log(endAt)
 
     const addScheduleRequest = {
       "trainerId"     : Number(userInfo[0].sub),

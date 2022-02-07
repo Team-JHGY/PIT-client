@@ -413,6 +413,7 @@ export default function MealPlan({ navigation, route }) {
               <View style={[globalStyle.row, { alignItems: 'stretch' }]}>
                 <Text style={[styles.subTitle, { flexGrow: 4 }]}>식단 기록</Text>
               </View>
+              
               {mealPanList.length === 0 ? (
                 <Text style={[styles.noMealPlan]}>식단 기록이 없습니다.</Text>
               ) : (
@@ -468,14 +469,14 @@ export default function MealPlan({ navigation, route }) {
           <Pressable
             style={[styles.floatingButton, styles.paddingRight, { elevation: 9999 }]}
             onPress={() => {
-              setModalVisible(!modalVisible)
               navigation.navigate('AddMealPlan', { mode: 'create', dateValue: new Date(date) })
             }}
           >
             <WithLocalSvg asset={addFloating} />
           </Pressable>
-        ) : null}
+        ) : null} 
       </SafeAreaView>
+      
     </>
   )
 }
@@ -572,15 +573,16 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   floatingButton: {
-    flex: 1,
     zIndex: 999,
-    position: 'relative',
+    position: 'absolute',
     marginTop: 'auto',
     marginBottom: 0,
     marginLeft: 'auto',
     marginRight: 0,
     alignSelf: 'flex-end',
     justifyContent: 'flex-end',
+    right: 0, 
+    bottom: 0
   },
   floatingButtonOver: {
     flex: 1,

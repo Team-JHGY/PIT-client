@@ -66,6 +66,7 @@ const ViewBody = ({ navigation, selectedDate }) => {
     )
       .then((res) => res.json())
       .then((res) => {
+        console.log(res)
         if (res.code === 0) {
           setLessonsInfo(res.data)
         } else {
@@ -87,12 +88,16 @@ const ViewBody = ({ navigation, selectedDate }) => {
           keyExtractor={(item) => String(item.id)}
           data={lessonsInfo}
           renderItem={({ item }) => {
+
             return (
               <View>
                 <Pressable
                   onPress={() => {
                     if (item.sequence !== -1) {
-                      navigation.navigate('ScheduleDetailInfo', { type: 'reserved', id: item.id })
+                      navigation.navigate('ScheduleDetailInfo', 
+                        { type: 'reserved', 
+                          id: item.id, 
+                          trainerid: userInfo.type === "MEMBER"? item.partnership.member.id:item.partnership.trainer.id})
                     } else {
                       navigation.navigate('ScheduleDetailInfo', {
                         type: 'notAvailable',
@@ -100,6 +105,7 @@ const ViewBody = ({ navigation, selectedDate }) => {
                         date: item.startAt,
                         startAt: getTimeOfDate(item.startAt),
                         endAt: getTimeOfDate(item.endAt),
+                        trainerid:userInfo.type === "MEMBER"? item.partnership.member.id:item.partnership.trainer.id
                       })
                     }
                   }}
@@ -157,7 +163,7 @@ const ViewBody = ({ navigation, selectedDate }) => {
       <Pressable
         style={styles.floatingButton}
         onPress={() => {
-          navigation.navigate('AddSchedule', { mode: 'create' })
+          navigation.navigate('AddSchedule', { mode: 'create', value:{start:selectedDate} })
         }}
       >
         <WithLocalSvg asset={addFloating} />

@@ -20,7 +20,7 @@ import config from '../../utils/config'
 import { decode } from 'js-base64'
 
 // global variables
-let today = new Date(2021, 11, 15)
+let today = new Date()
 
 let minDate
 let maxDate
@@ -70,7 +70,9 @@ export default function Schedule({ navigation, route }) {
   const [lastDayOfWeek, setLastDayOfWeek] = useState(today)
   const [calendarDate, setCalendarDate] = useState(today)
   const [markedDates, setMarkedDates] = useState([]) // 트레이너의 스케쥴이 몇일날에 있는지 조회하기
+ 
   async function GetTrainerScheduleDates(token) {
+
     let userId = routeMsg === null ? userInfo[0].sub : routeMsg.trainerId
     await fetch(
       `${config.BASE_URL}/schedules/days/trainer/${userId}?month=${
