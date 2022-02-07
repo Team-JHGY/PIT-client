@@ -25,17 +25,22 @@ const getDayOfDate = (date) => {
 }
 
 const getTimeOfDate = (date) => {
- 
-  const dateForm = JSON.stringify(new Date(date)).split("T")[1].split(":")
+  const dateForm = JSON.stringify(new Date(date)).split('T')[1].split(':')
   let hour = Number(dateForm[0])
   let min = Number(dateForm[1])
   var strMin = ''
   if (min < 10) strMin = '0' + min
   else strMin = min
-  
-  
+
   if (hour >= 0 && hour < 12) return '오전 ' + hour + ':' + strMin
   else return '오후 ' + (hour - 12) + ':' + strMin
-  
 }
-export { getDayOfWeek, getMonthOfDate, getDayOfDate, getTimeOfDate }
+
+const getCalendarMonth = (firstDay, lastDay) => {
+  // if (firstDayOfWeek === '' || lastDayOfWeek === '') {
+  //   return new Date().getMonth() + 1 + '월 스케쥴'
+  // }
+  if (firstDay.getMonth() === lastDay.getMonth()) return firstDay.getMonth() + 1 + '월'
+  else return firstDay.getMonth() + 1 + '~' + (lastDay.getMonth() + 1) + '월'
+}
+export { getDayOfWeek, getMonthOfDate, getDayOfDate, getTimeOfDate, getCalendarMonth }

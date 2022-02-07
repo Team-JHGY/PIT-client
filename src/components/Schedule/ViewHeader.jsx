@@ -1,18 +1,16 @@
+// libraries
 import React from 'react'
 import { Text, StyleSheet, View, Pressable } from 'react-native'
 import { WithLocalSvg } from 'react-native-svg'
+
+// utils
 import globalStyle from '../../utils/globalStyle'
+import { getCalendarMonth } from '../../utils/commonFunctions'
+
 import questionMark from '../../../assets/img/Schedule/questionMark.svg'
 const ViewHeader = ({ navigation, firstDayOfWeek, lastDayOfWeek, routeMsg }) => {
   var startDate = new Date(firstDayOfWeek)
   var endDate = new Date(lastDayOfWeek)
-  var getCalendarMonth = (firstDay, lastDay) => {
-    if (firstDayOfWeek === '' || lastDayOfWeek === '') {
-      return new Date().getMonth() + 1 + '월 스케쥴'
-    }
-    if (firstDay.getMonth() === lastDay.getMonth()) return startDate.getMonth() + 1 + '월 스케쥴'
-    else return startDate.getMonth() + 1 + '~' + (lastDay.getMonth() + 1) + '월 스케쥴'
-  }
   const ViewHeaderStyle = () => {
     if (routeMsg !== null && routeMsg.type === 'member') {
       return {
@@ -35,7 +33,7 @@ const ViewHeader = ({ navigation, firstDayOfWeek, lastDayOfWeek, routeMsg }) => 
         ViewHeaderStyle(),
       ]}
     >
-      <Text style={styles.title}>{getCalendarMonth(startDate, endDate)}</Text>
+      <Text style={styles.title}>{`${getCalendarMonth(startDate, endDate)} 스케쥴`}</Text>
       <View style={{ flexDirection: 'row' }}>
         {routeMsg === null && (
           <Text style={styles.subTitle}>나의 스케쥴 현황은 모든 회원에게 공유됩니다.</Text>

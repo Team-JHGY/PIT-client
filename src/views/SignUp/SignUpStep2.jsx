@@ -212,7 +212,6 @@ export default function SignUpStep2(props) {
             height={130}
             isMultiLine={true}
             setInput={(text) => {
-              //setUsetContext(text)
               userDispatch({ type: 'SET_MEMBER_INTRO', payload: { intro: text } })
             }}
           />
@@ -240,7 +239,7 @@ export default function SignUpStep2(props) {
                 expiresIn: expiresIn,
               }
               _axios
-                .post('/auth/signup/member', JSON.stringify(payload))
+                .post('/auth/signup/member', payload)
                 .then((res) => {
                   if (res.status === 200) {
                     var payload = {
@@ -260,10 +259,11 @@ export default function SignUpStep2(props) {
                   console.log(err)
                 })
                 .then((payload) => {
-                  return _axios.post('/auth/signin', JSON.stringify(payload))
+                  return _axios.post('/auth/signin', payload)
                 })
-                .then((res) => {
-                  AsyncStorage.setItem('JWT', res.data.data.token)
+                .then(async (res) => {
+                  await AsyncStorage.setItem('PROVIDER', provider)
+                  await AsyncStorage.setItem('ACCESSTOKEN', accessToken)
                   userDispatch({
                     type: 'SET_JWT_TOKEN',
                     payload: { jwtToken: res.data.data.token },
@@ -279,11 +279,10 @@ export default function SignUpStep2(props) {
                 refreshToken: refreshToken,
                 expiresIn: expiresIn,
               }
-              
+
               _axios
-                .post('/auth/signup/trainer', JSON.stringify(payload))
+                .post('/auth/signup/trainer', payload)
                 .then((res) => {
-                  
                   if (res.status === 200) {
                     var payload = {
                       accessToken: accessToken,
@@ -302,10 +301,11 @@ export default function SignUpStep2(props) {
                   console.log(err)
                 })
                 .then((payload) => {
-                  return _axios.post('/auth/signin', JSON.stringify(payload))
+                  return _axios.post('/auth/signin', payload)
                 })
-                .then((res) => {
-                  AsyncStorage.setItem('JWT', res.data.data.token)
+                .then(async (res) => {
+                  await AsyncStorage.setItem('PROVIDER', provider)
+                  await AsyncStorage.setItem('ACCESSTOKEN', accessToken)
                   userDispatch({
                     type: 'SET_JWT_TOKEN',
                     payload: { jwtToken: res.data.data.token },
