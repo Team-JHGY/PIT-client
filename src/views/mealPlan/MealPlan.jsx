@@ -426,13 +426,6 @@ export default function MealPlan({ navigation, route }) {
                         
                         <Pressable onPress={() => navigation.navigate('MealCommentPage',{mealId: item.id, dateValue: new Date(date)})}>
                         
-                          {
-                            (item.images).length === 0?
-                            <WithLocalSvg asset={AddMealPhoto} />
-                            :
-                            <Image source={{uri: item.images[0].path }} style={{width:92, height:92}}/>
-                          }
-                        
                           {item.images.length === 0 ? (
                             <WithLocalSvg asset={AddMealPhoto} />
                           ) : (
@@ -473,7 +466,7 @@ export default function MealPlan({ navigation, route }) {
         </ScrollView>
         {userState.role === 'member' ? (
           <Pressable
-            style={[styles.floatingButton, styles.paddingRight, { elevation: 999 }]}
+            style={[styles.floatingButton, styles.paddingRight, { elevation: 9999 }]}
             onPress={() => {
               setModalVisible(!modalVisible)
               navigation.navigate('AddMealPlan', { mode: 'create', dateValue: new Date(date) })

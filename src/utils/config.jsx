@@ -1,5 +1,5 @@
 const config = {
-  BASE_URL: 'http://3.36.113.168:8080',
+  BASE_URL: 'https://pit-server.site',
 
   KAKAO_OAUTH_URL: 'https://kauth.kakao.com',
   KAKAO_CLIENT_SECRET_ID: 'LeI9ECMDibQVxnqeSs7mxEAve69l6jA6',
