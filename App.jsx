@@ -5,7 +5,7 @@ import * as Font from 'expo-font'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { StyleSheet, Image, AsyncStorage } from 'react-native'
+import { StyleSheet, Image } from 'react-native'
 
 //Pages
 import MainView from './src/views/Main'
@@ -48,8 +48,7 @@ import { UserContext } from './src/store/user'
 
 // utils
 import { _axios } from './src/utils/http-utils'
-import { RefreshToken as KakaoRefreshToken } from './src/views/login/KakaoLogin'
-import { RefreshToken as NaverRefreshToken } from './src/views/login/NaverLogin'
+
 // Bottom Nav 연결 부분
 const Tab = createBottomTabNavigator()
 
@@ -86,16 +85,16 @@ export function BottomNav() {
       }}
     >
       <Tab.Screen
-        name={role === 'member' ? '홈' : '스케쥴'}
-        component={role === 'member' ? MainView : Schedule}
+        name={role === 'MEMBER' ? '홈' : '스케쥴'}
+        component={role === 'MEMBER' ? MainView : Schedule}
       />
       <Tab.Screen
-        name={role === 'member' ? '운동/식단' : '회원'}
-        component={role === 'member' ? MealPlan : Members}
+        name={role === 'MEMBER' ? '운동/식단' : '회원'}
+        component={role === 'MEMBER' ? MealPlan : Members}
       />
       <Tab.Screen
-        name={role === 'member' ? '마이' : '마이'}
-        component={role === 'member' ? MyPage : MyPage}
+        name={role === 'MEMBER' ? '마이' : '마이'}
+        component={role === 'MEMBER' ? MyPage : MyPage}
       />
     </Tab.Navigator>
   )
@@ -136,57 +135,11 @@ export function memberRoomNav({ navigation, route }) {
   )
 }
 const Stack = createStackNavigator()
-var initialView = ''
+var initialView = 'Login'
 
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false)
   const [routeName, setRoutName] = useState()
-
-  const getJWT = async () => {
-    try {
-      const PROVIDER = await AsyncStorage.getItem('PROVIDER')
-      const ACCESSTOKEN = await AsyncStorage.getItem('ACCESSTOKEN')
-
-      if (PROVIDER !== undefined && ACCESSTOKEN !== undefined) {
-        let payload = {
-          accessToken: ACCESSTOKEN,
-          provider: PROVIDER,
-        }
-
-        const res = await _axios.post('/auth/signin', JSON.stringify(payload))
-        if (res.data.code === -14) {
-          const refreshToken = res.data.refreshToken
-          let res
-          if (PROVIDER === 'KAKAO') {
-            res = await KakaoRefreshToken(refreshToken)
-          } else {
-            res = await NaverRefreshToken(refreshToken)
-          }
-          if (res === 'SignIn') {
-            // react useReducer 역시 sync이므로
-            const { accessToken } = userState
-            await AsyncStorage.setItem('ACCESSTOKEN', accessToken)
-            await getJWT()
-          } else {
-            console.log('인가 코드 재발급필요')
-            initialView = 'Login'
-          }
-        } else if (res.data.code === 0) {
-          console.log('정상 로그인')
-          userDispatch({
-            type: 'SET_JWT_TOKEN',
-            payload: { jwtToken: res.data.data.token },
-          })
-          initialView = 'Home'
-        }
-      } else {
-        console.log('login process')
-        initialView = 'Login'
-      }
-    } catch (err) {
-      console.log(err)
-    }
-  }
 
   useEffect(() => {
     async function prepare() {
@@ -194,8 +147,6 @@ export default function App() {
         // Keep the splash screen visible while we fetch resources
         await SplashScreen.preventAutoHideAsync()
         // Make any API calls you need to do here
-        await getJWT()
-
         await Font.loadAsync({
           // Load a font `NotoSansKR` from a static resource
           NotoSansKRBold: require('./assets/fonts/NotoSansKR-Bold.otf'),

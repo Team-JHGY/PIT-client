@@ -96,11 +96,11 @@ const PTGoalUpdateModal = ({ closeModal, partnershipId, goalText }) => {
           <CancelButton clickEvent={closeModal} buttonTitle={'취소'} />
           <PTGoalConfirmButton
             closeModal={closeModal}
-            callBackFunction={() => {
-              if (userState.role === 'member') {
-                updateMemberGoal()
+            callBackFunction={async () => {
+              if (userState.role === 'MEMBER') {
+                await updateMemberGoal()
               } else {
-                updateTrainerGoal()
+                await updateTrainerGoal()
               }
             }}
           />

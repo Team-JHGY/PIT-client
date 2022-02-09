@@ -232,7 +232,7 @@ export default function MealPlan({ navigation, route }) {
 
   React.useEffect(() => {
     console.log(date)
-    if (userState.role === 'member') {
+    if (userState.role === 'MEMBER') {
       getActivatedTrainerInfo()
       AsyncStorage.setItem('selectedDate', JSON.stringify(date))
       console.log('AsyncStorage', AsyncStorage.getItem('selectedDate'))
@@ -277,7 +277,7 @@ export default function MealPlan({ navigation, route }) {
                     styles.flexBasis,
                   ]}
                 >
-                  {userState.role === 'member' ? (
+                  {userState.role === 'MEMBER' ? (
                     <Image
                       style={[styles.userImg, { borderColor: '#11F37E' }]}
                       source={{
@@ -296,7 +296,7 @@ export default function MealPlan({ navigation, route }) {
                       }
                     />
                   )}
-                  {userState.role === 'member' ? (
+                  {userState.role === 'MEMBER' ? (
                     <Text>{userState.name}</Text>
                   ) : (
                     <Text>{routeMsg.memberInfo.member.user.name}</Text>
@@ -412,7 +412,7 @@ export default function MealPlan({ navigation, route }) {
           ) : null}
           {/*수업 관련 뷰 */}
         </ScrollView>
-        {userState.role === 'member' ? (
+        {userState.role === 'MEMBER' ? (
           <Pressable
             style={[styles.floatingButton, styles.paddingRight, { elevation: 999 }]}
             onPress={() => {

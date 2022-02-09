@@ -1,10 +1,16 @@
+// libraries
 import React, { useState, useContext } from 'react'
 import { View, Text, AsyncStorage } from 'react-native'
 import { WebView } from 'react-native-webview'
-import { UserContext } from '../../store/user'
 import axios from 'axios'
-import { _axios } from '../../utils/config'
+import { decode } from 'js-base64'
+
+// utils
+import { _axios } from '../../utils/http-utils'
 import config from '../../utils/config'
+
+// store
+import { UserContext } from '../../store/user'
 export default NaverLogin = ({ navigation }) => {
   var i = 0
   const { userState, userDispatch } = useContext(UserContext)
@@ -60,7 +66,7 @@ export default NaverLogin = ({ navigation }) => {
               const PROVIDER = await AsyncStorage.getItem('PROVIDER')
               const ACCESSTOKEN = await AsyncStorage.getItem('ACCESSTOKEN')
               // 재로그인
-              if (PROVIDER !== undefined && ACCESSTOKEN !== undefined) {
+              if (PROVIDER !== null && ACCESSTOKEN !== null) {
                 let payload = {
                   accessToken: ACCESSTOKEN,
                   provider: PROVIDER,
@@ -127,15 +133,17 @@ export default NaverLogin = ({ navigation }) => {
   )
 }
 
-export async function RefreshToken(token) {
+export async function refreshToken(token) {
+  let functionReturn
   const url = config.NAVER_OAUTH_URL + '/token'
-
   var data = {
     grant_type: 'refresh_token',
     client_id: config.NAVER_CLIENT_ID,
     client_secret: config.NAVER_CLIENT_SECRET_ID,
     refresh_token: token,
   }
+  const qs = require('query-string')
+
   await axios({
     method: 'post',
     url: config.NAVER_OAUTH_URL + '/token',
@@ -143,44 +151,49 @@ export async function RefreshToken(token) {
     config: { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
   })
     .then((res) => {
-      return new Promise((resolve, reject) => {
-        if (res.data.access_token !== undefined) {
-          userDispatch({
-            type: 'SET_MEMBER_TOKEN_WITHOUT_REFRESH',
-            payload: {
-              accessToken: res.data.access_token,
-              expiresIn: res.data.expires_in,
-            },
-          })
-          resolve('SignIn')
-        } else {
-          console.log(res.data.error)
-          console.log(res.data.error_description)
-          reject('Login')
-        }
-      })
-    })
-    .then(async (res) => {
-      let payload = {
-        provider: 'NAVER',
-        accessToken: userState.accessToken,
-        refreshToken: userState.refreshToken,
-      }
-      await _axios
-        .patch(config.BASE_URL + '/auth/oauth-token', payload, {
-          headers: {
-            Authorization: userState.jwtToken,
-            'Content-Type': 'application/json',
+      if (res.data.access_token !== undefined) {
+        functionReturn = {
+          type: 'SET_MEMBER_TOKEN_WITHOUT_REFRESH',
+          payload: {
+            accessToken: res.data.access_token,
+            expiresIn: res.data.expires_in,
           },
-        })
-        .then((res) => {
-          if (res.data.code !== 0) {
-            console.log('API 서버 유저 토큰 갱신 실패')
-          }
-        })
-      return res
+        }
+
+        // resolve('SignIn')
+      } else {
+        console.log(res.data.error)
+        console.log(res.data.error_description)
+        functionReturn = 'Login'
+      }
     })
-    .catch((res) => {
-      return res
+    .catch((e) => {
+      console.log(e.response.data.code)
     })
+  return functionReturn
+}
+
+export async function updateToken(param) {
+  let functionRes
+  let payload = {
+    provider: 'NAVER',
+    accessToken: param.payload.accessToken,
+    refreshToken: param.payload.refreshToken,
+  }
+  await _axios
+    .patch('/auth/oauth-token', payload)
+    .then((res) => {
+      if (res.data.code !== 0) {
+        console.log('API 서버 유저 토큰 갱신 실패')
+        functionRes = 'Login'
+      } else if (res.data.code === 0) {
+        console.log('토큰 갱신 성공')
+        functionRes = 'SignIn'
+      }
+    })
+    .catch((e) => {
+      console.log(e.response.data.code)
+      functionRes = 'Login'
+    })
+  return functionRes
 }

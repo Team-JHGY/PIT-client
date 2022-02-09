@@ -1,8 +1,8 @@
 export let getNextLessonInfo = async (props) => {
   let url
-  if (userState.role === 'member') {
+  if (userState.role === 'MEMBER') {
     url = `${config.BASE_URL}/schedules/next/member/${userInfo.sub}`
-  } else if (userState.role === 'trainer') {
+  } else if (userState.role === 'TRAINER') {
     url = `${config.BASE_URL}/schedules/next/member/${routeMsg.memberInfo.member.id}`
   }
   await fetch(url, {

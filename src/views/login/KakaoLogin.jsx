@@ -1,10 +1,17 @@
+//libraries
 import React, { useState, useContext } from 'react'
 import { View, Text, AsyncStorage } from 'react-native'
 import { WebView } from 'react-native-webview'
-import { UserContext } from '../../store/user'
 import axios from 'axios'
+import { decode } from 'js-base64'
+
+// utils
 import config from '../../utils/config'
 import { _axios } from '../../utils/http-utils'
+
+// store
+import { UserContext } from '../../store/user'
+
 export default KakaoLogin = ({ navigation }) => {
   var i = 0
   const { userState, userDispatch } = useContext(UserContext)
@@ -33,7 +40,7 @@ export default KakaoLogin = ({ navigation }) => {
           var data = {
             grant_type: 'authorization_code',
             client_id: config.CLIENT_ID,
-            redirect_uri: 'http://3.36.113.168:8080/client/white',
+            redirect_uri: config.BASE_URL + '/client/white',
             code: code,
             client_secret: config.KAKAO_CLIENT_SECRET_ID,
           }
@@ -61,12 +68,11 @@ export default KakaoLogin = ({ navigation }) => {
               const PROVIDER = await AsyncStorage.getItem('PROVIDER')
               const ACCESSTOKEN = await AsyncStorage.getItem('ACCESSTOKEN')
               // 재로그인
-              if (PROVIDER !== undefined && ACCESSTOKEN !== undefined) {
+              if (PROVIDER !== null && ACCESSTOKEN !== null) {
                 let payload = {
                   accessToken: ACCESSTOKEN,
                   provider: PROVIDER,
                 }
-
                 const res = await _axios.post('/auth/signin', payload)
                 if (res.data.code === 0) {
                   console.log('정상 로그인')
@@ -106,6 +112,7 @@ export default KakaoLogin = ({ navigation }) => {
                     })
                   }
                   navigation.replace('Home')
+                } else {
                 }
               } else {
                 // 첫 로그인
@@ -129,14 +136,16 @@ export default KakaoLogin = ({ navigation }) => {
   )
 }
 
-export async function RefreshToken(token) {
+export async function refreshToken(token) {
+  let functionReturn
   const url = config.KAKAO_OAUTH_URL + '/oauth/token'
-  const paylod = {
-    token_type: 'refresh_token',
+  const payload = {
+    grant_type: 'refresh_token',
     client_id: config.CLIENT_ID,
-    refreshToken: token,
+    refresh_token: token,
     client_secret: config.KAKAO_CLIENT_SECRET_ID,
   }
+  const qs = require('query-string')
   await axios({
     method: 'post',
     url: url,
@@ -144,56 +153,65 @@ export async function RefreshToken(token) {
     config: { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
   })
     .then((res) => {
-      return new Promise((resolve, reject) => {
-        if (res.data.access_token !== undefined) {
-          if (res.data.refreshToken !== undefined) {
-            // 엑세스 토큰, 리프레시 토큰 재발급
-            userDispatch({
-              type: 'SET_MEMBER_TOKEN',
-              payload: {
-                accessToken: res.data.access_token,
-                refreshToken: res.data.refresh_token,
-                expiresIn: res.data.expires_in,
-              },
-            })
-          } else if (res.data.refreshToken === undefined) {
-            // 엑세스 토큰 재발급
-            userDispatch({
-              type: 'SET_MEMBER_TOKEN_WITHOUT_REFRESH',
-              payload: {
-                accessToken: res.data.access_token,
-                expiresIn: res.data.expires_in,
-              },
-            })
+      if (res.data.access_token !== null) {
+        if (res.data.refreshToken !== undefined) {
+          // 카카오에서 아예 주지 않음
+          // 엑세스 토큰, 리프레시 토큰 재발급
+          console.log('엑세스 토큰 & 리프레시 토큰 재발급')
+          functionReturn = {
+            type: 'SET_MEMBER_TOKEN',
+            payload: {
+              accessToken: res.data.access_token,
+              refreshToken: res.data.refresh_token,
+              expiresIn: res.data.expires_in,
+            },
           }
-        } else if (res.data.error_code === 'KOE322') {
-          // 인가코드 재발급필요
-          reject(res.data.error_code)
+        } else if (res.data.refreshToken === undefined) {
+          // 엑세스 토큰 재발급
+          console.log('엑세스 토큰 재발급')
+
+          functionReturn = {
+            type: 'SET_MEMBER_TOKEN_WITHOUT_REFRESH',
+            payload: {
+              accessToken: res.data.access_token,
+              expiresIn: res.data.expires_in,
+            },
+          }
         }
-      })
-    })
-    .then(async () => {
-      let payload = {
-        provider: 'KAKAO',
-        accessToken: userState.accessToken,
-        refreshToken: userState.refreshToken,
+      } else if (res.data.error_code === 'KOE322') {
+        // 인가코드 재발급필요
+        console.log('인가 코드 재발급필요')
+        functionReturn = 'KOE322'
       }
-      await _axios
-        .patch(config.BASE_URL + '/auth/oauth-token', payload, {
-          headers: {
-            Authorization: userState.jwtToken,
-            'Content-Type': 'application/json',
-          },
-        })
-        .then((res) => {
-          if (res.data.code !== 0) {
-            console.log('API 서버 유저 토큰 갱신 실패')
-          }
-        })
-      return 'SignIn'
     })
-    .catch((err_code) => {
-      console.log(err_code)
-      return 'Login'
+    .catch((e) => {
+      console.log(e.response.data.code)
     })
+
+  return functionReturn
+}
+
+export async function updateToken(param) {
+  let functionRes
+  let payload = {
+    provider: 'KAKAO',
+    accessToken: param.payload.accessToken,
+    refreshToken: param.payload.refreshToken,
+  }
+  await _axios
+    .patch('/auth/oauth-token', payload)
+    .then((res) => {
+      if (res.data.code !== 0) {
+        console.log('API 서버 유저 토큰 갱신 실패')
+        functionRes = 'Login'
+      } else if (res.data.code === 0) {
+        console.log('토큰 갱신 성공')
+        functionRes = 'SignIn'
+      }
+    })
+    .catch((e) => {
+      console.log(e.response.data)
+      functionRes = 'Login'
+    })
+  return functionRes
 }

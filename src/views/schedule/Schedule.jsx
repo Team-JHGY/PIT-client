@@ -20,8 +20,7 @@ import config from '../../utils/config'
 import { decode } from 'js-base64'
 
 // global variables
-let today = new Date(2021, 11, 15)
-
+let today = new Date()
 let minDate
 let maxDate
 
@@ -52,18 +51,15 @@ export default function Schedule({ navigation, route }) {
   const onLayoutRootView = useCallback(async () => {
     await SplashScreen.hideAsync()
   })
-
   // context
   const { userState, userDispatch } = React.useContext(UserContext)
   const splitJwt = userState.jwtToken.split('.')
   const userInfo = React.useState(JSON.parse(decode(splitJwt[1])))
-
   // route
   let routeMsg = null
   if (route.params !== undefined) {
     routeMsg = route.params
   }
-
   //TODO: firstDayOfWeek, lastDayOfWeek 기본 값 수정
   // states
   const [firstDayOfWeek, setFirstDayOfWeek] = useState(today)
@@ -143,7 +139,7 @@ export default function Schedule({ navigation, route }) {
 
   return (
     <>
-      {routeMsg !== null && routeMsg.type === 'member' && (
+      {routeMsg !== null && routeMsg.type === 'MEMBER' && (
         <Appbar.Header style={[globalStyle.titleAppbar]}>
           <Pressable
             style={[globalStyle.iconSize, globalStyle.absolute]}
@@ -191,7 +187,7 @@ export default function Schedule({ navigation, route }) {
           />
         </View>
         <Seperator height={'2%'} />
-        {routeMsg !== null && routeMsg.type === 'member' ? (
+        {routeMsg !== null && routeMsg.type === 'MEMBER' ? (
           <ViewBodyForMember selectedDate={calendarDate} trainerId={routeMsg.trainerId} />
         ) : (
           <ViewBody navigation={navigation} selectedDate={calendarDate} />

@@ -279,9 +279,9 @@ export default function SignUpStep2(props) {
                 refreshToken: refreshToken,
                 expiresIn: expiresIn,
               }
-
               _axios
                 .post('/auth/signup/trainer', payload)
+
                 .then((res) => {
                   if (res.status === 200) {
                     var payload = {
@@ -298,7 +298,9 @@ export default function SignUpStep2(props) {
                   }
                 })
                 .catch((err) => {
-                  console.log(err)
+                  if (err.response.data.code === -11) {
+                    alert('이미 회원가입이 되어있습니다.')
+                  }
                 })
                 .then((payload) => {
                   return _axios.post('/auth/signin', payload)
@@ -312,6 +314,7 @@ export default function SignUpStep2(props) {
                   })
                   navigation.replace('Home')
                 })
+                .catch((e) => console.log(e))
             }
           }}
         />

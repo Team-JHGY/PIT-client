@@ -34,7 +34,6 @@ const ViewBody = ({ navigation, selectedDate }) => {
     ')'
 
   useEffect(() => {
-    //console.log("sel",selectedDate)
     GetMonthTrainerSchedule(userState.jwtToken)
   }, [selectedDate])
 

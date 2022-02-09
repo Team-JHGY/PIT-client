@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { View, StyleSheet, Text, SafeAreaView, Image, Pressable } from 'react-native'
 import * as SplashScreen from 'expo-splash-screen'
-
 import { WithLocalSvg } from 'react-native-svg'
 
 // utils
@@ -42,12 +41,13 @@ export default function MainView({ navigation, route }) {
   let memberProfile = emptyProfile
   if (route.params !== undefined) {
     routeMsg = route.params
-    if (routeMsg.memberInfo.member.user.profileImage !== null)
+    if (routeMsg.memberInfo.member.user.profileImage !== null) {
       memberProfile = routeMsg.memberInfo.member.user.profileImage.path
+    }
   }
 
   React.useEffect(() => {
-    if (userState.role === 'member') {
+    if (userState.role === 'MEMBER') {
       getActivatedTrainerInfo()
     }
   }, [])
@@ -80,9 +80,9 @@ export default function MainView({ navigation, route }) {
 
   let getNextLessonInfo = async () => {
     let url
-    if (userState.role === 'member') {
+    if (userState.role === 'MEMBER') {
       url = `${config.BASE_URL}/schedules/next/member/${userInfo.sub}`
-    } else if (userState.role === 'trainer') {
+    } else if (userState.role === 'TRAINER') {
       url = `${config.BASE_URL}/schedules/next/member/${routeMsg.memberInfo.member.id}`
     }
 
@@ -116,8 +116,8 @@ export default function MainView({ navigation, route }) {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      if (userState.role === 'member') getActivatedTrainerInfo()
-      if (userState.role === 'trainer') {
+      if (userState.role === 'MEMBER') getActivatedTrainerInfo()
+      if (userState.role === 'TRAINER') {
         setPartnershipId(routeMsg.memberInfo.partnershipId)
       }
       getNextLessonInfo()
@@ -129,7 +129,7 @@ export default function MainView({ navigation, route }) {
     <SafeAreaView style={styles.body} onLayout={onLayoutRootView}>
       <View style={{ width: '88.8%', marginTop: 30, flex: 1 }}>
         <View style={[globalStyle.row, styles.appBar]}>
-          {userState.role === 'member' ? (
+          {userState.role === 'MEMBER' ? (
             <Image
               style={[styles.userImg]}
               source={
@@ -152,7 +152,7 @@ export default function MainView({ navigation, route }) {
               }
             />
           )}
-          {userState.role === 'member' ? (
+          {userState.role === 'MEMBER' ? (
             <Text>{trainerName}</Text>
           ) : (
             <Text>{routeMsg.memberInfo.member.user.name}</Text>
@@ -160,7 +160,7 @@ export default function MainView({ navigation, route }) {
         </View>
         <WithLocalSvg style={styles.svgImage} asset={trainer} width={130} height={130} />
         <Text style={[globalStyle.heading1, { marginTop: 5 }]}>
-          {userState.role === 'member'
+          {userState.role === 'MEMBER'
             ? `${userState.name}회원님 안녕하세요\n오늘도 화이팅!`
             : `${routeMsg.memberInfo.member.user.name}회원님 안녕하세요\n오늘도 화이팅!`}
         </Text>
@@ -174,14 +174,17 @@ export default function MainView({ navigation, route }) {
             image={calendar}
             text={'수업 스케쥴'}
             clickEvent={() => {
-              if (userState.role === 'member') {
+              if (userState.role === 'MEMBER') {
                 navigation.navigate('Schedule', {
                   type: userState.role,
                   trainerName: trainerName,
                   trainerId: trainerId,
                 })
-              } else if (userState.role === 'trainer') {
-                navigation.navigate('Schedule', { type: userState.role })
+              } else if (userState.role === 'TRAINER') {
+                navigation.navigate('Schedule', {
+                  type: userState.role,
+                  trainerId: userInfo.sub,
+                })
               }
             }}
           />
@@ -189,7 +192,7 @@ export default function MainView({ navigation, route }) {
             image={goal}
             text={'PT 목표'}
             clickEvent={() => {
-              if (userState.role === 'member') {
+              if (userState.role === 'MEMBER') {
                 navigation.navigate('PTGoal', {
                   memberName: userState.name,
                   trainerName: trainerName,

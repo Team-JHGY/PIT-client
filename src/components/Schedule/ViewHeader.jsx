@@ -12,7 +12,7 @@ const ViewHeader = ({ navigation, firstDayOfWeek, lastDayOfWeek, routeMsg }) => 
   var startDate = new Date(firstDayOfWeek)
   var endDate = new Date(lastDayOfWeek)
   const ViewHeaderStyle = () => {
-    if (routeMsg !== null && routeMsg.type === 'member') {
+    if (routeMsg !== null && routeMsg.type === 'MEMBER') {
       return {
         marginTop: 0,
       }

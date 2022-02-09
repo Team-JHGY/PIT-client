@@ -57,7 +57,6 @@ const ScheduleDetailInfo = ({ navigation, route }) => {
     })
       .then((res) => res.json())
       .then((res) => {
-        console.log(res)
         setScheduleId(res.data.id)
         setname(res.data.partnership.member.user.name)
         setBrith(res.data.partnership.member.birthday)

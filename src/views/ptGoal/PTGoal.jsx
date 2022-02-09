@@ -74,7 +74,7 @@ const PTGoal = ({ navigation, route }) => {
             setIsPTGoalUpdateModal(false)
           }}
           partnershipId={partnershipId}
-          goalText={userState.role === 'member' ? memberGoal : trainerGoal}
+          goalText={userState.role === 'MEMBER' ? memberGoal : trainerGoal}
         />
       )}
       <Appbar.Header style={[globalStyle.titleAppbar]}>
@@ -93,7 +93,7 @@ const PTGoal = ({ navigation, route }) => {
       <View style={{ marginTop: 10, marginBottom: 30 }}>
         <View style={styles.buttonWrapper}>
           <Text style={[globalStyle.body1, { lineHeight: 50 }]}>{`${memberName} 회원님`}</Text>
-          {userState.role === 'member' ? (
+          {userState.role === 'MEMBER' ? (
             <ButtonSmall
               name={' 편집 '}
               customStyle={styles.button}
@@ -123,7 +123,7 @@ const PTGoal = ({ navigation, route }) => {
       <View style={{ marginTop: 10, marginBottom: 10 }}>
         <View style={styles.buttonWrapper}>
           <Text style={[globalStyle.body1, { lineHeight: 50 }]}>{`${trainerName} T`}</Text>
-          {userState.role === 'trainer' ? (
+          {userState.role === 'TRAINER' ? (
             <ButtonSmall
               name={' 편집 '}
               customStyle={styles.button}
