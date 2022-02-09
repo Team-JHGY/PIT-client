@@ -75,15 +75,12 @@ export default function MealPlan({ navigation, route }) {
       memberProfile = routeMsg.memberInfo.member.user.profileImage.path
   }
 
-  //console.log("route",route)
-
   // states
   const { userState, userDispatch } = React.useContext(UserContext)
   const splitJwt = userState.jwtToken.split('.')
   const userInfo = JSON.parse(decode(splitJwt[1]))
   const [partnershipId, setPartnershipId] = useState(null)
   const [lessonInfo, setLessonInfo] = useState('')
-  const [lessionSequence, setLessionSequence] = useState(null)
   const [markedDates, setMarkedDates] = useState([])
 
   const [firstDayOfWeek, setFirstDayOfWeek] = useState(new Date())
@@ -93,89 +90,6 @@ export default function MealPlan({ navigation, route }) {
   const [modalVisible, setModalVisible] = useState(false)
   const [mealPanList, setMealPlanList] = React.useState([])
 
-  async function getActivatedTrainerInfo() {
-    await fetch(`${config.BASE_URL}/partnerships/${userInfo.sub}/trainers`, {
-      method: 'GET', // *GET, POST, PUT, DELETE, etc.
-      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-      credentials: 'include', // include, *same-origin, omit
-      headers: {
-        Authorization: userState.jwtToken,
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        console.log(res)
-        if (res.code === 0) {
-          let activatedTrainerInfo = res.data.trainers.find((v, i) => {
-            if (v.isEnabled === true) return true
-          })
-
-          setTrainerProfile(activatedTrainerInfo.trainer.user.profileImage.path)
-          setTrainerName(activatedTrainerInfo.trainer.user.name)
-          setPartnershipId(activatedTrainerInfo.partnershipId)
-          GetMealList(activatedTrainerInfo.partnershipId)
-        }
-      })
-      .catch((e) => console.log(e))
-  }
-
-  async function GetLessonInfo() {
-    //TODO 스케줄 아이디를 먼저 구해야한다.
-    let userId = routeMsg === null ? userInfo.sub : routeMsg.memberInfo.member.id
-    await fetch(
-      `${config.BASE_URL}/schedules/member/${userId}?day=${date.getDate()}&month=${
-        date.getMonth() + 1
-      }&year=${date.getFullYear()}`,
-      {
-        method: 'GET', // *GET, POST, PUT, DELETE, etc.
-        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: 'include', // include, *same-origin, omit
-        headers: {
-          Authorization: userState.jwtToken,
-          'Content-Type': 'application/json',
-        },
-      }
-    )
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.code === 0) {
-          setLessonInfo(res.data)
-        } else {
-          console.log(res)
-        }
-      })
-      .catch((e) => console.log(e))
-  }
-
-  async function GetMealList(id) {
-    await fetch(
-      `${config.BASE_URL}/diet/partnership/${id}?day=${date.getDate()}&month=${
-        date.getMonth() + 1
-      }&year=${date.getFullYear()}`,
-      {
-        method: 'GET', // *GET, POST, PUT, DELETE, etc.
-        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: 'include', // include, *same-origin, omit
-        headers: {
-          Authorization: userState.jwtToken,
-          'Content-Type': 'application/json',
-        },
-      }
-    )
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.code === 0) {
-          setMealPlanList(res.data)
-        } else {
-          alert('식단 조회를 실패했습니다.')
-        }
-      })
-      .catch((e) => {
-        alert('식단 조회를 실패했습니다.')
-        console.log(e)
-      })
-  }
   async function GetMemberScheduleDates() {
     let userId = routeMsg === null ? userInfo.sub : routeMsg.memberInfo.member.id
 
@@ -230,26 +144,98 @@ export default function MealPlan({ navigation, route }) {
       .catch((e) => console.log(e))
   }
 
+  async function GetMealList(id, dateValue) {
+    const dateValueForm = new Date(JSON.parse(dateValue))
+    console.log('dateValue.getDate', dateValueForm)
+
+    await fetch(
+      `${config.BASE_URL}/diet/partnership/${id}?day=${dateValueForm.getDate()}&month=${
+        dateValueForm.getMonth() + 1
+      }&year=${dateValueForm.getFullYear()}`,
+      {
+        method: 'GET', // *GET, POST, PUT, DELETE, etc.
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'include', // include, *same-origin, omit
+        headers: {
+          Authorization: userState.jwtToken,
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.code === 0) {
+          setMealPlanList(res.data)
+          console.log('식단 조회', res)
+        }
+      })
+  }
+
+  async function GetLessonInfo() {
+    //TODO 스케줄 아이디를 먼저 구해야한다.
+    let userId = routeMsg === null ? userInfo.sub : routeMsg.memberInfo.member.id
+    await fetch(
+      `${config.BASE_URL}/schedules/member/${userId}?day=${date.getDate()}&month=${
+        date.getMonth() + 1
+      }&year=${date.getFullYear()}`,
+      {
+        method: 'GET', // *GET, POST, PUT, DELETE, etc.
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'include', // include, *same-origin, omit
+        headers: {
+          Authorization: userState.jwtToken,
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.code === 0) {
+          setLessonInfo(res.data)
+        } else {
+          console.log(res)
+        }
+      })
+      .catch((e) => console.log(e))
+  }
+
+  async function getActivatedTrainerInfo(dateValue) {
+    await fetch(`${config.BASE_URL}/partnerships/${userInfo.sub}/trainers`, {
+      method: 'GET', // *GET, POST, PUT, DELETE, etc.
+      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: 'include', // include, *same-origin, omit
+      headers: {
+        Authorization: userState.jwtToken,
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.code === 0) {
+          let activatedTrainerInfo = res.data.trainers.find((v, i) => {
+            if (v.isEnabled === true) return true
+          })
+          setPartnershipId(activatedTrainerInfo.partnershipId)
+          GetMealList(activatedTrainerInfo.partnershipId, dateValue)
+        }
+      })
+      .catch((e) => console.log(e))
+  }
+
   React.useEffect(() => {
-    console.log(date)
     if (userState.role === 'MEMBER') {
-      getActivatedTrainerInfo()
-      AsyncStorage.setItem('selectedDate', JSON.stringify(date))
-      console.log('AsyncStorage', AsyncStorage.getItem('selectedDate'))
+      AsyncStorage.getItem('date', (err, result) => {
+        getActivatedTrainerInfo(result)
+      })
     } else {
-      GetMealList(route.params.memberInfo.partnershipId)
+      GetMealList(route.params.memberInfo.partnershipId, date)
     }
     GetLessonInfo()
     GetMemberScheduleDates()
   }, [date])
 
   React.useEffect(() => {
-    console.log('AsyncStorage', AsyncStorage.getItem('selectedDate'))
-    //setDate(AsyncStorage.getItem('selectedDate', date))
-    const unsubscribe = navigation.addListener('focus', () => {
-      getActivatedTrainerInfo()
-    })
-
+    const unsubscribe = navigation.addListener('focus', () => {})
     return unsubscribe
   }, [navigation])
 
@@ -310,6 +296,8 @@ export default function MealPlan({ navigation, route }) {
             <CalendarStrip
               selectedDate={date}
               onDateSelected={(date) => {
+                console.log(JSON.stringify(date))
+                AsyncStorage.setItem('date', JSON.stringify(date))
                 setDate(new Date(date))
               }}
               scrollable={true}
@@ -332,11 +320,12 @@ export default function MealPlan({ navigation, route }) {
           </View>
           <View style={{ margin: 20 }}>
             <Text style={[styles.subTitle]}>수업</Text>
-            <View style={styles.lesson}>
-              {lessonInfo.length > 0 && (
-                <Text style={styles.numOfLesson}>{`${lessonInfo[0].sequence}회차`}</Text>
-              )}
-              {lessonInfo.length > 0 ? (
+            {lessonInfo.length > 0 ? (
+              <View style={styles.lesson}>
+                {lessonInfo.length > 0 && (
+                  <Text style={styles.numOfLesson}>{`${lessonInfo[0].sequence}회차`}</Text>
+                )}
+
                 <Text style={[styles.lessonTime]}>
                   {`${getMonthOfDate(new Date(lessonInfo[0].startAt))}/${getDayOfDate(
                     new Date(lessonInfo[0].startAt)
@@ -344,10 +333,12 @@ export default function MealPlan({ navigation, route }) {
                     lessonInfo[0].startAt
                   )} ~ ${getTimeOfDate(lessonInfo[0].endAt)}`}
                 </Text>
-              ) : (
+              </View>
+            ) : (
+              <View style={styles.nolesson}>
                 <Text style={[styles.noMealPlan]}>{'수업 기록이 없습니다.'}</Text>
-              )}
-            </View>
+              </View>
+            )}
           </View>
 
           {/*식단 부분 뷰 */}
@@ -356,6 +347,7 @@ export default function MealPlan({ navigation, route }) {
               <View style={[globalStyle.row, { alignItems: 'stretch' }]}>
                 <Text style={[styles.subTitle, { flexGrow: 4 }]}>식단 기록</Text>
               </View>
+
               {mealPanList.length === 0 ? (
                 <Text style={[styles.noMealPlan]}>식단 기록이 없습니다.</Text>
               ) : (
@@ -414,9 +406,8 @@ export default function MealPlan({ navigation, route }) {
         </ScrollView>
         {userState.role === 'MEMBER' ? (
           <Pressable
-            style={[styles.floatingButton, styles.paddingRight, { elevation: 999 }]}
+            style={[styles.floatingButton, styles.paddingRight, { elevation: 9999 }]}
             onPress={() => {
-              setModalVisible(!modalVisible)
               navigation.navigate('AddMealPlan', { mode: 'create', dateValue: new Date(date) })
             }}
           >
@@ -520,15 +511,16 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   floatingButton: {
-    flex: 1,
     zIndex: 999,
-    position: 'relative',
+    position: 'absolute',
     marginTop: 'auto',
     marginBottom: 0,
     marginLeft: 'auto',
     marginRight: 0,
     alignSelf: 'flex-end',
     justifyContent: 'flex-end',
+    right: 0,
+    bottom: 0,
   },
   floatingButtonOver: {
     flex: 1,
@@ -585,6 +577,13 @@ const styles = StyleSheet.create({
   lesson: {
     borderRadius: 10,
     backgroundColor: '#FFFFFF',
+    width: '100%',
+    marginTop: 20,
+    height: 90,
+    paddingLeft: '6.25%',
+  },
+  nolesson: {
+    borderRadius: 10,
     width: '100%',
     marginTop: 20,
     height: 90,

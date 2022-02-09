@@ -28,7 +28,9 @@ const ScheduleDetailInfo = ({ navigation, route }) => {
   const { userState, userDispatch } = React.useContext(UserContext)
   const splitJwt = userState.jwtToken.split('.')
   const userInfo = React.useState(JSON.parse(decode(splitJwt[1])))
-  const { type, id, startAt, endAt, date } = route.params
+
+  const { type, id, startAt, endAt, date, trainerid } = route.params
+
   const [name, setname] = React.useState()
   const [brith, setBrith] = React.useState()
   const [profile, setProfile] = React.useState(undefined)
@@ -38,7 +40,7 @@ const ScheduleDetailInfo = ({ navigation, route }) => {
   const [sequence, setSequence] = React.useState(0)
 
   //name, brith, end, start
-
+  console.log(route.params)
   //수정
   const [scheduleId, setScheduleId] = React.useState(0)
   // state
@@ -46,31 +48,61 @@ const ScheduleDetailInfo = ({ navigation, route }) => {
   const [isNotAvailableModal, setIsNotAvailableModal] = useState(false)
 
   React.useEffect(() => {
-    fetch(`${config.BASE_URL}/schedules/${id}`, {
-      method: 'GET', // *GET, POST, PUT, DELETE, etc.
-      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-      credentials: 'include', // include, *same-origin, omit
-      headers: {
-        Authorization: userState.jwtToken,
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        setScheduleId(res.data.id)
-        setname(res.data.partnership.member.user.name)
-        setBrith(res.data.partnership.member.birthday)
-        setProfile(
-          res.data.partnership.member.user.profileImage === null
-            ? undefined
-            : res.data.partnership.member.user.profileImage.path
-        )
-        setEnd(res.data.endAt === undefined ? new Date() : new Date(res.data.endAt))
-        setStart(res.data.startAt === undefined ? new Date() : new Date(res.data.startAt))
-        setSchedual(res.data.scheduleRepeat.count)
-        setSequence(res.data.sequence === undefined ? 0 : res.data.sequence)
+    if (userInfo[0].type === 'MEMBER') {
+      fetch(`${config.BASE_URL}/schedules/${id}/member/${trainerid}`, {
+        method: 'GET', // *GET, POST, PUT, DELETE, etc.
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'include', // include, *same-origin, omit
+        headers: {
+          Authorization: userState.jwtToken,
+          'Content-Type': 'application/json',
+        },
       })
-      .catch((e) => console.log(e))
+        .then((res) => res.json())
+        .then((res) => {
+          console.log('stes', res)
+          setScheduleId(res.data.id)
+          setname(res.data.partnership.member.user.name)
+          setBrith(res.data.partnership.member.birthday)
+          setProfile(
+            res.data.partnership.member.user.profileImage === null
+              ? undefined
+              : res.data.partnership.member.user.profileImage.path
+          )
+          setEnd(res.data.endAt === undefined ? new Date() : new Date(res.data.endAt))
+          setStart(res.data.startAt === undefined ? new Date() : new Date(res.data.startAt))
+          setSchedual(res.data.scheduleRepeat.count)
+          setSequence(res.data.sequence === undefined ? 0 : res.data.sequence)
+        })
+        .catch((e) => console.log(e))
+    } else {
+      fetch(`${config.BASE_URL}/schedules/${id}/trainer/${trainerid}`, {
+        method: 'GET', // *GET, POST, PUT, DELETE, etc.
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'include', // include, *same-origin, omit
+        headers: {
+          Authorization: userState.jwtToken,
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          console.log('stes', res)
+          setScheduleId(res.data.id)
+          setname(res.data.partnership.member.user.name)
+          setBrith(res.data.partnership.member.birthday)
+          setProfile(
+            res.data.partnership.member.user.profileImage === null
+              ? undefined
+              : res.data.partnership.member.user.profileImage.path
+          )
+          setEnd(res.data.endAt === undefined ? new Date() : new Date(res.data.endAt))
+          setStart(res.data.startAt === undefined ? new Date() : new Date(res.data.startAt))
+          setSchedual(res.data.scheduleRepeat.count)
+          setSequence(res.data.sequence === undefined ? 0 : res.data.sequence)
+        })
+        .catch((e) => console.log(e))
+    }
   }, [])
 
   async function DeleteSh() {
@@ -162,17 +194,13 @@ const ScheduleDetailInfo = ({ navigation, route }) => {
       {type !== 'notAvailable' && (
         <Text style={[globalStyle.heading2, { marginLeft: '5.55%' }]}>{'수업 회차'}</Text>
       )}
-      {type !== 'notAvailable' && (
-        <Text style={styles.subText}>{`${sequence}번째 수업 (등록된 수업 총 ${
-          schedual === null ? 0 : schedual
-        }회)`}</Text>
-      )}
+      {type !== 'notAvailable' && <Text style={styles.subText}>{`${sequence}번째 수업`}</Text>}
 
       <Text style={[globalStyle.heading2, { marginLeft: '5.55%', marginTop: 20 }]}>{'날짜'}</Text>
       <Text style={styles.subText}>
         {type !== 'notAvailable'
-          ? start.getFullYear() + '-' + (start.getMonth() + 1) + '-' + start.getDate()
-          : date.split('T')[0] + 'asdf'}
+          ? JSON.stringify(start).split('T')[0].replace('"', '')
+          : date.split('T')[0]}
       </Text>
       <Text style={styles.subText}>
         {type !== 'notAvailable'
