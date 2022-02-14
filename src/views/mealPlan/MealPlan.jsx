@@ -299,6 +299,20 @@ export default function MealPlan({ navigation, route }) {
 
   React.useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
+      if(userState.role === 'member'){
+        if(userState.role === 'member'){
+          AsyncStorage.getItem('date', (err, result) => {
+            
+            getActivatedTrainerInfo(result)
+          });
+        }
+      }else{
+        
+        GetMealList(route.params.memberInfo.partnershipId, date)
+  
+      }
+      GetLessonInfo()
+      GetMemberScheduleDates()
     })
 
     return unsubscribe
