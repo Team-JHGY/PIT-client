@@ -73,7 +73,8 @@ export default function AddMealPlan ({ navigation, route }) {
   const onDateChange = (event, selectedDate) => {
   
     setShow(Platform.OS === 'ios')
-    //console.log("currentDate", new Date(selectedDate.setHours(selectedDate.getHours() - 15)))
+    //console.log("currentDatㅂe", new Date(selectedDate.setHours(selectedDate.getHours() - 15)))
+    
     setDate(new Date(selectedDate.setHours(selectedDate.getHours() - 15)))
   }
 
@@ -123,7 +124,10 @@ export default function AddMealPlan ({ navigation, route }) {
   async function PostAddMealPlan() {
 
     //등록 날짜date.setHours(date.getHours() -15)
-    const addDate = `${dateValue.getFullYear()}-${("0"+Number(dateValue.getMonth())+1).slice(-2)}-${dateValue.getDate()<10? "0"+dateValue.getDate():dateValue.getDate()}T${JSON.stringify(date).split("T")[1].split("Z")[0]}Z`
+    
+    const dateFormValue = JSON.stringify(dateValue).split("T")[0].replace('"',"")
+
+    const addDate = `${dateFormValue}T${JSON.stringify(date).split("T")[1].split("Z")[0]}Z`
 
     //등록 이미지 관련
 
