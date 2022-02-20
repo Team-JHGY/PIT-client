@@ -72,10 +72,12 @@ export default function MainView({ navigation, route }) {
             let activatedTrainerInfo = res.data.trainers.find((v, i) => {
               if (v.isEnabled === true) return true
             })
-            setTrainerId(activatedTrainerInfo.trainer.user.id)
-            setTrainerProfile(activatedTrainerInfo.trainer.user.profileImage.path)
-            setTrainerName(activatedTrainerInfo.trainer.user.name)
-            setPartnershipId(activatedTrainerInfo.partnershipId)
+            if(activatedTrainerInfo !== undefined){
+              setTrainerId(activatedTrainerInfo.trainer.user.id)
+              setTrainerProfile(activatedTrainerInfo.trainer.user.profileImage.path)
+              setTrainerName(activatedTrainerInfo.trainer.user.name)
+              setPartnershipId(activatedTrainerInfo.partnershipId)
+            }
           }
         }
       })
