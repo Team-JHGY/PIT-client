@@ -1,11 +1,11 @@
-import React, { useEffect, useState, useContext } from 'react'
+import React, { useEffect, useState, useContext, useCallback } from 'react'
 import * as SplashScreen from 'expo-splash-screen'
 
 import * as Font from 'expo-font'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { StyleSheet, Image } from 'react-native'
+import { StyleSheet, Image, BackHandler, Alert } from 'react-native'
 
 //Pages
 import MainView from './src/views/Main'
@@ -55,7 +55,6 @@ const Tab = createBottomTabNavigator()
 //하단 라우팅 담당 + 네비게이션
 export function BottomNav() {
   const { userState, userDispatch } = useContext(UserContext)
-
   const { role } = userState
 
   return (
@@ -165,7 +164,22 @@ export default function App() {
     }
     prepare()
   }, [])
+  useEffect(() => {
+    const backAction = () => {
+      Alert.alert('확인', '앱을 종료하시겠습니까?', [
+        {
+          text: '취소',
+          onPress: () => null,
+        },
+        { text: '확인', onPress: () => BackHandler.exitApp() },
+      ])
+      return true
+    }
 
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction)
+
+    return () => backHandler.remove()
+  }, [])
   if (!appIsReady) {
     return null
   }

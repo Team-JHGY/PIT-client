@@ -43,4 +43,22 @@ const getCalendarMonth = (firstDay, lastDay) => {
   if (firstDay.getMonth() === lastDay.getMonth()) return firstDay.getMonth() + 1 + '월'
   else return firstDay.getMonth() + 1 + '~' + (lastDay.getMonth() + 1) + '월'
 }
-export { getDayOfWeek, getMonthOfDate, getDayOfDate, getTimeOfDate, getCalendarMonth }
+
+const makeDateFormat = (date) => {
+  if (date.length === 8) {
+    var flag = true
+    for (var i = 0; i < 8; i++) {
+      if (date[i] < '0' || date[i] > '9') flag = false
+    }
+    if (flag) return date.substr(0, 4) + '-' + date.substr(4, 2) + '-' + date.substr(6, 2)
+  }
+  return date
+}
+export {
+  getDayOfWeek,
+  getMonthOfDate,
+  getDayOfDate,
+  getTimeOfDate,
+  getCalendarMonth,
+  makeDateFormat,
+}

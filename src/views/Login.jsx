@@ -66,8 +66,8 @@ export default function LoginView({ navigation }) {
     const PROVIDER = await AsyncStorage.getItem('PROVIDER')
     const ACCESSTOKEN = await AsyncStorage.getItem('ACCESSTOKEN')
 
-    console.log(PROVIDER)
-    console.log(ACCESSTOKEN)
+    console.log('provider is ' + PROVIDER)
+    console.log('accesstoken is ' + ACCESSTOKEN)
     if (PROVIDER !== null && ACCESSTOKEN !== null) {
       let payload = {
         accessToken: ACCESSTOKEN,
@@ -134,10 +134,14 @@ export default function LoginView({ navigation }) {
           } else {
             console.log(userDataResJson)
           }
-          navigation.navigate('Home')
+          navigation.replace('Home')
+        } else {
+          console.log('Sign In API 호출 실패')
         }
       } catch (e) {
+        console.log(e.response.data)
         if (e.response.data.code === -14) {
+          console.log('토큰 만료 Refresh 진행 시작')
           const refreshToken = e.response.data.data
           let res
           let updateRes
@@ -146,7 +150,6 @@ export default function LoginView({ navigation }) {
             if (res === 'KOE322') {
               updateRes = 'Login'
             } else {
-              console.log(res)
               userDispatch(res)
               res.payload.refreshToken =
                 res.payload.refreshToken === undefined ? refreshToken : res.payload.refreshToken
@@ -165,99 +168,106 @@ export default function LoginView({ navigation }) {
               await AsyncStorage.setItem('ACCESSTOKEN', res.payload.accessToken)
             }
           }
-          console.log(updateRes)
           if (updateRes === 'SignIn') {
             console.log('signin')
             await loginProcess()
           } else {
             console.log(updateRes + '페이지에 stay')
           }
+        } else {
+          console.log('Sign In API 호출 실패2')
         }
       }
     } else {
       // 로그인 페이지에 stay
-      AsyncStorage.clear()
+      console.log('회원가입 필요 상태')
     }
   }
   useEffect(() => {
     async function login() {
       await loginProcess()
     }
-    //login()
+    login()
+    //AsyncStorage.clear()
+
+    // AsyncStorage.setItem('PROVIDER', 'KAKAO')
+    // AsyncStorage.setItem('ACCESSTOKEN', '_ysWHDIsv6Gys115E6reupM7Mt_q3R1mHlYdmAopb1QAAAF-1BCl7w')
+    //AsyncStorage.setItem('PROVIDER', 'KAKAO')
+    //AsyncStorage.setItem('ACCESSTOKEN', 'VmOVdg678M4b47nrT1CIZIf4C0Es2Aye88ADjworDNQAAAF_EW4SDw')
   }, [])
   return (
     <View style={styles.body} onLayout={onLayoutRootView}>
       <WithLocalSvg style={styles.logo} asset={Pitlogo}></WithLocalSvg>
       <Text style={styles.text1}>트레이너와 회원이 함께 하는</Text>
       <Text style={styles.text2}>1:1 PT 관리</Text>
-
-      <View style={{ flexDirection: 'row' }}>
-        <View style={{ flex: 1, alignItems: 'center' }}>
-          <Pressable
-            onPress={() =>
-              fakeLogin('dummytoken11', 'TRAINER', '트레이너 계정1', TEST_TRAINER1_PROFILE)
-            }
-          >
-            <View style={styles.testAccount}>
-              <Text>트레이너 계정 1</Text>
-            </View>
-          </Pressable>
-          <Pressable
-            onPress={() =>
-              fakeLogin('dummytoken12', 'TRAINER', '트레이너 계정2', TEST_TRAINER2_PROFILE)
-            }
-          >
-            <View style={styles.testAccount}>
-              <Text>트레이너 계정 2</Text>
-            </View>
-          </Pressable>
-          <Pressable onPress={() => fakeLogin('dummytoken13', 'TRAINER', '트레이너 계정3', '')}>
-            <View style={styles.testAccount}>
-              <Text>트레이너 계정 3</Text>
-            </View>
-          </Pressable>
-          <Pressable onPress={() => fakeLogin('dummytoken14', 'TRAINER', '트레이너 계정4')}>
-            <View style={styles.testAccount}>
-              <Text>트레이너 계정 4</Text>
-            </View>
-          </Pressable>
-          <Pressable onPress={() => fakeLogin('dummytoken15', 'TRAINER', '트레이너 계정5')}>
-            <View style={styles.testAccount}>
-              <Text>트레이너 계정 5</Text>
-            </View>
-          </Pressable>
+      {/*
+        <View style={{ flexDirection: 'row' }}>
+          <View style={{ flex: 1, alignItems: 'center' }}>
+            <Pressable
+              onPress={() =>
+                fakeLogin('dummytoken11', 'TRAINER', '트레이너 계정1', TEST_TRAINER1_PROFILE)
+              }
+            >
+              <View style={styles.testAccount}>
+                <Text>트레이너 계정 1</Text>
+              </View>
+            </Pressable>
+            <Pressable
+              onPress={() =>
+                fakeLogin('dummytoken12', 'TRAINER', '트레이너 계정2', TEST_TRAINER2_PROFILE)
+              }
+            >
+              <View style={styles.testAccount}>
+                <Text>트레이너 계정 2</Text>
+              </View>
+            </Pressable>
+            <Pressable onPress={() => fakeLogin('dummytoken13', 'TRAINER', '트레이너 계정3', '')}>
+              <View style={styles.testAccount}>
+                <Text>트레이너 계정 3</Text>
+              </View>
+            </Pressable>
+            <Pressable onPress={() => fakeLogin('dummytoken14', 'TRAINER', '트레이너 계정4')}>
+              <View style={styles.testAccount}>
+                <Text>트레이너 계정 4</Text>
+              </View>
+            </Pressable>
+            <Pressable onPress={() => fakeLogin('dummytoken15', 'TRAINER', '트레이너 계정5')}>
+              <View style={styles.testAccount}>
+                <Text>트레이너 계정 5</Text>
+              </View>
+            </Pressable>
+          </View>
+          <View style={{ flex: 1, alignItems: 'center' }}>
+            <Pressable
+              onPress={() => fakeLogin('dummytoken21', 'MEMBER', '회원계정1', TEST_MEMBER1_PROFILE)}
+            >
+              <View style={styles.testAccount}>
+                <Text>회원 계정 1</Text>
+              </View>
+            </Pressable>
+            <Pressable onPress={() => fakeLogin('dummytoken22', 'MEMBER', '회원계정2')}>
+              <View style={styles.testAccount}>
+                <Text>회원 계정 2</Text>
+              </View>
+            </Pressable>
+            <Pressable onPress={() => fakeLogin('dummytoken23', 'MEMBER', '회원계정3')}>
+              <View style={styles.testAccount}>
+                <Text>회원 계정 3</Text>
+              </View>
+            </Pressable>
+            <Pressable onPress={() => fakeLogin('dummytoken24', 'MEMBER', '회원계정4')}>
+              <View style={styles.testAccount}>
+                <Text>회원 계정 4</Text>
+              </View>
+            </Pressable>
+            <Pressable onPress={() => fakeLogin('dummytoken25', 'MEMBER', '회원계정5')}>
+              <View style={styles.testAccount}>
+                <Text>회원 계정 5</Text>
+              </View>
+            </Pressable>
+          </View>
         </View>
-        <View style={{ flex: 1, alignItems: 'center' }}>
-          <Pressable
-            onPress={() => fakeLogin('dummytoken21', 'MEMBER', '회원계정1', TEST_MEMBER1_PROFILE)}
-          >
-            <View style={styles.testAccount}>
-              <Text>회원 계정 1</Text>
-            </View>
-          </Pressable>
-          <Pressable onPress={() => fakeLogin('dummytoken22', 'MEMBER', '회원계정2')}>
-            <View style={styles.testAccount}>
-              <Text>회원 계정 2</Text>
-            </View>
-          </Pressable>
-          <Pressable onPress={() => fakeLogin('dummytoken23', 'MEMBER', '회원계정3')}>
-            <View style={styles.testAccount}>
-              <Text>회원 계정 3</Text>
-            </View>
-          </Pressable>
-          <Pressable onPress={() => fakeLogin('dummytoken24', 'MEMBER', '회원계정4')}>
-            <View style={styles.testAccount}>
-              <Text>회원 계정 4</Text>
-            </View>
-          </Pressable>
-          <Pressable onPress={() => fakeLogin('dummytoken25', 'MEMBER', '회원계정5')}>
-            <View style={styles.testAccount}>
-              <Text>회원 계정 5</Text>
-            </View>
-          </Pressable>
-        </View>
-      </View>
-      <Pressable></Pressable>
+            */}
       <Pressable
         style={[styles.svgWrapper, { marginTop: 60 }]}
         onPress={() => {

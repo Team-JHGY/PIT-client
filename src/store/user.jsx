@@ -4,7 +4,7 @@ export const UserContext = createContext()
 
 const initialState = {
   name: '',
-  gender: 'MAN',
+  gender: '',
   birthday: '',
   intro: '',
   accessToken: '',

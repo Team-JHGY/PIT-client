@@ -101,7 +101,7 @@ export default function SignUpStep2(props) {
         </Pressable>
       </Appbar.Header>
       <View style={styles.body}>
-        {image !== null ? (
+        {/* {image !== null ? (
           <Image source={{ uri: image }} style={styles.profile} />
         ) : (
           <Image
@@ -128,9 +128,9 @@ export default function SignUpStep2(props) {
               />
             </View>
           )}
-        </View>
+        </View> */}
 
-        <View style={globalStyle.textField}>
+        <View style={[globalStyle.textField, { marginTop: 35 }]}>
           <TextField
             title={'이름'}
             name="name"

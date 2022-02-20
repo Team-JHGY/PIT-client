@@ -113,6 +113,7 @@ export default NaverLogin = ({ navigation }) => {
                 }
               } else {
                 // 첫 로그인
+                console.log('첫 네이버 로그인')
                 navigation.replace('SignUp', { provider: 'NAVER' })
               }
             })

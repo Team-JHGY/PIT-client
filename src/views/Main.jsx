@@ -35,7 +35,7 @@ export default function MainView({ navigation, route }) {
   const [nextLessonInfo, setNextLessonInfo] = useState('')
   const [nextLessonSequence, setNextLessonSequence] = useState(null)
   const splitJwt = userState.jwtToken.split('.')
-  const [detailIndfo, setDetailInfo]       = React.useState()
+  const [detailIndfo, setDetailInfo] = React.useState()
   const userInfo = JSON.parse(decode(splitJwt[1]))
   // route
   let routeMsg = null
@@ -66,14 +66,17 @@ export default function MainView({ navigation, route }) {
       .then((res) => res.json())
       .then((res) => {
         if (res.code === 0) {
-          let activatedTrainerInfo = res.data.trainers.find((v, i) => {
-            if (v.isEnabled === true) return true
-          })
-
-          setTrainerId(activatedTrainerInfo.trainer.user.id)
-          setTrainerProfile(activatedTrainerInfo.trainer.user.profileImage.path)
-          setTrainerName(activatedTrainerInfo.trainer.user.name)
-          setPartnershipId(activatedTrainerInfo.partnershipId)
+          if (res.data.trainers.length === 0) {
+            setTrainerName('등록된 트레이너가 없습니다')
+          } else {
+            let activatedTrainerInfo = res.data.trainers.find((v, i) => {
+              if (v.isEnabled === true) return true
+            })
+            setTrainerId(activatedTrainerInfo.trainer.user.id)
+            setTrainerProfile(activatedTrainerInfo.trainer.user.profileImage.path)
+            setTrainerName(activatedTrainerInfo.trainer.user.name)
+            setPartnershipId(activatedTrainerInfo.partnershipId)
+          }
         }
       })
       .catch((e) => console.log(e))
@@ -103,7 +106,7 @@ export default function MainView({ navigation, route }) {
           let endAtDate = new Date(res.data.endAt)
           console.log(res.data.id)
           console.log(res.data.partnership)
-          setDetailInfo({id:res.data.id, trainerId:res.data.partnership.member.id})
+          setDetailInfo({ id: res.data.id, trainerId: res.data.partnership.member.id })
           setNextLessonInfo(
             `${getMonthOfDate(startAtDate)}/${getDayOfDate(startAtDate)}(${getDayOfWeek(
               startAtDate
@@ -177,17 +180,21 @@ export default function MainView({ navigation, route }) {
             image={calendar}
             text={'수업 스케쥴'}
             clickEvent={() => {
-              if (userState.role === 'MEMBER') {
-                navigation.navigate('Schedule', {
-                  type: userState.role,
-                  trainerName: trainerName,
-                  trainerId: trainerId,
-                })
-              } else if (userState.role === 'TRAINER') {
-                navigation.navigate('Schedule', {
-                  type: userState.role,
-                  trainerId: userInfo.sub,
-                })
+              if (trainerId === null) {
+                alert('트레이너 등록이 필요합니다.')
+              } else {
+                if (userState.role === 'MEMBER') {
+                  navigation.navigate('Schedule', {
+                    type: userState.role,
+                    trainerName: trainerName,
+                    trainerId: trainerId,
+                  })
+                } else if (userState.role === 'TRAINER') {
+                  navigation.navigate('Schedule', {
+                    type: userState.role,
+                    trainerId: userInfo.sub,
+                  })
+                }
               }
             }}
           />
@@ -195,22 +202,26 @@ export default function MainView({ navigation, route }) {
             image={goal}
             text={'PT 목표'}
             clickEvent={() => {
-              if (userState.role === 'MEMBER') {
-                navigation.navigate('PTGoal', {
-                  memberName: userState.name,
-                  trainerName: trainerName,
-                  memberProfile: userState.profile,
-                  trainerProfile: trainerProfile,
-                  partnershipId: partnershipId,
-                })
+              if (trainerId === null) {
+                alert('트레이너 등록이 필요합니다.')
               } else {
-                navigation.navigate('PTGoal', {
-                  memberName: routeMsg.memberInfo.member.user.name,
-                  trainerName: userState.name,
-                  memberProfile: memberProfile,
-                  trainerProfile: userState.profile,
-                  partnershipId: partnershipId,
-                })
+                if (userState.role === 'MEMBER') {
+                  navigation.navigate('PTGoal', {
+                    memberName: userState.name,
+                    trainerName: trainerName,
+                    memberProfile: userState.profile,
+                    trainerProfile: trainerProfile,
+                    partnershipId: partnershipId,
+                  })
+                } else {
+                  navigation.navigate('PTGoal', {
+                    memberName: routeMsg.memberInfo.member.user.name,
+                    trainerName: userState.name,
+                    memberProfile: memberProfile,
+                    trainerProfile: userState.profile,
+                    partnershipId: partnershipId,
+                  })
+                }
               }
             }}
           />
@@ -224,7 +235,11 @@ export default function MainView({ navigation, route }) {
           <View style={styles.lesson}>
             <Pressable
               onPress={() => {
-                navigation.navigate('ScheduleDetailInfo', { type: 'noUpdate', id:detailIndfo.id, trainerid:detailIndfo.trainerId})
+                navigation.navigate('ScheduleDetailInfo', {
+                  type: 'noUpdate',
+                  id: detailIndfo.id,
+                  trainerid: detailIndfo.trainerId,
+                })
               }}
             >
               <Text style={styles.numOfLesson}>
