@@ -40,9 +40,10 @@ export default function AddMealPlan ({ navigation, route }) {
   
   const dateValueDate = new Date(dateValue)
   //console.log("mealId", mealId)
-
+  
   // datetimepicker - 날짜
   const [date, setDate]                                 = useState(new Date(dateValue))
+  const [showDate, setShowDate]                         = useState(new Date(dateValue))
   const [show, setShow]                                 = useState(false)
   const { userState, userDispatch }                     = React.useContext(UserContext)
   const splitJwt                                        = userState.jwtToken.split('.')
@@ -73,9 +74,11 @@ export default function AddMealPlan ({ navigation, route }) {
   const onDateChange = (event, selectedDate) => {
   
     setShow(Platform.OS === 'ios')
-    //console.log("currentDatㅂe", new Date(selectedDate.setHours(selectedDate.getHours() - 15)))
-    
-    setDate(new Date(selectedDate.setHours(selectedDate.getHours() - 15)))
+
+    const kordate = selectedDate.getTime()+9 * 60 * 60 * 1000
+
+    setDate(new Date(selectedDate))
+    setShowDate(new Date(kordate))
   }
 
   const showDatepicker = () => {
@@ -127,7 +130,7 @@ export default function AddMealPlan ({ navigation, route }) {
     
     const dateFormValue = JSON.stringify(dateValue).split("T")[0].replace('"',"")
 
-    const addDate = `${dateFormValue}T${JSON.stringify(date).split("T")[1].split("Z")[0]}Z`
+    const addDate = `${dateFormValue}T${JSON.stringify(showDate).split("T")[1].split("Z")[0]}Z`
 
     //등록 이미지 관련
 
@@ -210,7 +213,7 @@ export default function AddMealPlan ({ navigation, route }) {
     }else{
       getActivatedTrainerInfo()
     }
-    
+    console.log(dateValue)
   },[])
 
   React.useEffect(()=>{
@@ -239,8 +242,9 @@ export default function AddMealPlan ({ navigation, route }) {
           let activatedTrainerInfo = res.data.trainers.find((v, i) => {
             if (v.isEnabled === true) return true
           })
-          setPartnershipId(activatedTrainerInfo.partnershipId)
-          
+          if(activatedTrainerInfo !== undefined){
+            setPartnershipId(activatedTrainerInfo.partnershipId)
+          }
         } else {
           //console.log(res)
         }
@@ -333,7 +337,7 @@ export default function AddMealPlan ({ navigation, route }) {
   async function EditMealPlan() {
 
     //등록 날짜date.setHours(date.getHours() -15)
-    const addDate = `${dateValue.getFullYear()}-${("0"+Number(dateValue.getMonth())+1).slice(-2)}-${dateValue.getDate()<10? "0"+dateValue.getDate():dateValue.getDate()}T${JSON.stringify(date).split("T")[1].split("Z")[0]}Z`
+    const addDate = `${dateValue.getFullYear()}-${("0"+Number(dateValue.getMonth())+1).slice(-2)}-${dateValue.getDate()<10? "0"+dateValue.getDate():dateValue.getDate()}T${JSON.stringify(showDate).split("T")[1].split("Z")[0]}Z`
 
     //등록 이미지 관련
 
@@ -465,6 +469,7 @@ export default function AddMealPlan ({ navigation, route }) {
           is24Hour={true}
           display="spinner"
           onChange={onDateChange}
+          timeZoneOffsetInSeconds={3600}
         />
       )}
     
@@ -502,7 +507,7 @@ export default function AddMealPlan ({ navigation, route }) {
         <View style={{ width: '88.8%' }}>
             <SelectBoxField
                 title={'시간'}
-                input={getTimeOfDate(date)}
+                input={getTimeOfDate(showDate)}
                 clickEvent={showDatepicker}
                 mode={mode}
             />

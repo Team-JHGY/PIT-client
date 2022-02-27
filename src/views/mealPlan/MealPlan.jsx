@@ -75,17 +75,19 @@ export default function MealPlan({ navigation, route }) {
       memberProfile = routeMsg.memberInfo.member.user.profileImage.path
   }
 
+
+  const kordate = today.getTime()+9 * 60 * 60 * 1000
   // states
   const { userState, userDispatch } = React.useContext(UserContext)
   const splitJwt = userState.jwtToken.split('.')
   const userInfo = JSON.parse(decode(splitJwt[1]))
-  const [partnershipId, setPartnershipId] = useState(null)
   const [lessonInfo, setLessonInfo] = useState('')
   const [markedDates, setMarkedDates] = useState([])
 
   const [firstDayOfWeek, setFirstDayOfWeek] = useState(new Date())
   const [lastDayOfWeek, setLastDayOfWeek] = useState(new Date())
-  const [date, setDate] = useState(new Date())
+  const [date, setDate] = useState(new Date(kordate))
+  
   const [seleted, setSeleted] = React.useState('meal')
   const [modalVisible, setModalVisible] = useState(false)
   const [mealPanList, setMealPlanList] = React.useState([])
@@ -215,19 +217,23 @@ export default function MealPlan({ navigation, route }) {
           let activatedTrainerInfo = res.data.trainers.find((v, i) => {
             if (v.isEnabled === true) return true
           })
-          setPartnershipId(activatedTrainerInfo.partnershipId)
-          GetMealList(activatedTrainerInfo.partnershipId, dateValue)
+          console.log(activatedTrainerInfo)
+          if(activatedTrainerInfo !== undefined){
+            GetMealList(activatedTrainerInfo.partnershipId, dateValue)
+          }
+         
         }
       })
       .catch((e) => console.log(e))
   }
 
   React.useEffect(() => {
+    console.log("route", route)
     if (userState.role === 'MEMBER') {
       AsyncStorage.getItem('date', (err, result) => {
         getActivatedTrainerInfo(result)
       })
-    } else {
+    } else if(route.params !== undefined){
       GetMealList(route.params.memberInfo.partnershipId, date)
     }
     GetLessonInfo()
@@ -235,12 +241,13 @@ export default function MealPlan({ navigation, route }) {
   }, [date])
 
   React.useEffect(() => {
+
     const unsubscribe = navigation.addListener('focus', () => {
       if (userState.role === 'member') {
         AsyncStorage.getItem('date', (err, result) => {
           getActivatedTrainerInfo(result)
         })
-      } else {
+      } else if(route.params !== undefined){
         GetMealList(route.params.memberInfo.partnershipId, date)
       }
       GetLessonInfo()

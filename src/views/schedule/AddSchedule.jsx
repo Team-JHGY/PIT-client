@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { View, ScrollView, SafeAreaView, Text, Pressable, Image } from 'react-native'
-import { WithLocalSvg } from 'react-native-svg'
+
 import DateTimePicker from '@react-native-community/datetimepicker'
 
 import { Appbar } from 'react-native-paper'
@@ -9,7 +9,6 @@ import { Appbar } from 'react-native-paper'
 import ButtonLarge from '../../components/Common/ButtonLarge'
 import ModalDialog from '../../components/Common/ModalDialog'
 import SelectBoxField from '../../components/Schedule/SelectBoxField'
-import Chip from '../../components/Schedule/Chip'
 import ScheduleChooseModal from '../../components/Schedule/ScheduleChooseModal'
 import RepeatChooseModal from '../../components/Schedule/RepeatChooseModal'
 
@@ -27,7 +26,7 @@ import { decode } from 'js-base64';
 
 // assets
 import cross from '../../../assets/cross.png'
-import Asterisk from '../../../assets/icon/asterisk.svg'
+
 
 // context
 import { UserContext } from '../../store/user'
@@ -58,7 +57,9 @@ const AddSchedule = ({ navigation, route }) => {
   const onDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || date
     setShow(Platform.OS === 'ios')
-    setDate(currentDate)
+    
+    const kordate = currentDate.getTime()+9 * 60 * 60 * 1000
+    setDate(new Date(kordate))
   }
 
   const showDatepicker = () => {
@@ -67,15 +68,20 @@ const AddSchedule = ({ navigation, route }) => {
 
   // datetimepicker - 시작시간
   const [fromTime, setFromTime] = useState(mode === "update"? value.start : new Date())
+  const [fromTimeShow, setFromTimeShow] = useState(mode === "update"? value.start : new Date())
+  
   const [showFromTime, setShowFromTime] = useState(false)
 
   const onFromTimeChange = (event, selectedDate) => {
-    selectedDate.setHours(selectedDate.getHours() - 15)
+    const kordate = selectedDate.getTime()+9 * 60 * 60 * 1000
 
     const currentDate = selectedDate || date
+    const currentDateShow = kordate || date
+    
     setShowFromTime(Platform.OS === 'ios')
     if (event.type === 'set') {
       setFromTime(currentDate)
+      setFromTimeShow(currentDateShow)
     }
   }
 
@@ -85,16 +91,19 @@ const AddSchedule = ({ navigation, route }) => {
 
   // datetimepicker - 종료시간
   const [toTime, setToTime] = useState(mode === "update"? value.end : new Date())
+  const [toTimeshow, setToTimeshow] = useState(mode === "update"? value.end : new Date())
+  
   const [showToTime, setShowToTime] = useState(false)
 
   const onToTimeChange = (event, selectedDate) => {
-    
-    selectedDate.setHours(selectedDate.getHours() - 15)
+    const kordate = selectedDate.getTime()+9 * 60 * 60 * 1000
 
-    const currentDate = selectedDate || date
+    const currentDate = selectedDate || date 
+    const showCurrentDate = kordate || date 
+
     setShowToTime(Platform.OS === 'ios')
     if (event.type === 'set') {
-
+      setToTimeshow(showCurrentDate)
       setToTime(currentDate)
     }
   }
@@ -116,9 +125,9 @@ const AddSchedule = ({ navigation, route }) => {
 
   async function AddSchedulesFuc() {
     const dateForm = String(JSON.stringify(date).split("T")[0].replace("/","").replace('"',""))
-    const startAt = `${dateForm}T${JSON.stringify(fromTime).split("T")[1].split("Z")[0]}`
+    const startAt = `${dateForm}T${JSON.stringify(fromTimeShow).split("T")[1].split("Z")[0]}`
 
-    const endAt   = `${dateForm}T${JSON.stringify(toTime).split("T")[1].split("Z")[0]}`        
+    const endAt   = `${dateForm}T${JSON.stringify(toTimeshow).split("T")[1].split("Z")[0]}`        
 
     console.log(dateForm)
     console.log(endAt)
@@ -167,9 +176,9 @@ const AddSchedule = ({ navigation, route }) => {
 
   async function EditSchedulesFuc() {
 
-    const startAt = `${date.getFullYear()}-${Number(date.getMonth())+1<10? "0"+Number(date.getMonth())+1:Number(date.getMonth())+1}-${date.getDate()<10? "0"+date.getDate():date.getDate()}T${JSON.stringify(fromTime).split("T")[1].split("Z")[0]}`
+    const startAt = `${date.getFullYear()}-${Number(date.getMonth())+1<10? "0"+Number(date.getMonth())+1:Number(date.getMonth())+1}-${date.getDate()<10? "0"+date.getDate():date.getDate()}T${JSON.stringify(fromTimeShow).split("T")[1].split("Z")[0]}`
 
-    const endAt   = `${date.getFullYear()}-${Number(date.getMonth())+1<10? "0"+Number(date.getMonth())+1:Number(date.getMonth())+1}-${date.getDate()<10? "0"+date.getDate():date.getDate()}T${JSON.stringify(toTime).split("T")[1].split("Z")[0]}`        
+    const endAt   = `${date.getFullYear()}-${Number(date.getMonth())+1<10? "0"+Number(date.getMonth())+1:Number(date.getMonth())+1}-${date.getDate()<10? "0"+date.getDate():date.getDate()}T${JSON.stringify(toTimeshow).split("T")[1].split("Z")[0]}`        
 
 
     const updateScheduleRequest = {
@@ -338,7 +347,7 @@ const AddSchedule = ({ navigation, route }) => {
               <View style={{ flex: 1, marginRight: 5 }}>
                 <SelectBoxField
                   title={'시작 시간'}
-                  input={getTimeOfDate(fromTime)}
+                  input={getTimeOfDate(fromTimeShow)}
                   clickEvent={showFromTimepicker}
                   mode={mode}
                 />
@@ -346,7 +355,7 @@ const AddSchedule = ({ navigation, route }) => {
               <View style={{ flex: 1, marginLeft: 5 }}>
                 <SelectBoxField
                   title={'끝 시간'}
-                  input={getTimeOfDate(toTime)}
+                  input={getTimeOfDate(toTimeshow)}
                   clickEvent={showToTimepicker}
                   mode={mode}
                 />
