@@ -4,6 +4,7 @@ import { StyleSheet, Text, View, Pressable, Image, AsyncStorage } from 'react-na
 import * as SplashScreen from 'expo-splash-screen'
 import axios from 'axios'
 import { decode } from 'js-base64'
+import { WithLocalSvg } from 'react-native-svg'
 
 // utils
 import globalStyle from '../utils/globalStyle'
@@ -20,14 +21,14 @@ import {
   TEST_MEMBER1_PROFILE,
 } from '../utils/constant'
 
+// context
+import { UserContext } from '../store/user'
+
 import { refreshToken as kakaoRefreshToken } from './login/KakaoLogin'
 import { updateToken as kakaoUpdateToken } from './login/KakaoLogin'
 import { updateToken as naverUpdateToken } from './login/NaverLogin'
 import { refreshToken as naverRefreshToken } from './login/NaverLogin'
-import { WithLocalSvg } from 'react-native-svg'
-
-// context
-import { UserContext } from '../store/user'
+import { initializeUserInfo } from '../api/Auth/commonFunctions'
 
 export default function LoginView({ navigation }) {
   const onLayoutRootView = useCallback(async () => {
@@ -77,63 +78,11 @@ export default function LoginView({ navigation }) {
         const res = await _axios.post('/auth/signin', payload)
         if (res.data.code === 0) {
           console.log('정상 로그인')
-          userDispatch({
-            type: 'SET_JWT_TOKEN',
-            payload: { jwtToken: res.data.data.token },
-          })
-
-          const userId = JSON.parse(decode(res.data.data.token.split('.')[1])).sub
-          const userDataRes = await fetch(`${config.BASE_URL}/users/${userId}`, {
-            method: 'GET', // *GET, POST, PUT, DELETE, etc.
-            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-            credentials: 'include',
-            headers: {
-              Authorization: res.data.data.token,
-              'Content-Type': 'application/json',
-            },
-          })
-          const userDataResJson = await userDataRes.json()
-          if (userDataResJson.code === 0) {
-            userDispatch({
-              type: 'SET_ROLE',
-              payload: { role: userDataResJson.data.type },
-            })
-
-            userDispatch({
-              type: 'SET_MEMBER_NAME',
-              payload: { name: userDataResJson.data.name },
-            })
-
-            userDispatch({
-              type: 'SET_PROFILE',
-              payload: { profile: userDataResJson.data.profileImage.path },
-            })
-
-            if (userDataResJson.type === 'MEMBER') {
-              const memberDataRes = await fetch(`${config.BASE_URL}/members/${userId}`, {
-                method: 'GET', // *GET, POST, PUT, DELETE, etc.
-                cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-                headers: {
-                  Authorization: userState.jwtToken,
-                  'Content-Type': 'application/json',
-                },
-              })
-
-              const memberDataResJson = await memberDataRes.json()
-              if (memberDataResJson.code === 0) {
-                userDispatch({
-                  type: 'SET_MEMBER_GENDER',
-                  payload: { gender: userDataResJson.data.gender },
-                })
-                userDispatch({
-                  type: 'SET_MEMBER_BIRTHDAY',
-                  payload: { birthday: userDataResJson.data.birthday },
-                })
-              }
-            }
-          } else {
-            console.log(userDataResJson)
+          const param = {
+            userDispatch: userDispatch,
+            jwtToken: res.data.data.token,
           }
+          await initializeUserInfo(param)
           navigation.replace('Home')
         } else {
           console.log('Sign In API 호출 실패')
@@ -190,8 +139,8 @@ export default function LoginView({ navigation }) {
     login()
     //AsyncStorage.clear()
 
-    // AsyncStorage.setItem('PROVIDER', 'KAKAO')
-    // AsyncStorage.setItem('ACCESSTOKEN', '_ysWHDIsv6Gys115E6reupM7Mt_q3R1mHlYdmAopb1QAAAF-1BCl7w')
+    //AsyncStorage.setItem('PROVIDER', 'KAKAO')
+    //AsyncStorage.setItem('ACCESSTOKEN', '-hfLUDek2uiM2irVQMHS-rZbkxoGj1pHPf6YMwo9dNsAAAF_HEsqNA')
     //AsyncStorage.setItem('PROVIDER', 'KAKAO')
     //AsyncStorage.setItem('ACCESSTOKEN', 'VmOVdg678M4b47nrT1CIZIf4C0Es2Aye88ADjworDNQAAAF_EW4SDw')
   }, [])
@@ -271,7 +220,7 @@ export default function LoginView({ navigation }) {
       <Pressable
         style={[styles.svgWrapper, { marginTop: 60 }]}
         onPress={() => {
-          navigation.navigate('KakaoLogin')
+          navigation.replace('KakaoLogin')
         }}
       >
         <Image source={KakaoLogin} style={{ width: 400, height: 70 }} />
@@ -279,7 +228,7 @@ export default function LoginView({ navigation }) {
       <Pressable
         style={styles.svgWrapper}
         onPress={() => {
-          navigation.navigate('NaverLogin')
+          navigation.replace('NaverLogin')
         }}
       >
         <Image source={NaverLogin} style={{ width: 400, height: 70, marginTop: 20 }} />

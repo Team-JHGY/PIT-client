@@ -12,7 +12,9 @@ import {
 import InputScrollView from 'react-native-input-scroll-view'
 import { WithLocalSvg } from 'react-native-svg'
 import { Appbar } from 'react-native-paper'
-import * as ImagePicker from 'expo-image-picker'
+import * as DocumentPicker from 'expo-document-picker'
+import { decode } from 'js-base64'
+
 import globalStyle from '../../utils/globalStyle'
 import TextField from '../../components/Common/TextField'
 import ButtonLarge from '../../components/Common/ButtonLarge'
@@ -29,30 +31,33 @@ import { UserContext } from '../../store/user'
 
 // utils
 import { _axios } from '../../utils/http-utils'
+import config from '../../utils/config'
+import { initializeUserInfo } from '../../api/Auth/commonFunctions'
+function birthDayValidCheck(birthday) {
+  let year = new Date().getFullYear()
+  if (
+    Number(birthday.substr(0, 4)) <= year &&
+    Number(birthday.substr(4, 2)) >= 1 &&
+    Number(birthday.substr(4, 2)) <= 12 &&
+    Number(birthday.substr(6, 2)) >= 1 &&
+    Number(birthday.substr(6, 2)) <= 31
+  ) {
+    return true
+  } else {
+    return false
+  }
+}
 export default function SignUpStep2(props) {
   const [buttonEnable, setButtonEnable] = React.useState('false')
-
   const [image, setImage] = React.useState(null)
-  //const [name, setName] = React.useState('')
-  //const [birthday, setBirthday] = React.useState('')
-  //const [gender, setGender] = React.useState('M')
-  // const [userContext, setUsetContext] = React.useState()
-
+  const [formData, setFormData] = React.useState(new FormData())
   const { goBackStep, openModal, navigation, provider } = props //앞에서 전달받은 정보
   const { userState, userDispatch } = useContext(UserContext)
   const { name, gender, birthday, intro, accessToken, refreshToken, expiresIn, role } = userState
+
   useEffect(() => {
-    ;(async () => {
-      if (Platform.OS !== 'web') {
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
-        if (status !== 'granted') {
-          alert('Sorry, we need camera roll permissions to make this work!')
-        }
-      }
-    })()
     AddtoLocalUserAuth()
   }, [])
-
   useEffect(() => {
     if (role === 'TRAINER') {
       if (name.length > 0) setButtonEnable(true)
@@ -66,20 +71,39 @@ export default function SignUpStep2(props) {
   function AddtoLocalUserAuth() {}
 
   const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    })
+    let result = await DocumentPicker.getDocumentAsync({ type: 'image/*' })
 
-    if (!result.cancelled) {
-      setImage(result.uri)
+    const imageValue = {
+      uri: result.uri,
+      name: result.name,
+      type: `image/${result.name.slice(-5).split('.')[1]}`,
     }
-  }
+    formData.append('profile', imageValue)
 
+    setImage(result.uri)
+  }
+  const uploadImage = async (jwtToken) => {
+    let headerValue = new Headers()
+    headerValue.append('Authorization', jwtToken)
+    headerValue.append('Content-Type', 'multipart/form-data')
+
+    const userId = JSON.parse(decode(jwtToken.split('.')[1])).sub
+    fetch(`${config.BASE_URL}/profile-image/${userId}`, {
+      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: 'include', // include, *same-origin, omit
+      body: formData,
+      headers: headerValue,
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        console.log(res.code)
+      })
+      .catch((e) => {
+        console.log(e)
+      })
+  }
   function ToggleButton(gender) {
-    //setGender(gender)
     userDispatch({ type: 'SET_MEMBER_GENDER', payload: { gender: gender } })
   }
 
@@ -101,7 +125,7 @@ export default function SignUpStep2(props) {
         </Pressable>
       </Appbar.Header>
       <View style={styles.body}>
-        {/* {image !== null ? (
+        {image !== null ? (
           <Image source={{ uri: image }} style={styles.profile} />
         ) : (
           <Image
@@ -128,7 +152,7 @@ export default function SignUpStep2(props) {
               />
             </View>
           )}
-        </View> */}
+        </View>
 
         <View style={[globalStyle.textField, { marginTop: 35 }]}>
           <TextField
@@ -225,6 +249,10 @@ export default function SignUpStep2(props) {
           name={'가입완료'}
           isEnable={buttonEnable}
           onPress={() => {
+            if (birthDayValidCheck(birthday) === false) {
+              alert('생년월일을 정확히 입력해주세요.')
+              return
+            }
             if (role === 'MEMBER') {
               const birthdayFormat =
                 birthday.substr(0, 4) + '-' + birthday.substr(4, 2) + '-' + birthday.substr(6, 2)
@@ -256,7 +284,9 @@ export default function SignUpStep2(props) {
                   }
                 })
                 .catch((err) => {
-                  console.log(err)
+                  if (err.response.data.code === -11) {
+                    alert('이미 회원가입이 되어있습니다.')
+                  }
                 })
                 .then((payload) => {
                   return _axios.post('/auth/signin', payload)
@@ -268,6 +298,14 @@ export default function SignUpStep2(props) {
                     type: 'SET_JWT_TOKEN',
                     payload: { jwtToken: res.data.data.token },
                   })
+                  if (image !== null) {
+                    await uploadImage(res.data.data.token)
+                  }
+                  const param = {
+                    userDispatch: userDispatch,
+                    jwtToken: res.data.data.token,
+                  }
+                  initializeUserInfo(param)
                   navigation.replace('Home')
                 })
             } else {
@@ -312,6 +350,14 @@ export default function SignUpStep2(props) {
                     type: 'SET_JWT_TOKEN',
                     payload: { jwtToken: res.data.data.token },
                   })
+                  if (image !== null) {
+                    await uploadImage(res.data.data.token)
+                  }
+                  const param = {
+                    userDispatch: userDispatch,
+                    jwtToken: res.data.data.token,
+                  }
+                  initializeUserInfo(param)
                   navigation.replace('Home')
                 })
                 .catch((e) => console.log(e))

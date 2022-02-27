@@ -3,7 +3,6 @@ import React, { useState, useContext } from 'react'
 import { View, Text, AsyncStorage } from 'react-native'
 import { WebView } from 'react-native-webview'
 import axios from 'axios'
-import { decode } from 'js-base64'
 
 // utils
 import { _axios } from '../../utils/http-utils'
@@ -58,59 +57,33 @@ export default NaverLogin = ({ navigation }) => {
                   expiresIn: res.data.expires_in,
                 },
               })
+
+              return res.data.access_token
+            })
+            .then(async (accessToken) => {
+              const res = await _axios.get(`/auth/exist?accessToken=${accessToken}&provider=NAVER`)
+              if (res.data.code === 0) {
+                if (res.data.data === true) {
+                  return accessToken
+                } else {
+                  return 'user not exists'
+                }
+              } else {
+                console.log('user/exist API 호출 실패')
+                console.log(res.data)
+              }
             })
             .catch((e) => {
               console.log(e)
             })
-            .finally(async () => {
-              const PROVIDER = await AsyncStorage.getItem('PROVIDER')
-              const ACCESSTOKEN = await AsyncStorage.getItem('ACCESSTOKEN')
+            .then(async (accessToken) => {
+              const PROVIDER = 'NAVER'
+              const ACCESSTOKEN = accessToken
               // 재로그인
-              if (PROVIDER !== null && ACCESSTOKEN !== null) {
-                let payload = {
-                  accessToken: ACCESSTOKEN,
-                  provider: PROVIDER,
-                }
-                const res = await _axios.post('/auth/signin', payload)
-                if (res.data.code === 0) {
-                  console.log('정상 로그인')
-                  //TODO 자기소개 부재
-                  userDispatch({
-                    type: 'SET_JWT_TOKEN',
-                    payload: { jwtToken: res.data.data.token },
-                  })
-
-                  const userId = JSON.parse(decode(res.data.data.token.split('.')[1])).sub
-                  const userDataRes = await _axios.get(`/members/${userId}`, {
-                    headers: {
-                      Authorization: userState.jwtToken,
-                      'Content-Type': 'application/json',
-                    },
-                  })
-                  if (userDataRes.data.code === 0) {
-                    userDispatch({
-                      type: 'SET_ROLE',
-                      payload: { role: userDataRes.data.user.type },
-                    })
-                    userDispatch({
-                      type: 'SET_MEMBER_GENDER',
-                      payload: { gender: userDataRes.data.user.gender },
-                    })
-                    userDispatch({
-                      type: 'SET_MEMBER_NAME',
-                      payload: { name: userDataRes.data.user.name },
-                    })
-                    userDispatch({
-                      type: 'SET_MEMBER_BIRTHDAY',
-                      payload: { birthday: userDataRes.data.birthday },
-                    })
-                    userDispatch({
-                      type: 'SET_PROFILE',
-                      payload: { profile: userDataRes.data.profileImage.path },
-                    })
-                  }
-                  navigation.replace('Home')
-                }
+              if (ACCESSTOKEN !== 'user not exists') {
+                await AsyncStorage.setItem('PROVIDER', PROVIDER)
+                await AsyncStorage.setItem('ACCESSTOKEN', ACCESSTOKEN)
+                navigation.replace('Login')
               } else {
                 // 첫 로그인
                 console.log('첫 네이버 로그인')
