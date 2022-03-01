@@ -148,6 +148,7 @@ export default function MyPage({navigation}) {
     }
 
 
+    
 
    
     return (
@@ -193,7 +194,13 @@ export default function MyPage({navigation}) {
                     >
                         <View style={[globalStyle.col_1, styles.alignCenter, styles.padding_Left]}>
                             <Text style={globalStyle.body2, globalStyle.textDartGery}>현재 트레이너</Text>
-                            <Text style={globalStyle.heading2}>{trainer}</Text>
+                            <Text style={globalStyle.heading2}>
+                                {trainer === ""?
+                                "없음"
+                                :
+                                trainer
+                                }
+                            </Text>
                         </View>
                         <View style={[globalStyle.col_2, styles.alignCenter, styles.padding_Left]}>
                             <Text style={globalStyle.body2, globalStyle.textDartGery}>함께 운동했던 선생님들</Text>

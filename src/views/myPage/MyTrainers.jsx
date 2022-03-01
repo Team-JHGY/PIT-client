@@ -98,29 +98,33 @@ export default function MyTrainers({ navigation }) {
           title="나의 트레이너"
           titleStyle={(globalStyle.header, globalStyle.center)}
         />
-        <Pressable
-          style={[
-            globalStyle.absoluteRight,
-            globalStyle.appbarBtn,
-            {
-              justifyContent: 'center',
-              width: 60,
-              height: 40,
-              borderColor: '#C2C7CC',
-              marginRight: 10,
-            },
-          ]}
-          onPress={() => {
-            setIsModal(true)
-          }}
-        >
-          <Text style={[globalStyle.appbarBtnText, globalStyle.center]}>설정</Text>
-        </Pressable>
+        {userCount === 0?
+          null
+          :
+          <Pressable
+            style={[
+              globalStyle.absoluteRight,
+              globalStyle.appbarBtn,
+              {
+                justifyContent: 'center',
+                width: 60,
+                height: 40,
+                borderColor: '#C2C7CC',
+                marginRight: 10,
+              },
+            ]}
+            onPress={() => {
+              setIsModal(true)
+            }}
+          >
+            <Text style={[globalStyle.appbarBtnText, globalStyle.center]}>설정</Text>
+          </Pressable>
+        }
       </Appbar.Header>
       <SafeAreaView style={userCount === 0 ? styles.mainForm : styles.mainFormUser}>
         {userCount === 0 ? (
           <View style={styles.centerArea}>
-            <Text style={[styles.disableText, styles.centerArea]}>등록된 회원이 없습니다.</Text>
+            <Text style={[styles.disableText, styles.centerArea]}>등록된 트레이너가 없습니다.</Text>
             <View style={styles.addTrainer}>
               <Pressable
                 style={styles.trainerAddBtn}

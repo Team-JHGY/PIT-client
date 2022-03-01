@@ -37,6 +37,7 @@ import config from '../../utils/config'
 
 export default function EditMyPage({ navigation, userData }) {
   const [image, setImage] = React.useState(null)
+  const [formdataImage, setFormData]   =  React.useState(null)
   const [name, setName] = React.useState('')
   const [intro, setIntro] = React.useState('')
   const [buttonEnable, setButtonEnable] = React.useState(false)
@@ -45,6 +46,7 @@ export default function EditMyPage({ navigation, userData }) {
   const { userState, userDispatch } = React.useContext(UserContext)
   const splitJwt = userState.jwtToken.split('.')
   const userInfo = React.useState(JSON.parse(decode(splitJwt[1])))
+
 
   function AddtoLocalUserAuth() {
     if (userInfo[0].type === 'MEMBER') {
@@ -115,26 +117,12 @@ export default function EditMyPage({ navigation, userData }) {
       type: `image/${result.name.slice(-5).split('.')[1]}`,
     }
 
-    console.log(imageValue)
-
     const formData = new FormData()
     formData.append('profile', imageValue)
 
     setImage(result.uri)
-
-    let headerValue = new Headers()
-    headerValue.append('Authorization', userState.jwtToken)
-    headerValue.append('Content-Type', 'multipart/form-data')
-
-    fetch(`${config.BASE_URL}/profile-image/${userInfo[0].sub}`, {
-      method: 'POST', // *GET, POST, PUT, DELETE, etc.
-      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-      credentials: 'include', // include, *same-origin, omit
-      body: formData,
-      headers: headerValue,
-    }).catch((e) => {
-      console.log('e.config', e)
-    })
+    setFormData(formData)
+    
   }
 
   function ToggleButton(gender) {
@@ -148,6 +136,22 @@ export default function EditMyPage({ navigation, userData }) {
     } else {
       setName(name)
     }
+  }
+
+  async function EditMyProfileImage(){
+    let headerValue = new Headers()
+    headerValue.append('Authorization', userState.jwtToken)
+    headerValue.append('Content-Type', 'multipart/form-data')
+
+    fetch(`${config.BASE_URL}/profile-image/${userInfo[0].sub}`, {
+      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: 'include', // include, *same-origin, omit
+      body: formdataImage,
+      headers: headerValue,
+    }).catch((e) => {
+      console.log('e.config', e)
+    })
   }
 
   function EditMyinfo() {
@@ -171,6 +175,10 @@ export default function EditMyPage({ navigation, userData }) {
         .then((res) => {
           //console.log(res.data)
           if (res.code === 0) {
+            if(formdataImage !== null){
+              EditMyProfileImage();
+            }
+            
             alert('편집 완료했습니다.')
             navigation.goBack()
           } else {

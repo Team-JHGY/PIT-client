@@ -249,7 +249,7 @@ export default function SignUpStep2(props) {
           name={'가입완료'}
           isEnable={buttonEnable}
           onPress={() => {
-            if (birthDayValidCheck(birthday) === false) {
+            if (role === 'MEMBER' && birthDayValidCheck(birthday) === false) {
               alert('생년월일을 정확히 입력해주세요.')
               return
             }

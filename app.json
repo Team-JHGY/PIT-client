@@ -24,7 +24,8 @@
         "backgroundColor": "#FFFFFF"
       },
       "softwareKeyboardLayoutMode": "pan",
-      "package": "com.hoyun.PIT"
+      "package": "com.hoyun.PIT",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/cross.png"

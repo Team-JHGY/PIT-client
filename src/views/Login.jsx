@@ -36,7 +36,7 @@ export default function LoginView({ navigation }) {
   })
 
   const { userState, userDispatch } = useContext(UserContext)
-  const fakeLogin = (accessToken, role, name, profile) => {
+  /*const fakeLogin = (accessToken, role, name, profile) => {
     _axios
       .post('/auth/fake-signin', JSON.stringify({ accessToken: accessToken, provider: 'KAKAO' }))
       .then((res) => {
@@ -62,7 +62,7 @@ export default function LoginView({ navigation }) {
           navigation.navigate('Home')
         }
       })
-  }
+  }*/
   const loginProcess = async () => {
     const PROVIDER = await AsyncStorage.getItem('PROVIDER')
     const ACCESSTOKEN = await AsyncStorage.getItem('ACCESSTOKEN')
