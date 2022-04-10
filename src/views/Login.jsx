@@ -15,6 +15,7 @@ import config from '../utils/config'
 import Pitlogo from '../../assets/img/Login/PIT_logo.svg'
 import KakaoLogin from '../../assets/img/Login/Kakao_login.png'
 import NaverLogin from '../../assets/img/Login/Naver_login.png'
+import NormalLogin from '../../assets/img/Login/Normal_login.png'
 import {
   TEST_TRAINER1_PROFILE,
   TEST_TRAINER2_PROFILE,
@@ -75,7 +76,7 @@ export default function LoginView({ navigation }) {
         provider: PROVIDER,
       }
       try {
-        const res = await _axios.post('/auth/signin', payload)
+        const res = await _axios.post('/auth/signin/social', payload)
         if (res.data.code === 0) {
           console.log('정상 로그인')
           const param = {
@@ -232,6 +233,14 @@ export default function LoginView({ navigation }) {
         }}
       >
         <Image source={NaverLogin} style={{ width: 400, height: 70, marginTop: 20 }} />
+      </Pressable>
+      <Pressable
+        style={styles.svgWrapper}
+        onPress={() => {
+          navigation.replace('NormalLogin')
+        }}
+      >
+        <Image source={NormalLogin} style={{ width: 400, height: 70, marginTop: 20 }} />
       </Pressable>
       <Text style={styles.footerText}>PIT project</Text>
     </View>

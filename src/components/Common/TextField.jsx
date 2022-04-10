@@ -4,8 +4,16 @@ import { WithLocalSvg } from 'react-native-svg'
 import globalStyle from '../../utils/globalStyle'
 import Asterisk from '../../../assets/icon/asterisk.svg'
 
-const TextField = ({ title, input, height, isMandatory, isMultiLine, setInput, placeholder }) => {
-  
+const TextField = ({
+  title,
+  input,
+  height,
+  isMandatory,
+  isMultiLine,
+  setInput,
+  placeholder,
+  isPassword,
+}) => {
   const labelTextStyle = (height) => {
     if (isMultiLine === true) {
       return {
@@ -22,19 +30,13 @@ const TextField = ({ title, input, height, isMandatory, isMultiLine, setInput, p
   return (
     <View>
       <View style={styles.titleWrapper}>
-        {title === null?
-          null
-          :
-          <Text style={styles.titleText}>{title}</Text>
-        }
-        {isMandatory === true && (
-          title === null?
-            null:
-          <View style={{ justifyContent: 'center', marginLeft: 5 }}>
-           <WithLocalSvg asset={Asterisk}></WithLocalSvg>
-          </View>
-          
-        )}
+        {title === null ? null : <Text style={styles.titleText}>{title}</Text>}
+        {isMandatory === true &&
+          (title === null ? null : (
+            <View style={{ justifyContent: 'center', marginLeft: 5 }}>
+              <WithLocalSvg asset={Asterisk}></WithLocalSvg>
+            </View>
+          ))}
       </View>
       <TextInput
         style={[
@@ -52,6 +54,7 @@ const TextField = ({ title, input, height, isMandatory, isMultiLine, setInput, p
         value={input}
         multiline={isMultiLine === true ? true : false}
         placeholder={placeholder !== null ? placeholder : ''}
+        secureTextEntry={isPassword === true ? true : false}
       ></TextInput>
     </View>
   )

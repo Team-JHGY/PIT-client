@@ -23,6 +23,7 @@ import SignUpView from './src/views/SignUp/SignUp'
 import EditMyPage from './src/views/myPage/EidtMyPage'
 import KakaoLogin from './src/views/login/KakaoLogin'
 import NaverLogin from './src/views/login/NaverLogin'
+import NormalLogin from './src/views/login/NormalLogin'
 import MyTrainers from './src/views/myPage/MyTrainers'
 import MealPlan from './src/views/mealPlan/MealPlan'
 import AddMealPlan from './src/views/mealPlan/AddMealPlan'
@@ -56,7 +57,6 @@ const Tab = createBottomTabNavigator()
 export function BottomNav() {
   const { userState, userDispatch } = useContext(UserContext)
   const { role } = userState
-
   return (
     <Tab.Navigator
       style={styles.bottomNavMain}
@@ -206,6 +206,7 @@ export default function App() {
           <Stack.Screen name="AddMembersCode" component={AddMembersCode} />
           <Stack.Screen name="KakaoLogin" component={KakaoLogin} />
           <Stack.Screen name="NaverLogin" component={NaverLogin} />
+          <Stack.Screen name="NormalLogin" component={NormalLogin} />
           <Stack.Screen name="MyTrainers" component={MyTrainers} />
           <Stack.Screen name="MealPlan" component={MealPlan} />
           <Stack.Screen name="AddMealPlan" component={AddMealPlan} />

@@ -289,7 +289,7 @@ export default function SignUpStep2(props) {
                   }
                 })
                 .then((payload) => {
-                  return _axios.post('/auth/signin', payload)
+                  return _axios.post('/auth/signin/social', payload)
                 })
                 .then(async (res) => {
                   await AsyncStorage.setItem('PROVIDER', provider)
@@ -341,7 +341,7 @@ export default function SignUpStep2(props) {
                   }
                 })
                 .then((payload) => {
-                  return _axios.post('/auth/signin', payload)
+                  return _axios.post('/auth/signin/social', payload)
                 })
                 .then(async (res) => {
                   await AsyncStorage.setItem('PROVIDER', provider)
